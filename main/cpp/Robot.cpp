@@ -13,15 +13,31 @@
 
 #include "Ports2019.h"
 #include "DriveController.h"
+#include "SuperstructureController.h"
+#include "ControlBoard.h"
 #include "RobotModel.h"
+#include "Logger.h"
+#include "PIDInputSource.h"
+#include <frc/WPILib.h>
 
 void Robot::RobotInit() {
-
+  
+  printf("In robot init.\n");
   currentGameMode_ = SANDSTORM;
 
-  robotModel_ = new RobotModel();
-  driveController_ = new DriveController(robotModel_);
+  robot_ = new RobotModel();
+  robot_->ZeroNavXYaw();
+	//robot_->RefreshIni(); //TODO INI
   
+  humanControl_ = new ControlBoard();
+  driveController_ = new DriveController(robot_, humanControl_);
+  superstructureController_ = new SuperstructureController(robot_, humanControl_);
+  talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+
+  //Sandstorm stuffs Here, Grace
+
+  ResetTimerVariables();
+
   //m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   //m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   //frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
@@ -70,14 +86,53 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
-
+  //RobotInit();
+  robot_->ResetTimer();
+	robot_->SetTalonCoastMode();
+	ResetTimerVariables();
+	ResetControllers();
+	robot_->StartCompressor();
 }
 
 void Robot::TeleopPeriodic() {
-
+  switch(currentGameMode_){
+    case SANDSTORM:
+      //Do override via checking joystick values (not 0)
+      break;
+    case NORMAL_TELEOP:
+      UpdateTimerVariables();
+		  robot_->PrintState();
+		  humanControl_->ReadControls();
+		  driveController_->Update(currTimeSec_, deltaTimeSec_);
+		  superstructureController_->Update(currTimeSec_, deltaTimeSec_);
+		  Logger::LogState(robot_, humanControl_);
+      break;
+    default:
+      printf("ERROR: Mode not found in Robot::TeleopPeriodic\n");
+  }
 }
 
 void Robot::TestPeriodic() {}
+
+void Robot::ResetTimerVariables() {
+  currTimeSec_ = robot_->GetTime();
+	lastTimeSec_ = currTimeSec_;
+	deltaTimeSec_ = 0.0;
+}
+
+void Robot::UpdateTimerVariables(){
+  lastTimeSec_ = currTimeSec_;
+	currTimeSec_ = robot_->GetTime();
+	deltaTimeSec_ = currTimeSec_ - lastTimeSec_;
+}
+
+void Robot::ResetControllers() {
+	driveController_->Reset();
+	superstructureController_->Reset();
+}
+
+//TODO get game data? needed?
+
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<Robot>(); }
