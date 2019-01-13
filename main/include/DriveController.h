@@ -14,6 +14,7 @@
 #include <frc/WPILib.h>
 #include "ControlBoard.h"
 #include "PIDInputSource.h"
+#include "PIDOutputSource.h"
 
 
 class DriveController {
@@ -29,6 +30,9 @@ public:
 	 */
 	~DriveController();
 
+	void DriveStraightInit();
+
+
 	void Reset();
 
 	void Update(double currTimeSec, double deltaTimeSec);
@@ -42,10 +46,6 @@ public:
 	 * Prints direction, state, angle, etc.
 	 */
 	void PrintDriveValues();
-
-	enum DriveState {
-		kTeleopDrive
-	};
 
 private:
 	/**

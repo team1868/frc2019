@@ -79,7 +79,14 @@ class RobotModel {
 
   void ZeroNavXYaw(); //TODO
 
+  enum GameMode{SANDSTORM, NORMAL_TELEOP};
+  
+  RobotModel::GameMode GetGameMode();
+
  private:
+ 
+  GameMode currentGameMode_;
+
   frc::ShuffleboardTab &tab_;
 
   //Ini *pini_;

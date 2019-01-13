@@ -31,11 +31,7 @@ class Robot : public frc::IterativeRobot {
   void UpdateTimerVariables();
   void ResetControllers();
 
-
-  enum GameMode{SANDSTORM, NORMAL_TELEOP};
-
  private:
-  GameMode currentGameMode_;
   RobotModel *robot_;
   ControlBoard *humanControl_;
   DriveController *driveController_;

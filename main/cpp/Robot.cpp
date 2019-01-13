@@ -23,7 +23,6 @@
 void Robot::RobotInit() {
   
   printf("In robot init.\n");
-  currentGameMode_ = SANDSTORM;
 
   robot_ = new RobotModel();
   robot_->ZeroNavXYaw();
@@ -33,6 +32,7 @@ void Robot::RobotInit() {
   driveController_ = new DriveController(robot_, humanControl_);
   superstructureController_ = new SuperstructureController(robot_, humanControl_);
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+
 
   //Sandstorm stuffs Here, Grace
 
@@ -95,11 +95,11 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  switch(currentGameMode_){
-    case SANDSTORM:
+  switch(robot_->GetGameMode()){
+    case RobotModel::SANDSTORM:
       //Do override via checking joystick values (not 0)
       break;
-    case NORMAL_TELEOP:
+    case RobotModel::NORMAL_TELEOP:
       UpdateTimerVariables();
 		  robot_->PrintState();
 		  humanControl_->ReadControls();
@@ -130,6 +130,7 @@ void Robot::ResetControllers() {
 	driveController_->Reset();
 	superstructureController_->Reset();
 }
+
 
 //TODO get game data? needed?
 

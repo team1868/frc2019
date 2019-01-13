@@ -22,6 +22,8 @@ const int EDGES_PER_ENCODER_COUNT = 4;
 
 RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")) {
 
+  currentGameMode_ = SANDSTORM;
+
   frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
 
   //pini_ = new Ini("home/lvuser/robot.ini");
@@ -359,6 +361,10 @@ void RobotModel::RefreshIniVals() {
 
 }
 */
+
+RobotModel::GameMode RobotModel::GetGameMode(){
+  return currentGameMode_;
+}
 
 void RobotModel::PrintState() {
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Drive Distance", GetLeftDistance());
