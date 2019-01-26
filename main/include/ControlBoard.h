@@ -18,6 +18,7 @@ class ControlBoard {
 public:
 	enum Joysticks{ kLeftJoy, kRightJoy };
 	enum Axes{ kX, kY, kZ };
+	enum JoystickMode{ gamePad, twoJoy};
 
 	/**
 	 * ControlBoard constructor initializes joysticks, buttons, and all other values
@@ -46,6 +47,8 @@ public:
 	virtual ~ControlBoard();
 private:
 	void ReadAllButtons();
+
+	JoystickMode curJoyMode;
 
 	// Joystick values
 	double leftJoyX_, leftJoyY_, leftJoyZ_, rightJoyX_, rightJoyY_, rightJoyZ_;

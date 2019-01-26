@@ -16,8 +16,13 @@
 #include "DriveController.h"
 #include "SuperstructureController.h"
 #include "PIDInputSource.h"
+#include "DriveStraightCommand.h" //TODO delete
+#include "PivotCommand.h" //TODO delete
 
-class Robot : public frc::IterativeRobot {
+#include <frc/shuffleboard/Shuffleboard.h>
+#include <frc/shuffleboard/ShuffleboardTab.h>
+
+class Robot : public frc::IterativeRobot { //TODO CHANGE
  public:
   void RobotInit() override;
   void RobotPeriodic() override;
@@ -37,6 +42,8 @@ class Robot : public frc::IterativeRobot {
   DriveController *driveController_;
   SuperstructureController *superstructureController_;
   TalonEncoderPIDSource *talonEncoderSource_;
+  PivotCommand *pivot_; //testing TODO delte
+
 
   double currTimeSec_;
 	double lastTimeSec_;
@@ -46,4 +53,8 @@ class Robot : public frc::IterativeRobot {
   const std::string kAutoNameDefault = "Default";
   const std::string kAutoNameCustom = "My Auto"; //TODO: Delete?? idk whatevs
   std::string m_autoSelected;
+
+
+  DriveStraightCommand *driveStraight_;//TODO delete
+  //ShuffleboardTab& tab;
 };

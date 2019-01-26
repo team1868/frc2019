@@ -88,6 +88,8 @@ private:
 	double LOW_THRUST_SENSITIVITY;
 	double LOW_ROTATE_SENSITIVITY;
 
+	double leftOutput, rightOutput;
+
 	NavXPIDSource *navXSource_;
 	TalonEncoderPIDSource *talonEncoderSource_;
 

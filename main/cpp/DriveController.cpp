@@ -27,6 +27,22 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 
 	isDone_ = false;
 
+	leftOutput = 0.0;
+	rightOutput  = 0.0;
+
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Thrust z", thrustSensitivity_);
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Rotate z", rotateSensitivity_);
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Gear High?", humanControl_->GetHighGearDesired());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Quick turn desired", humanControl_->GetQuickTurnDesired());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive Mode Arcade Drive?", humanControl_->GetArcadeDriveDesired());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left motor output", leftOutput );
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right motor output", rightOutput);
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive direction", GetDriveDirection());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX angle", robot_->GetNavXYaw());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left drive distance", robot_->GetLeftDistance());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive distance", robot_->GetRightDistance());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left drive encoder value", robot_->GetLeftEncoderValue());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive encoder value", robot_->GetRightEncoderValue());
 }
 
 void DriveController::Reset() {
@@ -39,7 +55,7 @@ void DriveController::Reset() {
 }
 
 void DriveController::Update(double currTimeSec, double deltaTimeSec) {
-	PrintDriveValues();
+	//PrintDriveValues();
 
 	switch (robot_->GetGameMode()) {
 		case (RobotModel::NORMAL_TELEOP):
@@ -57,26 +73,21 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 			thrustSensitivity_ = (leftJoyZ + 1.0) / 2.0;
 			rotateSensitivity_ = (rightJoyZ + 1.0) / 2.0;
 
-			frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Thrust z", thrustSensitivity_);
-			frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Rotate z", rotateSensitivity_);
-
 			// Change gear
 			if (humanControl_->GetHighGearDesired()) {
-				frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Gear", "High");
 				robot_->SetHighGear();
 			} else {
-				frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Gear", "Low");
 				robot_->SetLowGear();
 			}
 		
 			// Checks quickturn or arcade drive
-			frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Quick turn desired", humanControl_->GetQuickTurnDesired());
 			if (humanControl_->GetQuickTurnDesired()) {
 				QuickTurn(rightJoyX, 0.0);
 			} else {
 				if (humanControl_->GetArcadeDriveDesired()) {
 					ArcadeDrive(rightJoyX, leftJoyY, thrustSensitivity_, rotateSensitivity_);
 				} else {
+					printf("Using Tank drive------------------------------------------------------------------------------------------------------- \n");
 					TankDrive(leftJoyY, rightJoyY);
 				}
 			}
@@ -89,13 +100,12 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 }
 
 void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity) {
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive Mode", "Arcade Drive");
 
 	double thrustValue = myY * GetDriveDirection();
 	double rotateValue = myX;
 //	double rotateValue = myX * GetDriveDirection(); // TODO fix if you want chloemode
-	double leftOutput = 0.0;
-	double rightOutput = 0.0;
+	leftOutput = 0.0;
+	rightOutput = 0.0;
 
 	// Account for small joystick jostles (deadband)
 	thrustValue = HandleDeadband(thrustValue, 0.1);	// 0.02 was too low
@@ -121,24 +131,20 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 		rightOutput = -1.0;
 	}
 
-	robot_->SetDriveValues(RobotModel::kLeftWheels, leftOutput);
+	robot_->SetDriveValues(RobotModel::kLeftWheels, -leftOutput); //TODO ARTEMIS FIX CHANGE INVERSION
 	robot_->SetDriveValues(RobotModel::kRightWheels, rightOutput);
 
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left motor output", leftOutput );
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right motor output", rightOutput);
 }
 
 void DriveController::TankDrive(double myLeft, double myRight) {
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive Mode", "Tank Drive");
-	double leftOutput = myLeft * GetDriveDirection();
-	double rightOutput = myRight * GetDriveDirection();
+	leftOutput = myLeft * GetDriveDirection();
+	rightOutput = myRight * GetDriveDirection();
 
-	robot_->SetDriveValues(RobotModel::kLeftWheels, leftOutput);
+	robot_->SetDriveValues(RobotModel::kLeftWheels, -leftOutput); //TODO ARTEMIS FIX CHANGE INVERSION
 	robot_->SetDriveValues(RobotModel::kRightWheels, rightOutput);
 }
 
 void DriveController::QuickTurn(double myRight, double turnConstant) {
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive Mode", "Quick Turn");
 
 	double rotateValue = GetCubicAdjustment(myRight, turnConstant);
 
@@ -171,6 +177,7 @@ bool DriveController::IsDone() {
 	return isDone_;
 }
 
+/*
 void DriveController::PrintDriveValues() {
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive direction", GetDriveDirection());
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX angle", robot_->GetNavXYaw());
@@ -181,6 +188,7 @@ void DriveController::PrintDriveValues() {
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left drive encoder value", robot_->GetLeftEncoderValue());
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive encoder value", robot_->GetRightEncoderValue());
 }
+*/
 
 DriveController::~DriveController() {
 }

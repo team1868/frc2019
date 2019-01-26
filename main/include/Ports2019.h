@@ -1,4 +1,6 @@
 
+//NOTE: Ports changed, look into Phoenix tuner to update
+
 //Currently for practice bot - Valkarie
 
 static const int LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT = 0; //INCORRENT, TODO
@@ -16,8 +18,8 @@ static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN = 9; //INCORRECT, TODO
 static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN = 10; //INCORRECT, TODO
 
 //-----------------------Drive Talon IDs---------------------
-static const int LEFT_DRIVE_MASTER_ID          = 3;
-static const int LEFT_DRIVE_SLAVE_ID           = 4;
+static const int LEFT_DRIVE_MASTER_ID          = 4;
+static const int LEFT_DRIVE_SLAVE_ID           = 5;
 static const int RIGHT_DRIVE_MASTER_ID         = 1;
 static const int RIGHT_DRIVE_SLAVE_ID          = 2;
 
@@ -27,6 +29,7 @@ static const int LEFT_JOY_USB_PORT             = 0;
 static const int RIGHT_JOY_USB_PORT            = 1;
 static const int OPERATOR_JOY_USB_PORT         = 2;
 static const int OPERATOR_JOY_B_USB_PORT       = 3;
+//top 4 actually correct :)
 static const int HIGH_LOW_GEAR_BUTTON_PORT     = 4;
 static const int ARCADE_DRIVE_BUTTON_PORT      = 5;
 static const int QUICK_TURN_BUTTON_PORT        = 6;

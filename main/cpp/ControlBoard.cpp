@@ -9,21 +9,34 @@
 #include "Ports2019.h"
 
 ControlBoard::ControlBoard() {
-    leftJoyX_ = 0.0;
+	curJoyMode = gamePad; 
+
+  leftJoyX_ = 0.0;
 	leftJoyY_ = 0.0;
 	leftJoyZ_ = 0.0;
 	rightJoyX_ = 0.0;
 	rightJoyY_ = 0.0;
 	rightJoyZ_ = 0.0;
-
     
 	reverseDriveDesired_ = false;
 	highGearDesired_ = true; // TODO may want to fix this
 	arcadeDriveDesired_ = true;
 	quickTurnDesired_ = true;
 
-    leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
+  leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
 	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT);
+
+	/*switch(curJoyMode){
+		case(twoJoy):
+			rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT);
+			break;
+		case(gamePad):
+			printf("GamePad mode, right joy not initialized (good thing)\n");
+			break;
+		default:
+			printf("ERROR: mode of numjoysticks (curJoyMode of type JoystickMode) not set in ControlBoard constructer.\n");
+	}*/
+
 	operatorJoy_ = new frc::Joystick(OPERATOR_JOY_USB_PORT);
 	operatorJoyB_ = new frc::Joystick(OPERATOR_JOY_B_USB_PORT);
 
@@ -42,10 +55,20 @@ void ControlBoard::ReadControls() {
 	leftJoyX_ = leftJoy_->GetX();
 	leftJoyY_ = leftJoy_->GetY();
 	leftJoyZ_ = leftJoy_->GetZ();
-	rightJoyX_ = rightJoy_->GetX();
-	rightJoyY_ = rightJoy_->GetY();
-	rightJoyZ_ = rightJoy_->GetZ();
 
+	switch(curJoyMode) {
+		case(twoJoy):
+			rightJoyX_ = rightJoy_->GetX();
+			rightJoyY_ = rightJoy_->GetY();
+			rightJoyZ_ = rightJoy_->GetZ();
+			break;
+		case(gamePad):
+			rightJoyX_ = leftJoy_->GetRawAxis(4);
+			rightJoyY_ = leftJoy_->GetRawAxis(5);
+			break;
+		default:
+			printf("ERROR: mode of numjoysticks (curJoyMode of type JoystickMode) not set in ControlBoard read controls.\n");
+	}
     
 	reverseDriveDesired_ = driveDirectionButton_->IsDown();
 	highGearDesired_ = gearShiftButton_->IsDown();

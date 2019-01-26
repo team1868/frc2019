@@ -22,7 +22,7 @@ const int EDGES_PER_ENCODER_COUNT = 4;
 
 RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")) {
 
-  currentGameMode_ = SANDSTORM;
+  currentGameMode_ = NORMAL_TELEOP;//SANDSTORM;
 
   frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
 
@@ -95,6 +95,17 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")) {
 	gearShiftSolenoid_ = new frc::DoubleSolenoid(GEAR_SHIFT_FORWARD_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
 
   //TODO Superstructure
+
+	//Shuffleboard prints
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Jerk Y", navX_->GetWorldLinearAccelX());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Jerk X", navX_->GetWorldLinearAccelY());
+	//NOTE: collisions Detected not added here
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Drive Distance", GetLeftDistance());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Drive Distance", GetRightDistance());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Yaw", GetNavXYaw());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Pitch", GetNavXPitch());
+	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Roll", GetNavXRoll());
+  frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pressure", GetPressureSensorVal());
 
 }
 
@@ -305,10 +316,6 @@ bool RobotModel::CollisionDetected() {
 		collisionDetected = true;
 		printf("From ENCODER\n");
 	}
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Jerk Y", last_world_linear_accel_y_);
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Jerk X", last_world_linear_accel_x_);
-
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add(  "CollisionDetected", collisionDetected);
 	return collisionDetected;
 }
 
@@ -366,6 +373,7 @@ RobotModel::GameMode RobotModel::GetGameMode(){
   return currentGameMode_;
 }
 
+/* NOTE: using shuffleboard update method
 void RobotModel::PrintState() {
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Drive Distance", GetLeftDistance());
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Drive Distance", GetRightDistance());
@@ -374,6 +382,8 @@ void RobotModel::PrintState() {
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Roll", GetNavXRoll());
   frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pressure", GetPressureSensorVal());
 }
+*/
+
 
 RobotModel::~RobotModel() {
 }

@@ -10,7 +10,7 @@
 
 DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
-		double desiredDistance) {//: AutoCommand(){
+		double desiredDistance) : AutoCommand(){
 	isAbsoluteAngle_ = false;
 
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
@@ -37,7 +37,7 @@ void DriveStraightCommand::Init() {
 	anglePID_ = new PIDController(rPFac_, rIFac_, rDFac_, navXSource_, anglePIDOutput_);
 	distancePID_ = new PIDController(dPFac_, dIFac_, dDFac_, talonEncoderSource_, distancePIDOutput_);
 
-	//TODO INI //GetIniValues();
+	GetIniValues();
 
 	if (!isAbsoluteAngle_) {
 		desiredAngle_ = navXSource_->PIDGet();
@@ -147,7 +147,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 //		double maxOutput = fmax(fabs(rightMotorOutput_), fabs(leftMotorOutput_));
 	}
 
-	robot_->SetDriveValues(RobotModel::kLeftWheels, leftMotorOutput_);
+	robot_->SetDriveValues(RobotModel::kLeftWheels, -leftMotorOutput_); //TODO: THIS IS FOR ARTEMIS< CHANGE INVERSION
 	robot_->SetDriveValues(RobotModel::kRightWheels, rightMotorOutput_);
 }
 
@@ -179,9 +179,18 @@ void DriveStraightCommand::Reset() {
 	}
 	isDone_ = true;
 }
-
-/* TODO INI
+ 
 void DriveStraightCommand::GetIniValues() { // Ini values are refreshed at the start of auto
+
+	dPFac_ = 0.6;
+	dIFac_ = 0.0;
+	dDFac_ = 0.25;
+
+	rPFac_ = 0.8;
+	rIFac_ = 0.0;
+	rDFac_ = 0.0;
+
+	/* TODO INI
 	dPFac_ = robot_->driveDPFac_;
 	dIFac_ = robot_->driveDIFac_;
 	dDFac_ = robot_->driveDDFac_;
@@ -189,13 +198,13 @@ void DriveStraightCommand::GetIniValues() { // Ini values are refreshed at the s
 	rPFac_ = robot_->driveRPFac_;
 	rIFac_ = robot_->driveRIFac_;
 	rDFac_ = robot_->driveRDFac_;
+	*/
 
 	//driveTimeoutSec_ = robot_->driveTimeoutSec_;
 
 	printf("DRIVESTRAIGHT COMMAND DRIVE p: %f, i: %f, d: %f\n", dPFac_, dIFac_, dDFac_);
 	printf("DRIVESTRAIGHT COMMAND ANGLE p: %f, i: %f, d: %f\n", rPFac_, rIFac_, rDFac_);
 }
-*/
 
 void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 			AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
@@ -221,7 +230,7 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 	diffDriveTime_ = robot_->GetTime() - initialDriveTime_;
 
 	// Setting up the PID controllers to NULL
-	//TODO INI GetIniValues();
+	GetIniValues();
 	anglePID_ = NULL;
 	distancePID_ = NULL;
 

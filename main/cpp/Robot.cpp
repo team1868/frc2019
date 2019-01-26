@@ -20,7 +20,11 @@
 #include "PIDInputSource.h"
 #include <frc/WPILib.h>
 
-void Robot::RobotInit() {
+#include "DriveStraightCommand.h" //REMOVE LATER +BELOW
+#include "PIDInputSource.h"
+#include "PIDOutputSource.h"
+
+void Robot::RobotInit()  {
   
   printf("In robot init.\n");
 
@@ -29,6 +33,7 @@ void Robot::RobotInit() {
 	//robot_->RefreshIni(); //TODO INI
   
   humanControl_ = new ControlBoard();
+  printf("control done\n");
   driveController_ = new DriveController(robot_, humanControl_);
   superstructureController_ = new SuperstructureController(robot_, humanControl_);
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -37,6 +42,8 @@ void Robot::RobotInit() {
   //Sandstorm stuffs Here, Grace
 
   ResetTimerVariables();
+
+  printf("Main program initialized\n");
 
   //m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   //m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
@@ -65,6 +72,21 @@ void Robot::RobotPeriodic() {}
  * make sure to add them to the chooser code above as well.
  */
 void Robot::AutonomousInit() {
+
+  printf("IN AUTONOMOUS \n");
+
+  ResetTimerVariables();
+  NavXPIDSource *navXSource = new NavXPIDSource(robot_);
+  TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
+  AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
+  DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
+  /*driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
+  driveStraight_->Init();*/
+  pivot_ = new PivotCommand(robot_, 90.0, true, navXSource);
+  pivot_->Init();
+  
+
+
   m_autoSelected = m_chooser.GetSelected();
   // m_autoSelected = SmartDashboard::GetString(
   //     "Auto Selector", kAutoNameDefault);
@@ -78,6 +100,12 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
+  frc::Shuffleboard::Update();
+
+  //driveStraight_->Update(currTimeSec_, deltaTimeSec_);
+  UpdateTimerVariables();
+  pivot_->Update(currTimeSec_, deltaTimeSec_);
+
   if (m_autoSelected == kAutoNameCustom) {
     // Custom Auto goes here
   } else {
@@ -87,6 +115,7 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
   //RobotInit();
+  printf("Start teleop\n");
   robot_->ResetTimer();
 	robot_->SetTalonCoastMode();
 	ResetTimerVariables();
@@ -95,13 +124,16 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
+  frc::Shuffleboard::Update();
+
   switch(robot_->GetGameMode()){
     case RobotModel::SANDSTORM:
       //Do override via checking joystick values (not 0)
       break;
     case RobotModel::NORMAL_TELEOP:
+      printf("In normal teleop periodic\n");
       UpdateTimerVariables();
-		  robot_->PrintState();
+		  //robot_->PrintState();
 		  humanControl_->ReadControls();
 		  driveController_->Update(currTimeSec_, deltaTimeSec_);
 		  superstructureController_->Update(currTimeSec_, deltaTimeSec_);

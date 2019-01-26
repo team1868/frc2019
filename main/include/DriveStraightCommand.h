@@ -15,8 +15,9 @@
 #include "RobotModel.h"
 #include "PIDInputSource.h"
 #include "PIDOutputSource.h"
+#include "AutoCommand.h"
 
-class DriveStraightCommand {// : public AutoCommand {
+class DriveStraightCommand : public AutoCommand {
 public:
 	/**
 	 * Constructor that generates the DriveStraight Command
