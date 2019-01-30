@@ -16,6 +16,7 @@
 #include "RobotModel.h"
 #include "AutoCommand.h"
 //#include "Profiler.h"
+#include <NetworkTables/NetworkTableEntry.h>
 
 /**
  * A class implementing Pivot PID the WPILibrary PID Controller
@@ -64,7 +65,7 @@ public:
 	void GetIniValues();
 
 private:
-	double output;
+	//double output;
 
 	double pFac_, iFac_, dFac_;
 	double desiredAngle_;
@@ -90,6 +91,8 @@ private:
 	double pivotCommandStartTime_;
 
 	double pivotTimeoutSec_, actualTimeoutSec_;
+
+	nt::NetworkTableEntry leftDriveNet_, rightDriveNet_, pivotErrorNet_;
 };
 
 #endif /* SRC_AUTO_COMMANDS_PIVOTCOMMAND_H_ */

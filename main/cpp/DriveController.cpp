@@ -30,19 +30,19 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	leftOutput = 0.0;
 	rightOutput  = 0.0;
 
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Thrust z", thrustSensitivity_);
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Rotate z", rotateSensitivity_);
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Gear High?", humanControl_->GetHighGearDesired());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Quick turn desired", humanControl_->GetQuickTurnDesired());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive Mode Arcade Drive?", humanControl_->GetArcadeDriveDesired());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left motor output", leftOutput );
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right motor output", rightOutput);
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive direction", GetDriveDirection());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX angle", robot_->GetNavXYaw());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left drive distance", robot_->GetLeftDistance());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive distance", robot_->GetRightDistance());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left drive encoder value", robot_->GetLeftEncoderValue());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive encoder value", robot_->GetRightEncoderValue());
+	thrustZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Thrust Z", 0.0).GetEntry();
+	rotateZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Rotate Z", 0.0).GetEntry();
+	gearDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("High Gear", humanControl_->GetHighGearDesired()).GetEntry();
+	quickturnDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Quick Turn", humanControl_->GetQuickTurnDesired()).GetEntry();
+	arcadeDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Arcade Drive", humanControl_->GetArcadeDriveDesired()).GetEntry();
+	leftDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Output (controller)", leftOutput).GetEntry();
+	rightDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Output (controller)", rightOutput).GetEntry();
+	driveDirectionNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive Direction (controller)", GetDriveDirection()).GetEntry();
+	navXAngleNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Angle", robot_->GetNavXYaw()).GetEntry();
+	leftDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Drive Distance", robot_->GetLeftDistance()).GetEntry();
+	rightDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Drive Distance", robot_->GetRightDistance()).GetEntry();
+	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder", robot_->GetLeftEncoderValue()).GetEntry();
+	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder", robot_->GetRightEncoderValue()).GetEntry();
 }
 
 void DriveController::Reset() {
@@ -55,7 +55,7 @@ void DriveController::Reset() {
 }
 
 void DriveController::Update(double currTimeSec, double deltaTimeSec) {
-	//PrintDriveValues();
+	PrintDriveValues();
 
 	switch (robot_->GetGameMode()) {
 		case (RobotModel::NORMAL_TELEOP):
@@ -189,6 +189,23 @@ void DriveController::PrintDriveValues() {
 	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive encoder value", robot_->GetRightEncoderValue());
 }
 */
+
+void DriveController::PrintDriveValues(){
+
+	thrustZNet_.SetDouble(thrustSensitivity_);
+	rotateZNet_.SetDouble(rotateSensitivity_);
+	gearDesireNet_.SetBoolean(humanControl_->GetHighGearDesired());
+	quickturnDesireNet_.SetBoolean(humanControl_->GetQuickTurnDesired());
+	arcadeDesireNet_.SetBoolean(humanControl_->GetArcadeDriveDesired());
+	leftDriveNet_.SetDouble(leftOutput); //TODO MOVE INTO METHOD + line after
+	rightDriveNet_.SetDouble(rightOutput);
+	driveDirectionNet_.SetDouble(GetDriveDirection());
+	navXAngleNet_.SetDouble(robot_->GetNavXYaw());
+	leftDistanceNet_.SetDouble(robot_->GetLeftDistance());
+	rightDistanceNet_.SetDouble(robot_->GetRightDistance());
+	leftEncoderNet_.SetDouble(robot_->GetLeftEncoderValue());
+	rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
+}
 
 DriveController::~DriveController() {
 }

@@ -16,6 +16,7 @@
 #include "PIDInputSource.h"
 #include "PIDOutputSource.h"
 #include "AutoCommand.h"
+#include <NetworkTables/NetworkTableEntry.h>
 
 class DriveStraightCommand : public AutoCommand {
 public:
@@ -109,6 +110,9 @@ private:
 	double lastDistance_;
 
 	int numTimesStopped_;
+
+	nt::NetworkTableEntry leftStraightNet_, rightStraightNet_, angleErrorNet_, angleErrorGraphNet_, desiredAngleNet_,
+		encoderErrorNet_, encoderErrorGraphNet_, desiredTotalFeetNet_, dPIDOutputNet_, aPIDOutputNet_;
 
 };
 

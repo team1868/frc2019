@@ -14,6 +14,21 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	isAbsoluteAngle_ = false;
 
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
+
+	//NOTE: adding repetative title, this may be an issue later
+
+	//TODO: this may seem as though error, bc all values start at 0 and shouldn't
+	leftStraightNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Output (drivestraight)", 0.0).GetEntry();
+	rightStraightNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Output (drivestraight)", 0.0).GetEntry();
+	angleErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle Error (drivestraight)", 0.0).GetEntry();
+	angleErrorGraphNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle Error Graph (drivestraight)", 0.0).GetEntry();
+	desiredAngleNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Desired Angle (drivestraight)", 0.0).GetEntry();
+	encoderErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Encoder Error (drivestraight)", 0.0).GetEntry();
+	encoderErrorGraphNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Encoder Error Graph (drivestraight)", 0.0).GetEntry();
+	desiredTotalFeetNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Desired Total Feet", 0.0).GetEntry();
+	dPIDOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Distance PID Output", 0.0).GetEntry();
+	aPIDOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle PID Output", 0.0).GetEntry();
+	
 }
 
 DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
@@ -22,6 +37,8 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	isAbsoluteAngle_ = true;
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
 	desiredAngle_ = absoluteAngle;
+
+	//NOTE: adding repetative title, this may be an issue later
 }
 
 void DriveStraightCommand::Init() {
@@ -88,14 +105,14 @@ void DriveStraightCommand::Init() {
 }
 
 void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
-//	SmartDashboard::PutNumber("Left Motor Output", leftMotorOutput_);
-//	SmartDashboard::PutNumber("Right Motor Output", rightMotorOutput_);
-//	SmartDashboard::PutNumber("Angle Error", anglePID_->GetError());
-//	SmartDashboard::PutNumber("Angle Error Graph", anglePID_->GetError());
-//	SmartDashboard::PutNumber("DesiredAngle", desiredAngle_);
-//	SmartDashboard::PutNumber("Encoder Error Feet", distancePID_->GetError());
-//	SmartDashboard::PutNumber("Encoder Error Feet Graph", distancePID_->GetError());
-//	SmartDashboard::PutNumber("Desired Total Feet", desiredTotalAvgDistance_);
+	leftStraightNet_.SetDouble(leftMotorOutput_);
+	rightStraightNet_.SetDouble(rightMotorOutput_);
+	angleErrorNet_.SetDouble(anglePID_->GetError());
+	angleErrorGraphNet_.SetDouble(anglePID_->GetError());
+	desiredAngleNet_.SetDouble(desiredAngle_);
+	encoderErrorNet_.SetDouble(distancePID_->GetError());
+	encoderErrorGraphNet_.SetDouble(distancePID_->GetError());
+	desiredTotalFeetNet_.SetDouble(desiredTotalAvgDistance_);
 
 	diffDriveTime_ = robot_->GetTime() - initialDriveTime_;
 //	SmartDashboard::PutNumber("DriveStraight Time:", diffDriveTime_);
@@ -134,8 +151,9 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 		double dOutput = distancePIDOutput_->GetPIDOutput();
 		double rOutput = anglePIDOutput_->GetPIDOutput();
 
-//		SmartDashboard::PutNumber("rOutput:", rOutput);
-//		SmartDashboard::PutNumber("dOutput:", dOutput);
+		aPIDOutputNet_.SetDouble(rOutput);
+		dPIDOutputNet_.SetDouble(dOutput);
+
 		if (dOutput - lastDOutput_ > 0.5) { // only when accelerating forward
 			dOutput = lastDOutput_ + 0.5; //0.4 for KOP
 

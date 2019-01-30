@@ -100,7 +100,7 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
-  frc::Shuffleboard::Update();
+  //frc::Shuffleboard::Update();
 
   //driveStraight_->Update(currTimeSec_, deltaTimeSec_);
   UpdateTimerVariables();
@@ -124,7 +124,7 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  frc::Shuffleboard::Update();
+  //frc::Shuffleboard::Update();
 
   switch(robot_->GetGameMode()){
     case RobotModel::SANDSTORM:
@@ -133,7 +133,7 @@ void Robot::TeleopPeriodic() {
     case RobotModel::NORMAL_TELEOP:
       printf("In normal teleop periodic\n");
       UpdateTimerVariables();
-		  //robot_->PrintState();
+		  robot_->PrintState();
 		  humanControl_->ReadControls();
 		  driveController_->Update(currTimeSec_, deltaTimeSec_);
 		  superstructureController_->Update(currTimeSec_, deltaTimeSec_);

@@ -14,6 +14,7 @@
 //#include "frc/Encoder.h"
 #include <AHRS.h>
 #include "ctre/Phoenix.h" //TODO <>
+#include <NetworkTables/NetworkTableEntry.h>
 //#include "../ext/ini/ini.h"
 //#include <TalonSRX.h>
 //#include <VictorSPX.h>
@@ -113,5 +114,7 @@ class RobotModel {
   frc::DoubleSolenoid *gearShiftSolenoid_; //TODO
   frc::Encoder *leftDriveEncoder_, *rightDriveEncoder_; //TODO
   frc::PowerDistributionPanel *pdp_; //TODO
-  
+
+  //NetworkTable *jerkYNet_, *jerkXNet_, *leftDistanceNet_, *rightDistanceNet_, *yawNet_, *pitchNet_, *rollNet_, *pressuresNet_;
+  nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_;
 };

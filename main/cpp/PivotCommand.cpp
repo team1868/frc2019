@@ -47,9 +47,11 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	numTimesOnTarget_ = 0;
 
 	//ERROR (possibly) WARNING NOTE: this is adding every pivot
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("left output", output);
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("right output", -output);
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", pivotPID_->GetError());
+	//frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", pivotPID_->GetError());
+
+	leftDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Left Drive", 0.0).GetEntry();
+	rightDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Right Drive", 0.0).GetEntry();
+	pivotErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", 0.0).GetEntry();
 	//NOTE: not printing time difference
 
 }
@@ -84,6 +86,9 @@ void PivotCommand::Init() {
 void PivotCommand::Reset() {
 	robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
 	robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
+
+	leftDriveNet_.SetDouble(0.0);
+	rightDriveNet_.SetDouble(0.0);
 
 	if (pivotPID_ != NULL) {
 		pivotPID_->Disable();
@@ -124,10 +129,15 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) {
 		}
 	} else {
 		
-		output = talonOutput_->GetOutput();
+		double output = talonOutput_->GetOutput();
 //		double output = 0.0;
 		robot_->SetDriveValues(RobotModel::kLeftWheels, -output); //left inverted, right back and left foward if output positive
 		robot_->SetDriveValues(RobotModel::kRightWheels, -output);
+	
+		rightDriveNet_.SetDouble(-output);
+		leftDriveNet_.SetDouble(output);
+		pivotErrorNet_.SetDouble(pivotPID_->GetError());
+
 		printf("output is %d\n", output);
 	}
 }

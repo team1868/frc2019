@@ -3,10 +3,10 @@
 
 //Currently for practice bot - Valkarie
 
-static const int LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT = 0; //INCORRENT, TODO
-static const int RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT = 1; //INCORRENT, TODO
-static const int LEFT_DRIVE_ENCODER_RED_PWM_PORT     = 2; //INCORRENT, TODO
-static const int RIGHT_DRIVE_ENCODER_RED_PWM_PORT    = 3; //INCORRECT, TODO
+static const int LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT = 0;
+static const int RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT = 2;
+static const int LEFT_DRIVE_ENCODER_RED_PWM_PORT     = 1;
+static const int RIGHT_DRIVE_ENCODER_RED_PWM_PORT    = 3;
 
 static const int PNEUMATICS_CONTROL_MODULE_ID        = 4; //INCORRECT, TODO
 static const int GEAR_SHIFT_FORWARD_SOLENOID_PORT    = 5; //INCORRECT, TODO

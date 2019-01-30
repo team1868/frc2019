@@ -15,6 +15,7 @@
 #include "ControlBoard.h"
 #include "PIDInputSource.h"
 #include "PIDOutputSource.h"
+#include <NetworkTables/NetworkTableEntry.h>
 
 
 class DriveController {
@@ -94,6 +95,10 @@ private:
 	TalonEncoderPIDSource *talonEncoderSource_;
 
 	bool isDone_;
+
+	nt::NetworkTableEntry thrustZNet_, rotateZNet_, gearDesireNet_, quickturnDesireNet_, arcadeDesireNet_,
+		leftDriveNet_, rightDriveNet_, driveDirectionNet_, navXAngleNet_, leftDistanceNet_, rightDistanceNet_,
+		leftEncoderNet_, rightEncoderNet_;
 };
 
 //#endif /* SRC_CONTROLLERS_DRIVECONTROLLER_H_ */

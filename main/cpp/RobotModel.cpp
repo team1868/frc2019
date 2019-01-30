@@ -97,16 +97,16 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")) {
   //TODO Superstructure
 
 	//Shuffleboard prints
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Jerk Y", navX_->GetWorldLinearAccelX());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Jerk X", navX_->GetWorldLinearAccelY());
+	jerkYNet_ = tab_.Add("Jerk Y", navX_->GetWorldLinearAccelY()).GetEntry();
+	jerkXNet_ = tab_.Add("Jerk X", navX_->GetWorldLinearAccelX()).GetEntry();
 	//NOTE: collisions Detected not added here
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Drive Distance", GetLeftDistance());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Drive Distance", GetRightDistance());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Yaw", GetNavXYaw());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Pitch", GetNavXPitch());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Roll", GetNavXRoll());
-  frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pressure", GetPressureSensorVal());
-
+	leftDistanceNet_ = tab_.Add("Left Drive Distance", GetLeftDistance()).GetEntry();
+	rightDistanceNet_ = tab_.Add("Right Drive Distance", GetRightDistance()).GetEntry();
+	yawNet_ = tab_.Add("NavX Yaw", GetNavXYaw()).GetEntry();
+	pitchNet_ = tab_.Add("NavX Pitch", GetNavXPitch()).GetEntry();
+	rollNet_ = tab_.Add("NavX Roll", GetNavXRoll()).GetEntry();
+  pressureNet_ = tab_.Add("Pressure", GetPressureSensorVal()).GetEntry();
+	
 }
 
 void RobotModel::ResetTimer() {
@@ -238,10 +238,11 @@ double RobotModel::GetNavXRoll() {
 
 //initializes variables pertaining to current
 void RobotModel::UpdateCurrent() {
-	leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
-	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
-	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
-	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
+	//TODO PUT THIS BACK IN, it's currently causing errors
+	//leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
+	//leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
+	//rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
+	//rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
 	compressorCurrent_ = compressor_->GetCompressorCurrent();
 	roboRIOCurrent_ = frc::ControllerPower::GetInputCurrent(); //TODO, this is deprecated use static class method
 }
@@ -375,14 +376,26 @@ RobotModel::GameMode RobotModel::GetGameMode(){
 
 /* NOTE: using shuffleboard update method
 void RobotModel::PrintState() {
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Drive Distance", GetLeftDistance());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Drive Distance", GetRightDistance());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Yaw", GetNavXYaw());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Pitch", GetNavXPitch());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Roll", GetNavXRoll());
-  frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pressure", GetPressureSensorVal());
+	tab_.Add("Left Drive Distance", GetLeftDistance());
+	tab_.Add("Right Drive Distance", GetRightDistance());
+	tab_.Add("NavX Yaw", GetNavXYaw());
+	tab_.Add("NavX Pitch", GetNavXPitch());
+	tab_.Add("NavX Roll", GetNavXRoll());
+  tab_.Add("Pressure", GetPressureSensorVal());
 }
 */
+
+void RobotModel::PrintState(){
+	jerkYNet_.SetDouble(navX_->GetWorldLinearAccelY());
+	jerkXNet_.SetDouble(navX_->GetWorldLinearAccelX());
+	leftDistanceNet_.SetDouble(GetLeftDistance());
+	rightDistanceNet_.SetDouble(GetRightDistance());
+	yawNet_.SetDouble(GetNavXYaw());
+	pitchNet_.SetDouble(GetNavXPitch());
+	rollNet_.SetDouble(GetNavXRoll());
+	pressureNet_.SetDouble(GetPressureSensorVal());
+
+}
 
 
 RobotModel::~RobotModel() {
