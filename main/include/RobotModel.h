@@ -83,6 +83,17 @@ class RobotModel {
   enum GameMode{SANDSTORM, NORMAL_TELEOP};
   
   RobotModel::GameMode GetGameMode();
+  double GetDPFac();
+  double GetDIFac();
+  double GetDDFac();
+
+  double GetRPFac();
+  double GetRIFac();
+  double GetRDFac();
+
+  double GetPivotPFac();
+  double GetPivotIFac();
+  double GetPivotDFac();
 
  private:
  
@@ -115,6 +126,6 @@ class RobotModel {
   frc::Encoder *leftDriveEncoder_, *rightDriveEncoder_; //TODO
   frc::PowerDistributionPanel *pdp_; //TODO
 
-  //NetworkTable *jerkYNet_, *jerkXNet_, *leftDistanceNet_, *rightDistanceNet_, *yawNet_, *pitchNet_, *rollNet_, *pressuresNet_;
-  nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_;
+  nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_,
+    dPFacNet_, dIFacNet_, dDFacNet_, rPFacNet_, rIFacNet_, rDFacNet_, pivotPFacNet_, pivotIFacNet_, pivotDFacNet_;
 };

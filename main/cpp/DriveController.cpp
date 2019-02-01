@@ -8,15 +8,16 @@
 #include "DriveController.h"
 //#include <frc/WPILib.h>
 
+// constructor
 DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) {
 
 	robot_ = robot;
 	humanControl_ = humanControl;
 
-	//-----------------------NORMAL TELEOP-------------------------------------
 	navXSource_ = new NavXPIDSource(robot_);
 	talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
+	// driver preferences
     // Set sensitivity to 0
 	thrustSensitivity_ = 0.0;
 	rotateSensitivity_ = 0.0;
@@ -26,10 +27,12 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	LOW_ROTATE_SENSITIVITY = 0.7; // TODO tune this
 
 	isDone_ = false;
-
+	
+	// motor outputs
 	leftOutput = 0.0;
 	rightOutput  = 0.0;
 
+	// shuffleboard initializations
 	thrustZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Thrust Z", 0.0).GetEntry();
 	rotateZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Rotate Z", 0.0).GetEntry();
 	gearDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("High Gear", humanControl_->GetHighGearDesired()).GetEntry();
@@ -54,6 +57,7 @@ void DriveController::Reset() {
 //	check ini
 }
 
+// update drive
 void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 	PrintDriveValues();
 
@@ -99,6 +103,7 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 	}
 }
 
+// arcade drive
 void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity) {
 
 	double thrustValue = myY * GetDriveDirection();
@@ -136,6 +141,7 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 
 }
 
+// tank drive
 void DriveController::TankDrive(double myLeft, double myRight) {
 	leftOutput = myLeft * GetDriveDirection();
 	rightOutput = myRight * GetDriveDirection();
@@ -160,6 +166,7 @@ int DriveController::GetDriveDirection() {
 	}
 }
 
+// depends on joystick sensitivity
 double DriveController::HandleDeadband(double value, double deadband) {
 	if (fabs(value) < deadband) {
 		return 0.0;
@@ -177,21 +184,8 @@ bool DriveController::IsDone() {
 	return isDone_;
 }
 
-/*
-void DriveController::PrintDriveValues() {
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive direction", GetDriveDirection());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX angle", robot_->GetNavXYaw());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left drive distance", robot_->GetLeftDistance());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive distance", robot_->GetRightDistance());
-//	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left drive encoder value", robot_->leftMaster_->GetEncPosition());
-//	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive encoder value", robot_->rightMaster_->GetEncPosition());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left drive encoder value", robot_->GetLeftEncoderValue());
-	frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right drive encoder value", robot_->GetRightEncoderValue());
-}
-*/
-
+// update shuffleboard values
 void DriveController::PrintDriveValues(){
-
 	thrustZNet_.SetDouble(thrustSensitivity_);
 	rotateZNet_.SetDouble(rotateSensitivity_);
 	gearDesireNet_.SetBoolean(humanControl_->GetHighGearDesired());

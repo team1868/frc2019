@@ -8,11 +8,13 @@
 #include "PivotCommand.h"
 #include <frc/WPILib.h>
 
+// constructor
 PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource) {
 	navXSource_ = navXSource;
 
 	initYaw_ = navXSource_->PIDGet();
 
+	// adjust angle is absolute
 	if (isAbsoluteAngle){
 		desiredAngle_ = desiredAngle;
 	} else {
@@ -24,19 +26,21 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 		}
 	}
 
+	// initialize variables
 	isDone_ = false;
 	robot_ = robot;
+	
+	// initialize PID talon output
 	talonOutput_ = new PivotPIDTalonOutput(robot_);
 
+	// initialize time variables
 	pivotCommandStartTime_ = robot_->GetTime();
 	pivotTimeoutSec_ = 0.0;
-	//TODO INI GetIniValues();
 
-
-	//TODO delte @lili
-	pFac_ = 0.7;
-	iFac_ = 0.0;
-	dFac_ = 0.2;
+	// retrieve pid values from user
+	pFac_ = robot_->GetPivotPFac();
+	iFac_ = robot_->GetPivotIFac();
+	dFac_ = robot_->GetPivotDFac();
 
 //	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
 	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
@@ -62,8 +66,10 @@ void PivotCommand::Init() {
 	//TODO INI GetIniValues();
 	pivotPID_->SetPID(pFac_, iFac_, dFac_);
 
+	// initliaze NavX angle
 	initYaw_ = navXSource_->PIDGet();
 
+	// set settings for PID
 	pivotPID_->SetSetpoint(desiredAngle_);
 	pivotPID_->SetContinuous(true);
 	pivotPID_->SetInputRange(-180, 180);
@@ -71,7 +77,7 @@ void PivotCommand::Init() {
 	pivotPID_->SetAbsoluteTolerance(tolerance_);	 //adjust for 2018
 	pivotPID_->Enable();
 
-
+	// target variables
 	isDone_ = false;
 	numTimesOnTarget_ = 0;
 	pivotCommandStartTime_ = robot_->GetTime();
@@ -83,13 +89,17 @@ void PivotCommand::Init() {
 			initYaw_, desiredAngle_, pivotCommandStartTime_);
 }
 
+// theoretical change class back to orginal state
 void PivotCommand::Reset() {
+	// turn off motors
 	robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
 	robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
 
+	// reset shuffleboard values
 	leftDriveNet_.SetDouble(0.0);
 	rightDriveNet_.SetDouble(0.0);
 
+	// disable PID
 	if (pivotPID_ != NULL) {
 		pivotPID_->Disable();
 		delete(pivotPID_);
@@ -102,19 +112,21 @@ void PivotCommand::Reset() {
 	printf("DONE FROM RESET \n");
 }
 
+// update time variables
 void PivotCommand::Update(double currTimeSec, double deltaTimeSec) {
 	printf("Updating pivotcommand \n");
 
-
+	// calculate time difference
 	double timeDiff = robot_->GetTime() - pivotCommandStartTime_;
 	bool timeOut = (timeDiff > pivotTimeoutSec_);								//test this value
 
+	// on target
 	if (pivotPID_->OnTarget()) {
 		numTimesOnTarget_++;
 	} else {
 		numTimesOnTarget_ = 0;
 	}
-	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 1) || timeOut) {
+	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 1) || timeOut) { // done
 		printf("%f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
 				"%f Angle NavX Error %f\n",
@@ -127,38 +139,29 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) {
 		if (timeOut) {
 			printf("%f FROM PIVOT TIME OUT GO GET CHICKEN TENDERS @ %f\n", robot_->GetTime(), timeDiff);
 		}
-	} else {
+	} else { // not done
 		
 		double output = talonOutput_->GetOutput();
 //		double output = 0.0;
+		// adjust motor values according to PID
 		robot_->SetDriveValues(RobotModel::kLeftWheels, -output); //left inverted, right back and left foward if output positive
 		robot_->SetDriveValues(RobotModel::kRightWheels, -output);
-	
+
+		// update shuffleboard
 		rightDriveNet_.SetDouble(-output);
 		leftDriveNet_.SetDouble(output);
 		pivotErrorNet_.SetDouble(pivotPID_->GetError());
 
-		printf("output is %d\n", output);
+		printf("output is %f\n", output);
 	}
 }
 
+// done
 bool PivotCommand::IsDone() {
 	return isDone_;
 }
 
-/* TODO INI
-void PivotCommand::GetIniValues() {
-
-	pFac_ = robot_->pivotPFac_;
-	iFac_ = robot_->pivotIFac_;
-	dFac_ = robot_->pivotDFac_;
-	pivotTimeoutSec_ = robot_->pivotTimeoutSec_;
-//	minDrivePivotOutput_ = robot_->pini_->getf("PIVOT PID", "minDrivePivotOutput", 0.0);
-	printf("PIVOT COMMAND p: %f, i: %f, d: %f\n", pFac_, iFac_, dFac_);
-}
-*/
-
-
+// deinitialize
 PivotCommand::~PivotCommand() {
 	Reset();
 //	printf("IS DONE FROM DECONSTRUCTOR\n");

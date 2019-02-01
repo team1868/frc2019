@@ -28,12 +28,12 @@ void Robot::RobotInit()  {
   
   printf("In robot init.\n");
 
+  //initialize RobotModel
   robot_ = new RobotModel();
   robot_->ZeroNavXYaw();
-	//robot_->RefreshIni(); //TODO INI
   
+  //initialize controllers
   humanControl_ = new ControlBoard();
-  printf("control done\n");
   driveController_ = new DriveController(robot_, humanControl_);
   superstructureController_ = new SuperstructureController(robot_, humanControl_);
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -112,9 +112,8 @@ void Robot::AutonomousPeriodic() {
     // Default Auto goes here
   }
 }
-
+// reset timer and controller
 void Robot::TeleopInit() {
-  //RobotInit();
   printf("Start teleop\n");
   robot_->ResetTimer();
 	robot_->SetTalonCoastMode();
@@ -123,9 +122,8 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
 }
 
+// read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
-  //frc::Shuffleboard::Update();
-
   switch(robot_->GetGameMode()){
     case RobotModel::SANDSTORM:
       //Do override via checking joystick values (not 0)
@@ -146,18 +144,20 @@ void Robot::TeleopPeriodic() {
 
 void Robot::TestPeriodic() {}
 
+// set last time to current time
 void Robot::ResetTimerVariables() {
   currTimeSec_ = robot_->GetTime();
 	lastTimeSec_ = currTimeSec_;
 	deltaTimeSec_ = 0.0;
 }
 
+// calculate time difference
 void Robot::UpdateTimerVariables(){
   lastTimeSec_ = currTimeSec_;
 	currTimeSec_ = robot_->GetTime();
 	deltaTimeSec_ = currTimeSec_ - lastTimeSec_;
 }
-
+// reset controllers
 void Robot::ResetControllers() {
 	driveController_->Reset();
 	superstructureController_->Reset();

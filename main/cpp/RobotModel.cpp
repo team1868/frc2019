@@ -6,29 +6,37 @@
 /*----------------------------------------------------------------------------*/
 
 #include "RobotModel.h"
-#include "ctre/Phoenix.h" //TODO <>
-//#include "Robot.h"
+#include "ctre/Phoenix.h" 
 #include "Ports2019.h"
-//#include <frc/shuffleboard/Shuffleboard.h>
-//#include <frc/shuffleboard/ShuffleboardTab.h>
-//#include <TalonSRX.h>
-//#include <VictorSPX.h>
-//#include <ctre/phoenix/motorcontrol/can/TalonSRX>
-//#include "CANTalon.h"
 
 const double WHEEL_DIAMETER = 4.0 / 12.0; //Is this Right?
 const double ENCODER_COUNT_PER_ROTATION = 256.0;
 const int EDGES_PER_ENCODER_COUNT = 4;
 
-RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")) {
+RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
+  //initialize base variables
   currentGameMode_ = NORMAL_TELEOP;//SANDSTORM;
+
+  //create private tab to get user input
+  frc::Shuffleboard::GetTab("Private_Code_Input"); //ini replacement
+  
+  // initialize pid value nets
+  dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance P", 0.8).GetEntry();
+  dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance I", 0.0).GetEntry();
+  dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance D", 0.2).GetEntry();
+
+  rPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional P", 0.8).GetEntry();
+  rIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional I", 0.0).GetEntry();
+  rDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional D", 0.2).GetEntry();
+
+  pivotPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command P", 0.8).GetEntry();
+  pivotIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command I", 0.0).GetEntry();
+  pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.2).GetEntry();
 
   frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
 
-  //pini_ = new Ini("home/lvuser/robot.ini");
-  //RefreshIni();
-
+  // initialize variables
   leftDriveOutput_ = 0.0;
   rightDriveOutput_ = 0.0;
 
@@ -58,15 +66,17 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")) {
   compressorCurrent_ = 0;
 
   //TODO: it says pressure sensor?
-  
+
+  // initiliaze encoders
   leftDriveEncoder_ = new frc::Encoder(LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT, LEFT_DRIVE_ENCODER_RED_PWM_PORT, true);		// TODO check if true or false
-	leftDriveEncoder_->SetDistancePerPulse(((WHEEL_DIAMETER) * M_PI) / ENCODER_COUNT_PER_ROTATION);
-	leftDriveEncoder_->SetReverseDirection(true);
+  leftDriveEncoder_->SetDistancePerPulse(((WHEEL_DIAMETER) * M_PI) / ENCODER_COUNT_PER_ROTATION);
+  leftDriveEncoder_->SetReverseDirection(true);
 
   rightDriveEncoder_ = new frc::Encoder(RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT, RIGHT_DRIVE_ENCODER_RED_PWM_PORT, false);
-	rightDriveEncoder_->SetDistancePerPulse(((WHEEL_DIAMETER) * M_PI) / ENCODER_COUNT_PER_ROTATION);
-	rightDriveEncoder_->SetReverseDirection(false);
+  rightDriveEncoder_->SetDistancePerPulse(((WHEEL_DIAMETER) * M_PI) / ENCODER_COUNT_PER_ROTATION);
+  rightDriveEncoder_->SetReverseDirection(false);
 
+  //initilize motor controllers
   leftMaster_ = new WPI_TalonSRX(LEFT_DRIVE_MASTER_ID);
   rightMaster_ = new WPI_TalonSRX(RIGHT_DRIVE_MASTER_ID);
   leftSlave_ = new WPI_VictorSPX(LEFT_DRIVE_SLAVE_ID);
@@ -80,48 +90,51 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")) {
 
   // Setting Inversions
   //TODO: make variables for inverted
-	rightMaster_->SetInverted(false);
-	rightSlave_->SetInverted(false);
-	leftMaster_->SetInverted(false);
-	leftSlave_->SetInverted(false);
+  rightMaster_->SetInverted(false);
+  rightSlave_->SetInverted(false);
+  leftMaster_->SetInverted(false);
+  leftSlave_->SetInverted(false);
 
   // Initializing NavX
-	navXSpeed_ = 200;
-	navX_ = new AHRS(SPI::kMXP, navXSpeed_);
-	Wait(1.0); // NavX takes a second to calibrate
+  navXSpeed_ = 200;
+  navX_ = new AHRS(SPI::kMXP, navXSpeed_);
+  Wait(1.0); // NavX takes a second to calibrate
 
   // Initializing pneumatics
-	compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
-	gearShiftSolenoid_ = new frc::DoubleSolenoid(GEAR_SHIFT_FORWARD_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
+  compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
+  gearShiftSolenoid_ = new frc::DoubleSolenoid(GEAR_SHIFT_FORWARD_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
 
   //TODO Superstructure
 
-	//Shuffleboard prints
-	jerkYNet_ = tab_.Add("Jerk Y", navX_->GetWorldLinearAccelY()).GetEntry();
-	jerkXNet_ = tab_.Add("Jerk X", navX_->GetWorldLinearAccelX()).GetEntry();
-	//NOTE: collisions Detected not added here
-	leftDistanceNet_ = tab_.Add("Left Drive Distance", GetLeftDistance()).GetEntry();
-	rightDistanceNet_ = tab_.Add("Right Drive Distance", GetRightDistance()).GetEntry();
-	yawNet_ = tab_.Add("NavX Yaw", GetNavXYaw()).GetEntry();
-	pitchNet_ = tab_.Add("NavX Pitch", GetNavXPitch()).GetEntry();
-	rollNet_ = tab_.Add("NavX Roll", GetNavXRoll()).GetEntry();
+  //Shuffleboard prints
+  jerkYNet_ = tab_.Add("Jerk Y", navX_->GetWorldLinearAccelY()).GetEntry();
+  jerkXNet_ = tab_.Add("Jerk X", navX_->GetWorldLinearAccelX()).GetEntry();
+  //NOTE: collisions Detected not added here
+  leftDistanceNet_ = tab_.Add("Left Drive Distance", GetLeftDistance()).GetEntry();
+  rightDistanceNet_ = tab_.Add("Right Drive Distance", GetRightDistance()).GetEntry();
+  yawNet_ = tab_.Add("NavX Yaw", GetNavXYaw()).GetEntry();
+  pitchNet_ = tab_.Add("NavX Pitch", GetNavXPitch()).GetEntry();
+  rollNet_ = tab_.Add("NavX Roll", GetNavXRoll()).GetEntry();
   pressureNet_ = tab_.Add("Pressure", GetPressureSensorVal()).GetEntry();
 	
 }
 
+// reset timer
 void RobotModel::ResetTimer() {
   timer_->Reset();
 }
 
+// get current time
 double RobotModel::GetTime() {
   return timer_->Get();
 }
 
+// get specific motor controller
 WPI_TalonSRX *RobotModel::GetTalon(Talons talon) {
   switch(talon) {
-    case(kLeftMaster):
+    case(kLeftMaster): //left motor
       return leftMaster_;
-    case(kRightMaster):
+    case(kRightMaster): //right motor
       return rightMaster_;
     default:
       printf("WARNING: Talon not returned from RobotModel::GetTalon()\n");
@@ -131,39 +144,41 @@ WPI_TalonSRX *RobotModel::GetTalon(Talons talon) {
 
 //TODO intake/outtake get motor speed
 
+// get specific wheel speed
 double RobotModel::GetWheelSpeed(RobotModel::Wheels wheel){
   switch(wheel) {
-		case (kLeftWheels):
-			return leftMaster_->Get();
-		  break;
-	  case (kRightWheels):
-		  return rightMaster_->Get();
-		  break;
-	  case (kAllWheels):
-		  return rightMaster_->Get(); //sketch, depending on right
+	case (kLeftWheels): // left wheel
+	  return leftMaster_->Get();
+	case (kRightWheels): // right wheel
+	  return rightMaster_->Get();
+	case (kAllWheels): // right wheel
+	  return rightMaster_->Get(); //sketch, depending on right
     default:
       printf("WARNING: Wheel speed not returned in RobotModel::GetWheelSpeed()\n");
       return 0.0;
   }
 }
 
+// drive specific motor
 void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
   leftDriveOutput_ = rightDriveOutput_ = value;
 	switch (wheel) {
-    case (kLeftWheels):
-      leftMaster_->Set(value);
-      break;
-    case (kRightWheels):
-      rightMaster_->Set(value);
-      break;
-    case (kAllWheels):
-      rightMaster_->Set(value);
-      leftMaster_->Set(value);
-    default:
-      printf("WARNING: Drive value not set in RobotModel::SetDriveValues()");
+	  case (kLeftWheels): // set left
+		leftMaster_->Set(value);
+		break;
+	  case (kRightWheels): // set right
+		rightMaster_->Set(value);
+		break;
+	  case (kAllWheels): // set both
+		rightMaster_->Set(value);
+		leftMaster_->Set(value);
+		break;
+	  default:
+		printf("WARNING: Drive value not set in RobotModel::SetDriveValues()");
 	}
 }
 
+// set motor brake mode
 void RobotModel::SetTalonBrakeMode() {
 	printf("In Brake Mode\n");
 	rightMaster_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
@@ -172,6 +187,7 @@ void RobotModel::SetTalonBrakeMode() {
 	leftSlave_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
 }
 
+// set motor coast mode
 void RobotModel::SetTalonCoastMode() {
 	printf("In Coast Mode\n");
 	rightMaster_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
@@ -180,14 +196,17 @@ void RobotModel::SetTalonCoastMode() {
 	leftSlave_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
 }
 
+// set motor high gear
 void RobotModel::SetHighGear() {
 	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
 }
 
+// set motor low gear
 void RobotModel::SetLowGear() {
 	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kForward); // TODO Check if right
 }
 
+// ------------------------ get drive values--------------------------------------------
 double RobotModel::GetLeftEncoderValue() {
 	return leftDriveEncoder_->Get();
 }
@@ -217,6 +236,8 @@ void RobotModel::ResetDriveEncoders() {
 	rightDriveEncoder_->Reset();
 }
 
+//----------------------------get Navx values-------------------------------------------------
+
 double RobotModel::GetNavXYaw() {
 	return navX_->GetYaw();
 }
@@ -238,13 +259,13 @@ double RobotModel::GetNavXRoll() {
 
 //initializes variables pertaining to current
 void RobotModel::UpdateCurrent() {
-	//TODO PUT THIS BACK IN, it's currently causing errors
+	//TODO PUT THIS BACK IN, use robotcontroller static class method :( it's currently causing errors
 	//leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	//leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
 	//rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	//rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
-	compressorCurrent_ = compressor_->GetCompressorCurrent();
-	roboRIOCurrent_ = frc::ControllerPower::GetInputCurrent(); //TODO, this is deprecated use static class method
+	//compressorCurrent_ = compressor_->GetCompressorCurrent();
+	//roboRIOCurrent_ = frc::ControllerPower::GetInputCurrent(); //TODO, this is deprecated use static class method
 }
 
 //returns the voltage
@@ -266,23 +287,20 @@ double RobotModel::GetTotalPower() {
 	return pdp_->GetTotalPower();
 }
 
+// get current from channel 
 double RobotModel::GetCurrent(int channel) {
 	UpdateCurrent();
 	switch(channel) {
 	case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
 		return rightDriveACurrent_;
-		break;
 	case RIGHT_DRIVE_MOTOR_B_PDP_CHAN:
 		return rightDriveBCurrent_;
-		break;
 	case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
 		return leftDriveACurrent_;
-		break;
 	case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
 		return leftDriveBCurrent_;
-		break;
 	default:
-    printf("WARNING: Current not recieved in RobotModel::GetCurrent()\n");
+    	printf("WARNING: Current not recieved in RobotModel::GetCurrent()\n");
 		return -1;
 	}
 }
@@ -303,6 +321,7 @@ double RobotModel::GetPressureSensorVal() { //TODO make sensor
 	//return 250 * (pressureSensor_->GetAverageVoltage() / 5) - 25;
 }
 
+// if sudden stop
 bool RobotModel::CollisionDetected() {
 	bool collisionDetected = false;
 
@@ -319,7 +338,7 @@ bool RobotModel::CollisionDetected() {
 	}
 	return collisionDetected;
 }
-
+//------------------------------------compressors--------------------------------
 void RobotModel::StopCompressor() {
 	compressor_->Stop();
 }
@@ -328,63 +347,104 @@ void RobotModel::StartCompressor() {
 	compressor_->Start();
 }
 
-//TODO Ini stuff
-/*
-void RobotModel::RefreshIni() {
-	delete pini_;
-	const char* usbPath = "insert path here"; // TODO fix
-	if(FILE *file = fopen(usbPath, "r")) {
-		fclose(file);
-		pini_ = new Ini(usbPath);
-	} else {
-		pini_ = new Ini("/home/lvuser/robot.ini");
-	}
-
-	RefreshIniVals();
-}
-
-void RobotModel::RefreshIniVals() {
-	// Pivot PID's
-	pivotPFac_ = pini_->getf("PIVOT PID", "pFac", 0.0);
-	pivotIFac_ = pini_->getf("PIVOT PID", "iFac", 0.0);
-	pivotDFac_ = pini_->getf("PIVOT PID", "dFac", 0.0);
-	pivotTimeoutSec_ = pini_->getf("PIVOT PID", "pivotTimeoutSec", 3.5);
-
-	// Drive PID's
-	driveRPFac_ = pini_->getf("DRIVESTRAIGHT PID", "rPFac", 0.0);
-	driveRIFac_ = pini_->getf("DRIVESTRAIGHT PID", "rIFac", 0.0);
-	driveRDFac_ = pini_->getf("DRIVESTRAIGHT PID", "rDFac", 0.0);
-	driveDPFac_ = pini_->getf("DRIVESTRAIGHT PID", "dPFac", 0.0);
-	driveDIFac_ = pini_->getf("DRIVESTRAIGHT PID", "dIFac", 0.0);
-	driveDDFac_ = pini_->getf("DRIVESTRAIGHT PID", "dDFac", 0.0);
-	driveTimeoutSec_ = pini_->getf("DRIVESTRAIGHT PID", "driveTimeoutSec", 2.5);
-
-	// Superstructure teleop stuff
-	intakeMotorOutput_ = pini_->getf("SUPERSTRUCTURE", "intakeMotorOutput", 0.0);
-	intakeMotorOutputSubtract_ = pini_->getf("SUPERSTRUCTURE", "intakeMotorOutputSubtract_", 0.0);
-	outtakeMotorOutput_ = pini_->getf("SUPERSTRUCTURE", "outtakeMotorOutput", 0.0);
-	elevatorOutput_ = pini_->getf("SUPERSTRUCTURE", "elevatorOutput", 0.5);
-	wristMotorOutput_ = pini_->getf("SUPERSTRUCTURE", "wristMotorOutput", 0.3); //TODO ADD TO INI
-	wristPFac_ = pini_->getf("WRIST FAKE PID", "pFac", 0.0);
-
-}
-*/
+//--------------------------------get overall game mode-----------------------------
 
 RobotModel::GameMode RobotModel::GetGameMode(){
   return currentGameMode_;
 }
 
-/* NOTE: using shuffleboard update method
-void RobotModel::PrintState() {
-	tab_.Add("Left Drive Distance", GetLeftDistance());
-	tab_.Add("Right Drive Distance", GetRightDistance());
-	tab_.Add("NavX Yaw", GetNavXYaw());
-	tab_.Add("NavX Pitch", GetNavXPitch());
-	tab_.Add("NavX Roll", GetNavXRoll());
-  tab_.Add("Pressure", GetPressureSensorVal());
+//-------------------------------get PID values from user--------------------------
+//distance p
+double RobotModel::GetDPFac(){
+	double dPFac = dPFacNet_.GetDouble(0.8);
+	if(dPFac > 1.0 || dPFac < 0.0){
+		return 0.0;
+	} else {
+		return dPFac;
+	}
 }
-*/
 
+// distance I
+double RobotModel::GetDIFac(){
+	double dIFac = dIFacNet_.GetDouble(0.0);
+	if(dIFac > 1.0 || dIFac < 0.0){
+		return 0.0;
+	} else {
+		return dIFac;
+	}
+}
+
+// distance D
+double RobotModel::GetDDFac(){
+	double dDFac = dDFacNet_.GetDouble(0.2);
+	if(dDFac > 1.0 || dDFac < 0.0){
+		return 0.0;
+	} else {
+		return dDFac;
+	}
+}
+
+// rotational P
+double RobotModel::GetRPFac(){
+	double rPFac = rPFacNet_.GetDouble(0.8);
+	if(rPFac > 1.0 || rPFac < 0.0){
+		return 0.0;
+	} else {
+		return rPFac;
+	}
+}
+
+// rotational I
+double RobotModel::GetRIFac(){
+	double rIFac = rIFacNet_.GetDouble(0.0);
+	if(rIFac > 1.0 || rIFac < 0.0){
+		return 0.0;
+	} else {
+		return rIFac;
+	}
+}
+
+// rotational D
+double RobotModel::GetRDFac(){
+	double rDFac = rDFacNet_.GetDouble(0.2);
+	if(rDFac > 1.0 || rDFac < 0.0){
+		return 0.0;
+	} else {
+		return rDFac;
+	}
+}
+
+// pivot P
+double RobotModel::GetPivotPFac(){
+	double pivotPFac = pivotPFacNet_.GetDouble(0.8);
+	if(pivotPFac > 1.0 || pivotPFac < 0.0){
+		return 0.0;
+	} else {
+		return pivotPFac;
+	}
+}
+
+// pivot I
+double RobotModel::GetPivotIFac(){
+	double pivotIFac = pivotIFacNet_.GetDouble(0.0);
+	if(pivotIFac > 1.0 || pivotIFac < 0.0){
+		return 0.0;
+	} else {
+		return pivotIFac;
+	}
+}
+
+// pivot D
+double RobotModel::GetPivotDFac(){
+	double pivotDFac = pivotDFacNet_.GetDouble(0.2);
+	if(pivotDFac > 1.0 || pivotDFac < 0.0){
+		return 0.0;
+	} else {
+		return pivotDFac;
+	}
+}
+
+// update shuffleboard values
 void RobotModel::PrintState(){
 	jerkYNet_.SetDouble(navX_->GetWorldLinearAccelY());
 	jerkXNet_.SetDouble(navX_->GetWorldLinearAccelX());
@@ -397,6 +457,6 @@ void RobotModel::PrintState(){
 
 }
 
-
+// deconstructor
 RobotModel::~RobotModel() {
 }

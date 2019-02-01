@@ -22,7 +22,7 @@
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardTab.h>
 
-class Robot : public frc::IterativeRobot { //TODO CHANGE
+class Robot : public frc::TimedRobot { //TODO CHANGE
  public:
   void RobotInit() override;
   void RobotPeriodic() override;
