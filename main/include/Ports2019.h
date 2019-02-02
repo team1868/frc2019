@@ -12,10 +12,10 @@ static const int PNEUMATICS_CONTROL_MODULE_ID        = 4; //INCORRECT, TODO
 static const int GEAR_SHIFT_FORWARD_SOLENOID_PORT    = 5; //INCORRECT, TODO
 static const int GEAR_SHIFT_REVERSE_SOLENOID_PORT    = 6; //INCORRECT, TODO
 
-static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN = 7; //INCORRECT, TODO
-static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN = 8; //INCORRECT, TODO
-static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN = 9; //INCORRECT, TODO
-static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN = 10; //INCORRECT, TODO
+static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN = 15; //INCORRECT, TODO
+static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN = 14; //INCORRECT, TODO
+static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN = 0;
+static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN = 1;
 
 //-----------------------Drive Talon IDs---------------------
 static const int LEFT_DRIVE_MASTER_ID          = 4;

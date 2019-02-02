@@ -20,6 +20,10 @@
 //#include <VictorSPX.h>
 //#include "CANTalon.h"
 
+static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO INCORRECT< FIX
+static const double MIN_VOLTAGE_BROWNOUT = 6.8; //brownout protection state; PWM, CAN, 6V, relay outputs, CAN motors disabled
+static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are 40-50 Amps
+
 class RobotModel {
  public:
   enum Wheels {kLeftWheels, kRightWheels, kAllWheels};

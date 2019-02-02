@@ -261,12 +261,16 @@ double RobotModel::GetNavXRoll() {
 void RobotModel::UpdateCurrent() {
 	//TODO PUT THIS BACK IN, use robotcontroller static class method :( it's currently causing errors
 	//leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
-	//leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
-	//rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
-	//rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
-	//compressorCurrent_ = compressor_->GetCompressorCurrent();
-	//roboRIOCurrent_ = frc::ControllerPower::GetInputCurrent(); //TODO, this is deprecated use static class method
+	
+	leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
+	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
+	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
+	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
+	compressorCurrent_ = compressor_->GetCompressorCurrent();
+	roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
+
 }
+
 
 //returns the voltage
 double RobotModel::GetVoltage() {
@@ -286,6 +290,7 @@ double RobotModel::GetTotalEnergy() {
 double RobotModel::GetTotalPower() {
 	return pdp_->GetTotalPower();
 }
+
 
 // get current from channel 
 double RobotModel::GetCurrent(int channel) {
