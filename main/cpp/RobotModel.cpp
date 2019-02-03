@@ -199,11 +199,13 @@ void RobotModel::SetTalonCoastMode() {
 // set motor high gear
 void RobotModel::SetHighGear() {
 	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
+	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
 // set motor low gear
 void RobotModel::SetLowGear() {
 	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kForward); // TODO Check if right
+	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
 // ------------------------ get drive values--------------------------------------------

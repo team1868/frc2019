@@ -40,12 +40,18 @@ ControlBoard::ControlBoard() {
 	operatorJoy_ = new frc::Joystick(OPERATOR_JOY_USB_PORT);
 	operatorJoyB_ = new frc::Joystick(OPERATOR_JOY_B_USB_PORT);
 
-	gearShiftButton_ = new ButtonReader(rightJoy_, HIGH_LOW_GEAR_BUTTON_PORT);
+	gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
+	gearLowShiftButton_ = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); // TODO change this
 	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT);
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
 
-    ReadControls();
+	highGearDesired_ = false;
+
+	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Left Joy Z (thrust sensitivity)", 0.0).GetEntry();
+	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Right Joy Z (rotate sensitivity)", 0.0).GetEntry();
+
+  ReadControls();
 }
 
 void ControlBoard::ReadControls() {
@@ -54,13 +60,14 @@ void ControlBoard::ReadControls() {
 	//Reading joystick values
 	leftJoyX_ = leftJoy_->GetX();
 	leftJoyY_ = leftJoy_->GetY();
-	leftJoyZ_ = leftJoy_->GetZ();
+
+	leftJoyZ_ = leftZNet_.GetDouble(0.0);
+	rightJoyZ_ = rightZNet_.GetDouble(0.0);
 
 	switch(curJoyMode) {
 		case(twoJoy):
 			rightJoyX_ = rightJoy_->GetX();
 			rightJoyY_ = rightJoy_->GetY();
-			rightJoyZ_ = rightJoy_->GetZ();
 			break;
 		case(gamePad):
 			rightJoyX_ = leftJoy_->GetRawAxis(4);
@@ -70,8 +77,15 @@ void ControlBoard::ReadControls() {
 			printf("ERROR: mode of numjoysticks (curJoyMode of type JoystickMode) not set in ControlBoard read controls.\n");
 	}
     
+	//no switch, so using buttons
 	reverseDriveDesired_ = driveDirectionButton_->IsDown();
-	highGearDesired_ = gearShiftButton_->IsDown();
+	if(gearLowShiftButton_->IsDown()){
+		highGearDesired_ = false;
+	} else if (gearHighShiftButton_->IsDown()){
+		highGearDesired_ = true;
+	} //else remain as is
+
+	//gearHighShiftButton_->IsDown();
 	arcadeDriveDesired_ = arcadeDriveButton_->IsDown();
 	quickTurnDesired_ = quickTurnButton_->IsDown();
 
@@ -80,27 +94,27 @@ void ControlBoard::ReadControls() {
 double ControlBoard::GetJoystickValue(Joysticks j, Axes a) {
 	switch (j) {
 	  case (kLeftJoy):
-		switch(a) {
-	      case(kX):
-	 	    return leftJoyX_;
-		  case(kY):
-			return leftJoyY_;
-   		  case(kZ):
-			return leftJoyZ_;
-		}
-	    break;
+			switch(a) {
+				case(kX):
+					return leftJoyX_;
+				case(kY):
+					return leftJoyY_;
+				case(kZ):
+					return leftJoyZ_;
+			}
+	  	break;
 	  case (kRightJoy):
-		switch(a){
+			switch(a){
 	  	  case(kX):
-			return rightJoyX_;
-		  case(kY):
-			return rightJoyY_;
-		  case(kZ):
-			return rightJoyZ_;
-	    }
-	    break;
-      default:
-        printf("WARNING: Joystick value not received in ControlBoard::GetJoystickValue\n");
+					return rightJoyX_;
+				case(kY):
+					return rightJoyY_;
+				case(kZ):
+					return rightJoyZ_;
+			}
+			break;
+		default:
+      printf("WARNING: Joystick value not received in ControlBoard::GetJoystickValue\n");
 	}
 	return 0;
 }
@@ -123,7 +137,8 @@ bool ControlBoard::GetQuickTurnDesired() {
 
 void ControlBoard::ReadAllButtons() {
 	driveDirectionButton_->ReadValue();
-	gearShiftButton_->ReadValue();
+	gearHighShiftButton_->ReadValue();
+	gearLowShiftButton_->ReadValue();
 	arcadeDriveButton_->ReadValue();
 	quickTurnButton_->ReadValue();
 }

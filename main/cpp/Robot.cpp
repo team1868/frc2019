@@ -129,13 +129,18 @@ void Robot::TeleopPeriodic() {
       //Do override via checking joystick values (not 0)
       break;
     case RobotModel::NORMAL_TELEOP:
-      printf("In normal teleop periodic\n");
+      //printf("In normal teleop periodic\n");
       UpdateTimerVariables();
 		  robot_->PrintState();
 		  humanControl_->ReadControls();
 		  driveController_->Update(currTimeSec_, deltaTimeSec_);
 		  superstructureController_->Update(currTimeSec_, deltaTimeSec_);
 		  Logger::LogState(robot_, humanControl_);
+      if(humanControl_->GetHighGearDesired()){
+        robot_->SetHighGear();
+      } else {
+        robot_->SetLowGear();
+      }
       break;
     default:
       printf("ERROR: Mode not found in Robot::TeleopPeriodic\n");

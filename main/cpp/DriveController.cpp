@@ -37,7 +37,8 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	rotateZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Rotate Z", 0.0).GetEntry();
 	gearDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("High Gear", humanControl_->GetHighGearDesired()).GetEntry();
 	quickturnDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Quick Turn", humanControl_->GetQuickTurnDesired()).GetEntry();
-	arcadeDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Arcade Drive", humanControl_->GetArcadeDriveDesired()).GetEntry();
+	arcadeDesireNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Arcade Drive", true).withWidget(BuiltInWidgets::kToggleSwitch).GetEntry();// humanControl_->GetArcadeDriveDesired()).GetEntry();
+	reverseReverseNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Lili Mode", true).withWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
 	leftDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Output (controller)", leftOutput).GetEntry();
 	rightDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Output (controller)", rightOutput).GetEntry();
 	driveDirectionNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive Direction (controller)", GetDriveDirection()).GetEntry();
@@ -46,6 +47,9 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	rightDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Drive Distance", robot_->GetRightDistance()).GetEntry();
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder", robot_->GetLeftEncoderValue()).GetEntry();
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder", robot_->GetRightEncoderValue()).GetEntry();
+	thrustDeadbandNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Thrust Deadband", 0.0).GetEntry();
+	rotateDeadbandNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Rotate Deadband", 0.0).GetEntry();
+
 }
 
 void DriveController::Reset() {
@@ -88,7 +92,8 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 			if (humanControl_->GetQuickTurnDesired()) {
 				QuickTurn(rightJoyX, 0.0);
 			} else {
-				if (humanControl_->GetArcadeDriveDesired()) {
+				//if (humanControl_->GetArcadeDriveDesired()) {
+				if(arcadeDesireNet_.GetBoolean(true)){
 					ArcadeDrive(rightJoyX, leftJoyY, thrustSensitivity_, rotateSensitivity_);
 				} else {
 					printf("Using Tank drive------------------------------------------------------------------------------------------------------- \n");
@@ -105,34 +110,38 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 
 // arcade drive
 void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity) {
-
-	double thrustValue = myY * GetDriveDirection();
+	double thrustValue = myY;
 	double rotateValue = myX;
-//	double rotateValue = myX * GetDriveDirection(); // TODO fix if you want chloemode
-	leftOutput = 0.0;
-	rightOutput = 0.0;
 
-	// Account for small joystick jostles (deadband)
-	thrustValue = HandleDeadband(thrustValue, 0.1);	// 0.02 was too low
-	rotateValue = HandleDeadband(rotateValue, 0.06);
+	//TODO: add safety for deadband values (prevent (-) or >= 0.1)
+	thrustValue = HandleDeadband(thrustValue, thrustDeadbandNet_.GetDouble(0.0));	// 0.02 was too low
+	rotateValue = HandleDeadband(rotateValue, rotateDeadbandNet_.GetDouble(0.0));
 
-	// Sensitivity adjustment
 	rotateValue = GetCubicAdjustment(rotateValue, rotateSensitivity);
-	rotateValue *= fabs(thrustValue);
-
 	thrustValue = GetCubicAdjustment(thrustValue, thrustSensitivity);
 
-	leftOutput = thrustValue + rotateValue;			// CHECK FOR COMP BOT
-	rightOutput = thrustValue - rotateValue;
+	if(reverseReverseNet_.GetBoolean(true) || (!reverseReverseNet_.GetBoolean(true) && thrustValue >= 0.0)){// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ //lili mode
+		leftOutput = thrustValue + rotateValue;			// CHECK FOR COMP BOT
+		rightOutput = thrustValue - rotateValue;
+	} else {
+		leftOutput = thrustValue - rotateValue;
+		rightOutput = thrustValue + rotateValue;
+	}
 
 	// Make sure, output values are within range
+	//no ratios last year, added, good?
 	if (leftOutput > 1.0) {
+		rightOutput = rightOutput/leftOutput;
 		leftOutput = 1.0;
-	} else if (rightOutput > 1.0) {
-		rightOutput = 1.0;
 	} else if (leftOutput < -1.0) {
+		rightOutput = rightOutput/(-leftOutput);
 		leftOutput = -1.0;
+	}
+	if (rightOutput > 1.0) {
+		leftOutput = leftOutput/rightOutput;
+		rightOutput = 1.0;
 	} else if (rightOutput < -1.0) {
+		leftOutput = leftOutput/(-rightOutput);
 		rightOutput = -1.0;
 	}
 
@@ -190,7 +199,7 @@ void DriveController::PrintDriveValues(){
 	rotateZNet_.SetDouble(rotateSensitivity_);
 	gearDesireNet_.SetBoolean(humanControl_->GetHighGearDesired());
 	quickturnDesireNet_.SetBoolean(humanControl_->GetQuickTurnDesired());
-	arcadeDesireNet_.SetBoolean(humanControl_->GetArcadeDriveDesired());
+	//arcadeDesireNet_.SetBoolean(humanControl_->GetArcadeDriveDesired());
 	leftDriveNet_.SetDouble(leftOutput); //TODO MOVE INTO METHOD + line after
 	rightDriveNet_.SetDouble(rightOutput);
 	driveDirectionNet_.SetDouble(GetDriveDirection());

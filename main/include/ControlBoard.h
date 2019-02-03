@@ -12,6 +12,10 @@
 
 #include <frc/WPILib.h>
 #include "ButtonReader.h"
+#include <NetworkTables/NetworkTableEntry.h>
+
+#include <frc/shuffleboard/Shuffleboard.h>
+#include <frc/shuffleboard/ShuffleboardTab.h> //is this one necessary
 //#include "Ports2019.h"
 
 class ControlBoard {
@@ -63,7 +67,9 @@ private:
 	frc::Joystick *operatorJoy_, *operatorJoyB_;
 
 	// Buttons for drive
-	ButtonReader *driveDirectionButton_, *gearShiftButton_, *arcadeDriveButton_, *quickTurnButton_;
+	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_;
+
+	nt::NetworkTableEntry leftZNet_, rightZNet_;
 
   //Buttons for superstructure
 
