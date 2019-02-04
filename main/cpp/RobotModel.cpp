@@ -13,6 +13,18 @@ const double WHEEL_DIAMETER = 4.0 / 12.0; //Is this Right?
 const double ENCODER_COUNT_PER_ROTATION = 256.0;
 const int EDGES_PER_ENCODER_COUNT = 4;
 
+static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO INCORRECT< FIX
+static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
+//ratios work in 5 or 10% increments (accumulative)
+static const double MIN_RATIO_ALL_CURRENT = 0.2;//0.7; //TODO add to shuffleboard
+static const double MIN_RATIO_DRIVE_CURRENT = 0.7; //TODO add to shuffleboard
+static const double MIN_RATIO_SUPERSTRUCTURE_CURRENT = 0.5; //TODO add to shuffleboard
+static const double MIN_VOLTAGE_BROWNOUT = 7.5; //6.8; //brownout protection state; PWM, CAN, 6V, relay outputs, CAN motors disabled
+
+//unused
+static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are 40-50 Amps
+
+
 RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   //initialize base variables
@@ -58,6 +70,13 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   //initializing pdp
   pdp_ = new frc::PowerDistributionPanel();
 
+  //power distribution
+  ratioAll_ = 1.0; //no ratio
+  ratioDrive_ = 1.0;
+  ratioSuperstructure_ = 1.0;
+  lastOver_ = false;
+  compressorOff_ = false;
+
   leftDriveACurrent_ = 0;
   leftDriveBCurrent_ = 0;
   rightDriveACurrent_ = 0;
@@ -79,21 +98,27 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   //initilize motor controllers
   leftMaster_ = new WPI_TalonSRX(LEFT_DRIVE_MASTER_ID);
   rightMaster_ = new WPI_TalonSRX(RIGHT_DRIVE_MASTER_ID);
-  leftSlave_ = new WPI_VictorSPX(LEFT_DRIVE_SLAVE_ID);
-  rightSlave_ = new WPI_VictorSPX(RIGHT_DRIVE_SLAVE_ID);
+  leftSlaveA_ = new WPI_VictorSPX(LEFT_DRIVE_SLAVE_A_ID);
+  rightSlaveA_ = new WPI_VictorSPX(RIGHT_DRIVE_SLAVE_A_ID);
+  leftSlaveB_ = new WPI_VictorSPX(LEFT_DRIVE_SLAVE_B_ID);
+  rightSlaveB_ = new WPI_VictorSPX(RIGHT_DRIVE_SLAVE_B_ID);
 
   // Setting talon control modes and slaves
   leftMaster_->Set(ControlMode::PercentOutput, 0.0);
   rightMaster_->Set(ControlMode::PercentOutput, 0.0);
-  leftSlave_->Follow(*leftMaster_);
-  rightSlave_->Follow(*rightMaster_);
+  leftSlaveA_->Follow(*leftMaster_);
+  rightSlaveA_->Follow(*rightMaster_);
+  leftSlaveB_->Follow(*leftMaster_);
+  rightSlaveB_->Follow(*rightMaster_);
 
   // Setting Inversions
   //TODO: make variables for inverted
   rightMaster_->SetInverted(false);
-  rightSlave_->SetInverted(false);
+  rightSlaveA_->SetInverted(false);
+  rightSlaveB_->SetInverted(false);
   leftMaster_->SetInverted(false);
-  leftSlave_->SetInverted(false);
+  leftSlaveA_->SetInverted(false);
+  leftSlaveB_->SetInverted(false);
 
   // Initializing NavX
   navXSpeed_ = 200;
@@ -116,6 +141,12 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   pitchNet_ = tab_.Add("NavX Pitch", GetNavXPitch()).GetEntry();
   rollNet_ = tab_.Add("NavX Roll", GetNavXRoll()).GetEntry();
   pressureNet_ = tab_.Add("Pressure", GetPressureSensorVal()).GetEntry();
+  
+  ratioAllNet_ = tab_.Add("Ratio All", ratioAll_).GetEntry();
+  ratioDriveNet_ = tab_.Add("Ratio Drive", ratioDrive_).GetEntry();
+  ratioSuperNet_ = tab_.Add("Ratio Superstructure", ratioSuperstructure_).GetEntry();
+
+
 	
 }
 
@@ -161,7 +192,9 @@ double RobotModel::GetWheelSpeed(RobotModel::Wheels wheel){
 
 // drive specific motor
 void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
+
   leftDriveOutput_ = rightDriveOutput_ = value;
+  value = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, value); //drive channels do the same as params
 	switch (wheel) {
 	  case (kLeftWheels): // set left
 		leftMaster_->Set(value);
@@ -183,8 +216,10 @@ void RobotModel::SetTalonBrakeMode() {
 	printf("In Brake Mode\n");
 	rightMaster_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
 	leftMaster_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
-	rightSlave_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
-	leftSlave_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
+	rightSlaveA_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
+	leftSlaveA_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
+	rightSlaveB_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
+	leftSlaveB_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
 }
 
 // set motor coast mode
@@ -192,8 +227,10 @@ void RobotModel::SetTalonCoastMode() {
 	printf("In Coast Mode\n");
 	rightMaster_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
 	leftMaster_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
-	rightSlave_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
-	leftSlave_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
+	rightSlaveA_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
+	leftSlaveA_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
+	rightSlaveB_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
+	leftSlaveB_->SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
 }
 
 // set motor high gear
@@ -259,6 +296,59 @@ double RobotModel::GetNavXRoll() {
 	return navX_->GetRoll();
 }
 
+double RobotModel::ModifyCurrent(int channel, double value){
+	double power = value*ratioAll_;
+	double individualPowerRatio = power;
+	double tempPowerRatio;
+
+	switch(channel){ //TODO check these constants what want to use?
+		case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
+		case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
+		case LEFT_DRIVE_MOTOR_C_PDP_CHAN:
+		case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
+		case RIGHT_DRIVE_MOTOR_B_PDP_CHAN:
+		case RIGHT_DRIVE_MOTOR_C_PDP_CHAN:
+			power *= ratioDrive_;
+			tempPowerRatio = CheckMotorCurrentOver(RIGHT_DRIVE_MOTOR_A_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			tempPowerRatio = CheckMotorCurrentOver(RIGHT_DRIVE_MOTOR_B_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			tempPowerRatio = CheckMotorCurrentOver(RIGHT_DRIVE_MOTOR_C_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			tempPowerRatio = CheckMotorCurrentOver(LEFT_DRIVE_MOTOR_A_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			tempPowerRatio = CheckMotorCurrentOver(LEFT_DRIVE_MOTOR_B_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			tempPowerRatio = CheckMotorCurrentOver(LEFT_DRIVE_MOTOR_C_PDP_CHAN, power);
+			if(tempPowerRatio < individualPowerRatio){
+				individualPowerRatio = tempPowerRatio;
+			}
+			power = individualPowerRatio;
+			break;
+		default:
+			printf("WARNING: current not found to modify.  In ModifyCurrents() in RobotModel.cpp");
+	}
+	return power;
+}
+
+double RobotModel::CheckMotorCurrentOver(int channel, double power){
+	double motorCurrent = GetCurrent(channel);
+	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over
+		power = power*MAX_DRIVE_MOTOR_CURRENT / motorCurrent; //ratio down by percent over
+	}
+	return power;
+}
+
 //initializes variables pertaining to current
 void RobotModel::UpdateCurrent() {
 	//TODO PUT THIS BACK IN, use robotcontroller static class method :( it's currently causing errors
@@ -266,10 +356,71 @@ void RobotModel::UpdateCurrent() {
 	
 	leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
+	leftDriveCCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_C_PDP_CHAN);
 	rightDriveACurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_A_PDP_CHAN);
 	rightDriveBCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_B_PDP_CHAN);
+	rightDriveCCurrent_ = pdp_->GetCurrent(RIGHT_DRIVE_MOTOR_C_PDP_CHAN);
 	compressorCurrent_ = compressor_->GetCompressorCurrent();
 	roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
+
+	//TODO fix and check logic
+	if((GetTotalCurrent() > MAX_CURRENT_OUTPUT || GetVoltage() <= MIN_VOLTAGE_BROWNOUT) && !lastOver_){
+		printf("\nSTOPPING\n\n");
+		StopCompressor();
+		compressorOff_ = true;
+		if(ratioAll_-0.05 > MIN_RATIO_ALL_CURRENT){
+			ratioAll_ -= 0.05;
+		} else if (ratioSuperstructure_-0.05 > MIN_RATIO_SUPERSTRUCTURE_CURRENT){
+			ratioSuperstructure_ -= 0.05;
+		} else if (ratioDrive_-0.05 > MIN_RATIO_DRIVE_CURRENT){
+			ratioDrive_ -= 0.05;
+		}// else {
+		//	cutSlaves_ = true;
+		//}
+		lastOver_ = true;
+	} else if((GetTotalCurrent() > MAX_CURRENT_OUTPUT || GetVoltage() <= MIN_VOLTAGE_BROWNOUT) && lastOver_){
+		//know compressor is off, because lastOver_ is true
+		//TODO WARNING THIS MIN IS NOT A MIN
+		if(ratioAll_ > MIN_RATIO_ALL_CURRENT){ //sketch, sketch, check this
+			ratioAll_ *= ratioAll_;//-= 0.1;
+		} else if (ratioSuperstructure_ > MIN_RATIO_SUPERSTRUCTURE_CURRENT){
+			ratioSuperstructure_ *= ratioSuperstructure_; //-= 0.1;
+		} else if (ratioDrive_ > MIN_RATIO_DRIVE_CURRENT){
+			ratioDrive_ *= ratioDrive_;//-= 0.1;
+		}// else {
+		//	cutSlaves_ = true;
+		//}
+		lastOver_ = true;
+	} else { //good !
+		//if(cutSlaves_){
+		//	cutSlaves = false;
+		//} else
+		if(compressorOff_){
+			StartCompressor();
+			compressorOff_ = false;
+		}
+		if(ratioDrive_+0.001 < 1.0){
+			ratioDrive_ += 0.001;
+		} else if (ratioDrive_ < 1.0){
+			ratioDrive_ = 1.0;
+		} else if(ratioSuperstructure_+0.001 < 1.0){
+			ratioSuperstructure_ += 0.001;
+		} else if(ratioSuperstructure_ < 1.0){
+			ratioSuperstructure_ = 1.0;
+		} else if(ratioAll_+0.001 < 1.0){
+			ratioAll_ += 0.001;
+		} else if(ratioAll_ < 1.0){
+			ratioAll_ = 1.0;
+		} //else don't make it greater than one!
+		lastOver_ = false;
+	}
+
+
+	ratioAllNet_.SetDouble(ratioAll_);
+	ratioDriveNet_.SetDouble(ratioDrive_);
+	ratioSuperNet_.SetDouble(ratioSuperstructure_);
+
+	printf("current updated\n");
 
 }
 
@@ -302,10 +453,14 @@ double RobotModel::GetCurrent(int channel) {
 		return rightDriveACurrent_;
 	case RIGHT_DRIVE_MOTOR_B_PDP_CHAN:
 		return rightDriveBCurrent_;
+	case RIGHT_DRIVE_MOTOR_C_PDP_CHAN:
+		return rightDriveCCurrent_;
 	case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
 		return leftDriveACurrent_;
 	case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
 		return leftDriveBCurrent_;
+	case LEFT_DRIVE_MOTOR_C_PDP_CHAN:
+		return leftDriveCCurrent_;
 	default:
     	printf("WARNING: Current not recieved in RobotModel::GetCurrent()\n");
 		return -1;

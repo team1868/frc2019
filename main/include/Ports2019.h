@@ -14,14 +14,18 @@ static const int GEAR_SHIFT_REVERSE_SOLENOID_PORT    = 1;
 
 static const int LEFT_DRIVE_MOTOR_A_PDP_CHAN = 15;
 static const int LEFT_DRIVE_MOTOR_B_PDP_CHAN = 14;
+static const int LEFT_DRIVE_MOTOR_C_PDP_CHAN = 13;
 static const int RIGHT_DRIVE_MOTOR_A_PDP_CHAN = 0;
 static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN = 1;
+static const int RIGHT_DRIVE_MOTOR_C_PDP_CHAN = 2;
 
 //-----------------------Drive Talon IDs---------------------
 static const int LEFT_DRIVE_MASTER_ID          = 4;
-static const int LEFT_DRIVE_SLAVE_ID           = 5;
+static const int LEFT_DRIVE_SLAVE_A_ID         = 5;
+static const int LEFT_DRIVE_SLAVE_B_ID         = 6;
 static const int RIGHT_DRIVE_MASTER_ID         = 1;
-static const int RIGHT_DRIVE_SLAVE_ID          = 2;
+static const int RIGHT_DRIVE_SLAVE_A_ID        = 2;
+static const int RIGHT_DRIVE_SLAVE_B_ID        = 3;
 
 //--------------------Joystick USB Ports---------------------
 

@@ -72,6 +72,7 @@ void Robot::RobotPeriodic() {}
  * make sure to add them to the chooser code above as well.
  */
 void Robot::AutonomousInit() {
+  frc::Shuffleboard::StartRecording();
 
   printf("IN AUTONOMOUS \n");
 
@@ -114,6 +115,7 @@ void Robot::AutonomousPeriodic() {
 }
 // reset timer and controller
 void Robot::TeleopInit() {
+  frc::Shuffleboard::StartRecording();
   printf("Start teleop\n");
   robot_->ResetTimer();
 	robot_->SetTalonCoastMode();
@@ -132,6 +134,7 @@ void Robot::TeleopPeriodic() {
       //printf("In normal teleop periodic\n");
       UpdateTimerVariables();
 		  robot_->PrintState();
+      robot_->UpdateCurrent();
 		  humanControl_->ReadControls();
 		  driveController_->Update(currTimeSec_, deltaTimeSec_);
 		  superstructureController_->Update(currTimeSec_, deltaTimeSec_);

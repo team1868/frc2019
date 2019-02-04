@@ -20,10 +20,6 @@
 //#include <VictorSPX.h>
 //#include "CANTalon.h"
 
-static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO INCORRECT< FIX
-static const double MIN_VOLTAGE_BROWNOUT = 6.8; //brownout protection state; PWM, CAN, 6V, relay outputs, CAN motors disabled
-static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are 40-50 Amps
-
 class RobotModel {
  public:
   enum Wheels {kLeftWheels, kRightWheels, kAllWheels};
@@ -36,6 +32,8 @@ class RobotModel {
   ~RobotModel();
 
   void ResetTimer(); //TODO: implement ALL TIME
+  double ModifyCurrent(int channel, double value);
+  double CheckMotorCurrentOver(int channel, double power);
   void UpdateCurrent();
   double GetTime();
 
@@ -112,14 +110,21 @@ class RobotModel {
   double leftDriveOutput_, rightDriveOutput_;
   float last_world_linear_accel_x_, last_world_linear_accel_y_;
   double driveCurrentLimit_, intakeCurrentLimit_, totalCurrentLimit_, voltageFloor_, pressureFloor_, size_;
-  double leftDriveACurrent_, leftDriveBCurrent_, rightDriveACurrent_, rightDriveBCurrent_,
+  double leftDriveACurrent_, leftDriveBCurrent_, leftDriveCCurrent_, rightDriveACurrent_, rightDriveBCurrent_, rightDriveCCurrent_,
 		roboRIOCurrent_, compressorCurrent_, leftIntakeCurrent_, rightIntakeCurrent_;
+
+  //Power Distribution
+  bool lastOver_;
+  double ratioAll_, ratioDrive_, ratioSuperstructure_; //TODO superstructure not implemented
+  bool compressorOff_;
+  
+  //bool cutSlaves_; //remove one slave from drive
 
   int autoPos_, autoMode_; //TODO
   std::string testMode_; //TODO
 
   WPI_TalonSRX *leftMaster_, *rightMaster_;
-  WPI_VictorSPX *leftSlave_, *rightSlave_;
+  WPI_VictorSPX *leftSlaveA_, *leftSlaveB_, *rightSlaveA_, *rightSlaveB_;
 
   frc::Timer *timer_;
   AHRS *navX_; 
@@ -131,5 +136,6 @@ class RobotModel {
   frc::PowerDistributionPanel *pdp_; //TODO
 
   nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_,
-    dPFacNet_, dIFacNet_, dDFacNet_, rPFacNet_, rIFacNet_, rDFacNet_, pivotPFacNet_, pivotIFacNet_, pivotDFacNet_;
+    dPFacNet_, dIFacNet_, dDFacNet_, rPFacNet_, rIFacNet_, rDFacNet_, pivotPFacNet_, pivotIFacNet_, pivotDFacNet_,
+    ratioAllNet_, ratioDriveNet_, ratioSuperNet_;
 };
