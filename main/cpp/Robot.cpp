@@ -122,10 +122,22 @@ void Robot::TeleopInit() {
 	ResetTimerVariables();
 	ResetControllers();
 	robot_->StartCompressor();
+
+  //TODO DELETE
+  spark_ = new Spark(1);
+  spark2_ = new Spark(2);
 }
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
+
+  if(humanControl_->GetTestDesired()){
+    spark_->Set(1.0);
+    spark2_->Set(1.0);
+  }
+
+
+
   switch(robot_->GetGameMode()){
     case RobotModel::SANDSTORM:
       //Do override via checking joystick values (not 0)

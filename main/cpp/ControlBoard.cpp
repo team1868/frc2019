@@ -23,7 +23,7 @@ ControlBoard::ControlBoard() {
 	arcadeDriveDesired_ = true;
 	quickTurnDesired_ = true;
 
-  leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
+    leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
 	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT);
 
 	/*switch(curJoyMode){
@@ -42,20 +42,30 @@ ControlBoard::ControlBoard() {
 
 	gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
 	gearLowShiftButton_ = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
-	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); // TODO change this
-	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT);
+	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); // TODO change this, delete actually
+	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //TODO FIX, aka add to shuffleboard
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
+
+	//TODO DELETE
+	testButton_ = new ButtonReader(leftJoy_, 2);
 
 	highGearDesired_ = false;
 
 	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Left Joy Z (thrust sensitivity)", 0.0).GetEntry();
 	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Right Joy Z (rotate sensitivity)", 0.0).GetEntry();
+	joyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad", true).GetEntry(); //hm, consider for ooperator
 
   ReadControls();
 }
 
 void ControlBoard::ReadControls() {
-	ReadAllButtons();
+	ReadAllButtons(); //TODO this is a mess, combine these methods
+
+	if(joyModeNet_->GetBoolean(true)){
+		curJoyMode = gamePad;
+	} else {
+		curJoyMode = twoJoy;
+	}
 
 	//Reading joystick values
 	leftJoyX_ = leftJoy_->GetX();
@@ -133,6 +143,11 @@ bool ControlBoard::GetArcadeDriveDesired() {
 
 bool ControlBoard::GetQuickTurnDesired() {
 	return quickTurnDesired_;
+}
+
+//TODO DELETE
+bool ControlBoard::GetTestDesired() {
+	return testButton_->IsDown(); // don't follow this example: is test
 }
 
 void ControlBoard::ReadAllButtons() {

@@ -56,5 +56,5 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
 
 
   DriveStraightCommand *driveStraight_;//TODO delete
-  //ShuffleboardTab& tab;
+  frc::Spark *spark_, *spark2_; //TODO delete
 };

@@ -43,6 +43,9 @@ public:
 	bool GetArcadeDriveDesired();
 	bool GetQuickTurnDesired();
 
+	//TODO DELETE
+	bool GetTestDesired();
+
 	/**
 	 * Returns desired values for superstructure controls
 	 */
@@ -69,11 +72,14 @@ private:
 	// Buttons for drive
 	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_;
 
-	nt::NetworkTableEntry leftZNet_, rightZNet_;
+	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_;
 
   //Buttons for superstructure
 
   //Variables for superstructure
+
+  //TODO delete BELOW ALL GO AWAY DELETE DELETE DANG IT
+   ButtonReader *testButton_;
 
 };
 
