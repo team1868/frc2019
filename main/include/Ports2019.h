@@ -20,12 +20,13 @@ static const int RIGHT_DRIVE_MOTOR_B_PDP_CHAN = 1;
 static const int RIGHT_DRIVE_MOTOR_C_PDP_CHAN = 2;
 
 //-----------------------Drive Talon IDs---------------------
-static const int LEFT_DRIVE_MASTER_ID          = 4;
-static const int LEFT_DRIVE_SLAVE_A_ID         = 5;
-static const int LEFT_DRIVE_SLAVE_B_ID         = 6;
-static const int RIGHT_DRIVE_MASTER_ID         = 1;
-static const int RIGHT_DRIVE_SLAVE_A_ID        = 2;
-static const int RIGHT_DRIVE_SLAVE_B_ID        = 3;
+// ASSUMING INTAKE IS FRONT
+static const int RIGHT_DRIVE_MASTER_ID        = 4;
+static const int RIGHT_DRIVE_SLAVE_A_ID       = 5;
+static const int RIGHT_DRIVE_SLAVE_B_ID       = 6;
+static const int LEFT_DRIVE_MASTER_ID         = 1;
+static const int LEFT_DRIVE_SLAVE_A_ID        = 2;
+static const int LEFT_DRIVE_SLAVE_B_ID        = 3;
 
 //--------------------Joystick USB Ports---------------------
 
