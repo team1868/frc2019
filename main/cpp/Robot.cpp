@@ -124,8 +124,8 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
 
   //TODO DELETE
-  spark_ = new Spark(1);
-  spark2_ = new Spark(2);
+  spark_ = new Spark(7);
+  //spark2_ = new Spark(8);
 }
 
 // read controls and get current time from controllers
@@ -133,12 +133,12 @@ void Robot::TeleopPeriodic() {
 
   if(humanControl_->GetTestDesired()){
     spark_->Set(1.0);
-    spark2_->Set(1.0);
+    //spark2_->Set(1.0);
   }
 
 
 
-  switch(robot_->GetGameMode()){
+  switch(robot_->GetGameMode()){ //TODO MAKE INTO SEMIAUTO OR REG
     case RobotModel::SANDSTORM:
       //Do override via checking joystick values (not 0)
       break;
@@ -149,13 +149,8 @@ void Robot::TeleopPeriodic() {
       robot_->UpdateCurrent();
 		  humanControl_->ReadControls();
 		  driveController_->Update(currTimeSec_, deltaTimeSec_);
-		  superstructureController_->Update(currTimeSec_, deltaTimeSec_);
+		  superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used
 		  Logger::LogState(robot_, humanControl_);
-      if(humanControl_->GetHighGearDesired()){
-        robot_->SetHighGear();
-      } else {
-        robot_->SetLowGear();
-      }
       break;
     default:
       printf("ERROR: Mode not found in Robot::TeleopPeriodic\n");

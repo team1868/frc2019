@@ -34,6 +34,9 @@ private:
 	RobotModel *robot_;
 	ControlBoard *humanControl_;
 
+	double cargoIntakeOutput_, cargoFlywheelOutput_;
+	
+
 	uint32_t currState_;
 	uint32_t nextState_;
 };

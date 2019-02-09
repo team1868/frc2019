@@ -40,3 +40,17 @@ static const int LOW_GEAR_BUTTON_PORT         = 1;
 static const int ARCADE_DRIVE_BUTTON_PORT     = 5;
 static const int QUICK_TURN_BUTTON_PORT       = 6;
 static const int DRIVE_DIRECTION_BUTTON_PORT  = 7;
+
+static const int CARGO_INTAKE_BUTTON_PORT     = 5;
+static const int CARGO_FLYWHEEL_BUTTON_PORT   = 6;
+static const int HATCH_DOUBLE_SOLENOID_BUTTON_PORT = 8; //NOTE 8 GUYS FOR HATCH
+
+//----------------------Superstructure-----------------------
+static const int CARGO_INTAKE_MOTOR_PORT       = 8;
+static const int CARGO_FLYWHEEL_MOTOR_PORT     = 9;
+
+static const int CARGO_INTAKE_MOTOR_PDP_CHAN   = 11; //TODO DOESN'T WORKKK, incorrect
+static const int CARGO_FLYWHEEL_MOTOR_PDP_CHAN = 12; //TODO DOESN'T WORKKK, incorrect
+
+static const int HATCH_OUTTAKE_DOUBLE_SOLENOID_FORWARD_CHAN = 0; //TODO DOESNT WORK
+static const int HATCH_OUTTAKE_DOUBLE_SOLENOID_REVERSE_CHAN = 1; //TODO DOESNT WORK

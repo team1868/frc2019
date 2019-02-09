@@ -21,7 +21,7 @@
 class ControlBoard {
 public:
 	enum Joysticks{ kLeftJoy, kRightJoy };
-	enum Axes{ kX, kY, kZ };
+	enum Axes{ kX, kY, kZ, kLT};
 	enum JoystickMode{ gamePad, twoJoy};
 
 	/**
@@ -46,6 +46,10 @@ public:
 	//TODO DELETE
 	bool GetTestDesired();
 
+	bool GetCargoIntakeDesired();
+	bool GetCargoFlywheelDesired();
+	bool GetHatchEngageDesired();
+
 	/**
 	 * Returns desired values for superstructure controls
 	 */
@@ -55,22 +59,29 @@ public:
 private:
 	void ReadAllButtons();
 
-	JoystickMode curJoyMode;
+	JoystickMode curJoyMode, curOpJoyMode_; //TODO curJoyMode to curDriverJoyMode_
 
 	// Joystick values
 	double leftJoyX_, leftJoyY_, leftJoyZ_, rightJoyX_, rightJoyY_, rightJoyZ_;
 
+	//for gamepad
+	double leftJoyLTrigger_;
+
 	// Drive Modes
 	bool reverseDriveDesired_, highGearDesired_, arcadeDriveDesired_, quickTurnDesired_;
+
+	//Superstructure
+	bool cargoIntakeDesired_, cargoFlywheelDesired_, hatchEngaged_;
 
 	// Joysticks for drive
 	frc::Joystick *leftJoy_, *rightJoy_;
 
 	// Joysticks for operator
-	frc::Joystick *operatorJoy_, *operatorJoyB_;
+	frc::Joystick *operatorJoy_, *operatorJoyB_; //TODO implement
 
 	// Buttons for drive
-	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_;
+	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_,
+		*cargoIntakeButton_, *cargoFlywheelButton_, *hatchDoubleSolenoidButton_;
 
 	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_;
 

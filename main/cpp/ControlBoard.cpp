@@ -10,8 +10,9 @@
 
 ControlBoard::ControlBoard() {
 	curJoyMode = gamePad; 
+	curOpJoyMode_ = gamePad;
 
-  leftJoyX_ = 0.0;
+    leftJoyX_ = 0.0;
 	leftJoyY_ = 0.0;
 	leftJoyZ_ = 0.0;
 	rightJoyX_ = 0.0;
@@ -24,7 +25,7 @@ ControlBoard::ControlBoard() {
 	quickTurnDesired_ = true;
 
     leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
-	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT);
+	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT); //if gamepad mode, just initialized and not used
 
 	/*switch(curJoyMode){
 		case(twoJoy):
@@ -38,13 +39,24 @@ ControlBoard::ControlBoard() {
 	}*/
 
 	operatorJoy_ = new frc::Joystick(OPERATOR_JOY_USB_PORT);
-	operatorJoyB_ = new frc::Joystick(OPERATOR_JOY_B_USB_PORT);
+	operatorJoyB_ = new frc::Joystick(OPERATOR_JOY_B_USB_PORT); //if gamepad mode, just initialized and not used
+	
+	highGearDesired_ = false;
+	arcadeDriveDesired_ = true;
+	quickTurnDesired_ = false;
+	reverseDriveDesired_ = false;
+	cargoIntakeDesired_ = false;
+	cargoFlywheelDesired_ = false; //TODO NOT USING
+	hatchEngaged_ = false;
 
 	gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
 	gearLowShiftButton_ = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); // TODO change this, delete actually
 	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //TODO FIX, aka add to shuffleboard
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
+	cargoIntakeButton_ = new ButtonReader(leftJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
+	cargoFlywheelButton_ = new ButtonReader(leftJoy_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
+	hatchDoubleSolenoidButton_ = new ButtonReader(leftJoy_, HATCH_DOUBLE_SOLENOID_BUTTON_PORT);
 
 	//TODO DELETE
 	testButton_ = new ButtonReader(leftJoy_, 2);
@@ -55,13 +67,13 @@ ControlBoard::ControlBoard() {
 	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Right Joy Z (rotate sensitivity)", 0.0).GetEntry();
 	joyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad", true).GetEntry(); //hm, consider for ooperator
 
-  ReadControls();
+    ReadControls();
 }
 
 void ControlBoard::ReadControls() {
-	ReadAllButtons(); //TODO this is a mess, combine these methods
+	ReadAllButtons();
 
-	if(joyModeNet_->GetBoolean(true)){
+	if(joyModeNet_.GetBoolean(true)){
 		curJoyMode = gamePad;
 	} else {
 		curJoyMode = twoJoy;
@@ -70,6 +82,8 @@ void ControlBoard::ReadControls() {
 	//Reading joystick values
 	leftJoyX_ = leftJoy_->GetX();
 	leftJoyY_ = leftJoy_->GetY();
+
+	leftJoyLTrigger_ = leftJoy_->GetRawAxis(2); //TODO FIX, gamepad or not (error prob for not)
 
 	leftJoyZ_ = leftZNet_.GetDouble(0.0);
 	rightJoyZ_ = rightZNet_.GetDouble(0.0);
@@ -99,32 +113,51 @@ void ControlBoard::ReadControls() {
 	arcadeDriveDesired_ = arcadeDriveButton_->IsDown();
 	quickTurnDesired_ = quickTurnButton_->IsDown();
 
+	cargoIntakeDesired_ = cargoIntakeButton_->IsDown();
+	if(cargoFlywheelButton_->IsDown()){ //button clicked, flip polarity (same button for off and on)
+		if(cargoFlywheelDesired_){
+			cargoFlywheelDesired_ = false;
+		} else {
+			cargoFlywheelDesired_ = true;
+		}
+	}
+
+	if(hatchDoubleSolenoidButton_->IsDown()){ //button clicked, flip polarity (same button for off and on)
+		if(hatchEngaged_){
+			hatchEngaged_ = false;
+		} else {
+			hatchEngaged_ = true;
+		}
+	}
+
 }
 
 double ControlBoard::GetJoystickValue(Joysticks j, Axes a) {
 	switch (j) {
 	  case (kLeftJoy):
-			switch(a) {
-				case(kX):
-					return leftJoyX_;
-				case(kY):
-					return leftJoyY_;
-				case(kZ):
-					return leftJoyZ_;
-			}
+		switch(a) {
+			case(kX):
+				return leftJoyX_;
+			case(kY):
+				return leftJoyY_;
+			case(kZ):
+				return leftJoyZ_;
+			case(kLT):
+				return leftJoyLTrigger_;
+		}
 	  	break;
 	  case (kRightJoy):
-			switch(a){
+		switch(a){
 	  	  case(kX):
-					return rightJoyX_;
-				case(kY):
-					return rightJoyY_;
-				case(kZ):
-					return rightJoyZ_;
-			}
-			break;
-		default:
-      printf("WARNING: Joystick value not received in ControlBoard::GetJoystickValue\n");
+			return rightJoyX_;
+	  	  case(kY):
+			return rightJoyY_;
+	  	  case(kZ):
+			return rightJoyZ_;
+		}
+		break;
+	  default:
+        printf("WARNING: Joystick value not received in ControlBoard::GetJoystickValue\n");
 	}
 	return 0;
 }
@@ -147,7 +180,21 @@ bool ControlBoard::GetQuickTurnDesired() {
 
 //TODO DELETE
 bool ControlBoard::GetTestDesired() {
+	testButton_->ReadValue();
 	return testButton_->IsDown(); // don't follow this example: is test
+}
+
+bool ControlBoard::GetCargoIntakeDesired(){
+	return cargoIntakeDesired_;
+}
+
+//TODO unused
+bool ControlBoard::GetCargoFlywheelDesired(){
+	return cargoFlywheelDesired_;
+}
+
+bool ControlBoard::GetHatchEngageDesired(){
+	return hatchEngaged_;
 }
 
 void ControlBoard::ReadAllButtons() {
@@ -156,6 +203,10 @@ void ControlBoard::ReadAllButtons() {
 	gearLowShiftButton_->ReadValue();
 	arcadeDriveButton_->ReadValue();
 	quickTurnButton_->ReadValue();
+
+	cargoIntakeButton_->ReadValue();
+	cargoFlywheelButton_->ReadValue();
+	hatchDoubleSolenoidButton_->ReadValue();
 }
 
 ControlBoard::~ControlBoard() {

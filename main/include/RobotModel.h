@@ -81,6 +81,10 @@ class RobotModel {
   double GetNavXRoll(); //TODO
 
   void ZeroNavXYaw(); //TODO
+  
+  void SetCargoIntakeOutput(double output);
+  void SetCargoFlywheelOutput(double output);
+  void SetHatchDoubleSolenoid(bool change);
 
   enum GameMode{SANDSTORM, NORMAL_TELEOP};
   
@@ -123,8 +127,11 @@ class RobotModel {
   int autoPos_, autoMode_; //TODO
   std::string testMode_; //TODO
 
-  WPI_TalonSRX *leftMaster_, *rightMaster_;
+  WPI_TalonSRX *leftMaster_, *rightMaster_; //TODO this is weird, frc:: or not?
   WPI_VictorSPX *leftSlaveA_, *leftSlaveB_, *rightSlaveA_, *rightSlaveB_;
+
+  Victor *cargoIntakeMotor_, *cargoFlywheelMotor_;
+  DoubleSolenoid *hatchOuttakeSolenoid_;
 
   frc::Timer *timer_;
   AHRS *navX_; 

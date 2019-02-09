@@ -130,6 +130,10 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   gearShiftSolenoid_ = new frc::DoubleSolenoid(GEAR_SHIFT_FORWARD_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
 
   //TODO Superstructure
+  cargoIntakeMotor_ = new Victor(CARGO_INTAKE_MOTOR_PORT);
+  cargoFlywheelMotor_ = new Victor(CARGO_FLYWHEEL_MOTOR_PORT);
+
+  hatchOuttakeSolenoid_ = new DoubleSolenoid(HATCH_OUTTAKE_DOUBLE_SOLENOID_FORWARD_CHAN, HATCH_OUTTAKE_DOUBLE_SOLENOID_REVERSE_CHAN);
 
   //Shuffleboard prints
   jerkYNet_ = tab_.Add("Jerk Y", navX_->GetWorldLinearAccelY()).GetEntry();
@@ -145,8 +149,6 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   ratioAllNet_ = tab_.Add("Ratio All", ratioAll_).GetEntry();
   ratioDriveNet_ = tab_.Add("Ratio Drive", ratioDrive_).GetEntry();
   ratioSuperNet_ = tab_.Add("Ratio Superstructure", ratioSuperstructure_).GetEntry();
-
-
 	
 }
 
@@ -296,12 +298,33 @@ double RobotModel::GetNavXRoll() {
 	return navX_->GetRoll();
 }
 
+//-------------------------SUPERSTRUCTURE control-------------------------------------
+// ****************************REMINDER:::::::: USE POWER CONTROLLER DON'T DO RANDOM MOTOR ON DANG IT
+void RobotModel::SetCargoIntakeOutput(double output){
+	output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
+	cargoIntakeMotor_->Set(-output); //motor is negatized
+}
+
+void RobotModel::SetCargoFlywheelOutput(double output){
+	output = ModifyCurrent(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, output);
+	cargoFlywheelMotor_->Set(-output); //motor negatized
+}
+
+void RobotModel::SetHatchDoubleSolenoid(bool change){
+	//has kOff, kForward, kReverse
+	if(change){
+		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kForward);
+	} else {
+		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kOff);
+	}
+}
+
 double RobotModel::ModifyCurrent(int channel, double value){
 	double power = value*ratioAll_;
 	double individualPowerRatio = power;
 	double tempPowerRatio;
 
-	switch(channel){ //TODO check these constants what want to use?
+	switch(channel){ //TODO check these constants what want to use? TODO CHANGE CHANGE DANG IT
 		case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
 		case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
 		case LEFT_DRIVE_MOTOR_C_PDP_CHAN:
@@ -334,6 +357,14 @@ double RobotModel::ModifyCurrent(int channel, double value){
 				individualPowerRatio = tempPowerRatio;
 			}
 			power = individualPowerRatio;
+			break;
+		case CARGO_INTAKE_MOTOR_PDP_CHAN:
+			power *= ratioSuperstructure_;
+			power = CheckMotorCurrentOver(CARGO_INTAKE_MOTOR_PDP_CHAN, power);
+			break;
+		case CARGO_FLYWHEEL_MOTOR_PDP_CHAN:
+			power *= ratioSuperstructure_;
+			power = CheckMotorCurrentOver(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, power);
 			break;
 		default:
 			printf("WARNING: current not found to modify.  In ModifyCurrents() in RobotModel.cpp");
