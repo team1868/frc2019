@@ -8,10 +8,10 @@
 #pragma once
 #include <frc/WPILib.h>
 #include <AHRS.h>
-#include "PIDInputSource.h"
-#include "PIDOutputSource.h"
+#include "../PIDSource/PIDInputSource.h"
+#include "../PIDSource/PIDOutputSource.h"
 #include "RobotModel.h"
-#include "AutoCommand.h"
+#include "../AutoCommand.h"
 
 //NOTE: refer to 2016 code
 class CurveCommand : public AutoCommand {

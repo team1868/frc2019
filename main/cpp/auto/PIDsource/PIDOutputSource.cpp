@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "PIDOutputSource.h"
+#include "../../../include/auto/PIDSource/PIDOutputSource.h"
 
 AnglePIDOutput::AnglePIDOutput() {
 	pidOutput_ = 0.0;

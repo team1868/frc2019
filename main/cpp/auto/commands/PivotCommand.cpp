@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "PivotCommand.h"
+#include "../../../include/auto/commands/PivotCommand.h"
 #include <frc/WPILib.h>
 
 // constructor

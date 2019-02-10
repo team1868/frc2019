@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "DriveStraightCommand.h"
+#include "../../../include/auto/commands/DriveStraightCommand.h"
 #include <frc/WPILib.h>
 
 // constructing

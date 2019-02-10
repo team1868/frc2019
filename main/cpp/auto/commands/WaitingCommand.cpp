@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "WaitingCommand.h"
+#include "../../../include/auto/commands/WaitingCommand.h"
 
 WaitingCommand::WaitingCommand(double myWaitTimeSec) : AutoCommand() {
 	waitTimeSec_ = myWaitTimeSec;

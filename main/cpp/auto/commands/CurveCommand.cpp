@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "CurveCommand.h"
+#include "../../../include/auto/commands/CurveCommand.h"
 
 CurveCommand::CurveCommand(RobotModel *robot, double curveRadius, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource) {
     robot_ = robot;

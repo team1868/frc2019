@@ -12,17 +12,17 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 #include "Ports2019.h"
-#include "DriveController.h"
-#include "SuperstructureController.h"
+#include "../include/controllers/DriveController.h"
+#include "../include/controllers/SuperstructureController.h"
 #include "ControlBoard.h"
 #include "RobotModel.h"
 #include "Logger.h"
-#include "PIDInputSource.h"
+#include "../include/auto/PIDSource/PIDInputSource.h"
 #include <frc/WPILib.h>
 
-#include "DriveStraightCommand.h" //REMOVE LATER +BELOW
-#include "PIDInputSource.h"
-#include "PIDOutputSource.h"
+#include "../include/auto/commands/DriveStraightCommand.h"
+#include "../include/auto/PIDSource/PIDInputSource.h"
+#include "../include/auto/PIDSource/PIDOutputSource.h"
 
 void Robot::RobotInit()  {
   

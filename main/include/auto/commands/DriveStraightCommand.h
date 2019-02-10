@@ -13,9 +13,9 @@
 #include <frc/WPILib.h>
 #include <math.h>
 #include "RobotModel.h"
-#include "PIDInputSource.h"
-#include "PIDOutputSource.h"
-#include "AutoCommand.h"
+#include "../PIDSource/PIDInputSource.h"
+#include "../PIDSource/PIDOutputSource.h"
+#include "../AutoCommand.h"
 #include <NetworkTables/NetworkTableEntry.h>
 
 class DriveStraightCommand : public AutoCommand {

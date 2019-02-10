@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "PIDInputSource.h"
+#include "../../../include/auto/PIDSource/PIDInputSource.h"
 #include <frc/WPILib.h>
 
 NavXPIDSource::NavXPIDSource(RobotModel *robot) {

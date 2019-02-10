@@ -13,11 +13,11 @@
 #include <frc/smartdashboard/SendableChooser.h>
 #include "RobotModel.h"
 #include "ControlBoard.h"
-#include "DriveController.h"
-#include "SuperstructureController.h"
-#include "PIDInputSource.h"
-#include "DriveStraightCommand.h" //TODO delete
-#include "PivotCommand.h" //TODO delete
+#include "../include/controllers/DriveController.h"
+#include "../include/controllers/SuperstructureController.h"
+#include "../include/auto/PIDSource/PIDInputSource.h"
+#include "../include/auto/commands/DriveStraightCommand.h"
+#include "../include/auto/commands/PivotCommand.h"
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardTab.h>

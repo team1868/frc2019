@@ -10,7 +10,7 @@
 #ifndef SRC_AUTO_COMMANDS_WAITINGCOMMAND_H_
 #define SRC_AUTO_COMMANDS_WAITINGCOMMAND_H_
 #include "RobotModel.h"
-#include "AutoCommand.h"
+#include "../AutoCommand.h"
 
 class WaitingCommand : public AutoCommand {
 public:

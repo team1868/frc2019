@@ -13,8 +13,8 @@
 
 #include <frc/WPILib.h>
 #include "ControlBoard.h"
-#include "PIDInputSource.h"
-#include "PIDOutputSource.h"
+#include "../auto/PIDSource/PIDInputSource.h"
+#include "../auto/PIDSource/PIDOutputSource.h"
 #include <NetworkTables/NetworkTableEntry.h>
 #include <frc/shuffleboard/BuiltInWidgets.h>
 

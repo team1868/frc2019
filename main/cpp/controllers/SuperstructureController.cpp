@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "SuperstructureController.h"
+#include "../../include/controllers/SuperstructureController.h"
 
 SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlBoard *myHumanControl) {
     robot_ = myRobot;
