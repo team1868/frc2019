@@ -35,6 +35,7 @@ private:
 	ControlBoard *humanControl_;
 
 	double cargoIntakeOutput_, cargoFlywheelOutput_;
+	bool hatchEngaged_;
 	
 
 	uint32_t currState_;

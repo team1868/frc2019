@@ -199,14 +199,14 @@ void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
   value = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, value); //drive channels do the same as params
 	switch (wheel) {
 	  case (kLeftWheels): // set left
-		leftMaster_->Set(value);
+		leftMaster_->Set(-value);
 		break;
 	  case (kRightWheels): // set right
-		rightMaster_->Set(value);
+		rightMaster_->Set(-value);
 		break;
 	  case (kAllWheels): // set both
-		rightMaster_->Set(value);
-		leftMaster_->Set(value);
+		rightMaster_->Set(-value);
+		leftMaster_->Set(-value);
 		break;
 	  default:
 		printf("WARNING: Drive value not set in RobotModel::SetDriveValues()");
@@ -301,8 +301,13 @@ double RobotModel::GetNavXRoll() {
 //-------------------------SUPERSTRUCTURE control-------------------------------------
 // ****************************REMINDER:::::::: USE POWER CONTROLLER DON'T DO RANDOM MOTOR ON DANG IT
 void RobotModel::SetCargoIntakeOutput(double output){
-	output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
+	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
 	cargoIntakeMotor_->Set(-output); //motor is negatized
+}
+
+void RobotModel::SetCargoUnintakeOutput(double output){
+	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
+	cargoIntakeMotor_->Set(output); //motor is negatized
 }
 
 void RobotModel::SetCargoFlywheelOutput(double output){
@@ -315,7 +320,7 @@ void RobotModel::SetHatchDoubleSolenoid(bool change){
 	if(change){
 		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kForward);
 	} else {
-		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kOff);
+		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kReverse);
 	}
 }
 
@@ -326,11 +331,7 @@ double RobotModel::ModifyCurrent(int channel, double value){
 
 	switch(channel){ //TODO check these constants what want to use? TODO CHANGE CHANGE DANG IT
 		case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
-		case LEFT_DRIVE_MOTOR_B_PDP_CHAN:
-		case LEFT_DRIVE_MOTOR_C_PDP_CHAN:
 		case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
-		case RIGHT_DRIVE_MOTOR_B_PDP_CHAN:
-		case RIGHT_DRIVE_MOTOR_C_PDP_CHAN:
 			power *= ratioDrive_;
 			tempPowerRatio = CheckMotorCurrentOver(RIGHT_DRIVE_MOTOR_A_PDP_CHAN, power);
 			if(tempPowerRatio < individualPowerRatio){
@@ -362,19 +363,20 @@ double RobotModel::ModifyCurrent(int channel, double value){
 			power *= ratioSuperstructure_;
 			power = CheckMotorCurrentOver(CARGO_INTAKE_MOTOR_PDP_CHAN, power);
 			break;
-		case CARGO_FLYWHEEL_MOTOR_PDP_CHAN:
+		case CARGO_FLYWHEEL_MOTOR_PDP_CHAN: //unused, dont want to slow flywheel of wont shoot
 			power *= ratioSuperstructure_;
 			power = CheckMotorCurrentOver(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, power);
 			break;
 		default:
 			printf("WARNING: current not found to modify.  In ModifyCurrents() in RobotModel.cpp");
 	}
+	printf("ratio current %f, drive ratio current %f, super ratio current %d", ratioAll_, ratioDrive_, ratioSuperstructure_);
 	return power;
 }
 
 double RobotModel::CheckMotorCurrentOver(int channel, double power){
 	double motorCurrent = GetCurrent(channel);
-	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over
+	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over, TODO change for super
 		power = power*MAX_DRIVE_MOTOR_CURRENT / motorCurrent; //ratio down by percent over
 	}
 	return power;
@@ -451,7 +453,7 @@ void RobotModel::UpdateCurrent() {
 	ratioDriveNet_.SetDouble(ratioDrive_);
 	ratioSuperNet_.SetDouble(ratioSuperstructure_);
 
-	printf("current updated\n");
+	//printf("current updated\n");
 
 }
 

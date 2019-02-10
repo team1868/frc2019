@@ -16,6 +16,8 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
 
     cargoIntakeOutput_ = 1.0; //TODO PID
     cargoFlywheelOutput_ = 0.5; //TODO PID, also, btw not using
+
+    hatchEngaged_ = false;
 }
 
 void SuperstructureController::Reset() {
@@ -39,14 +41,22 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             if(humanControl_->GetCargoIntakeDesired()){
                 printf("cargo intake activated\n");
                 robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
+            } else if(humanControl_->GetCargoUnintakeDesired()){
+                robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
+                printf("cargo unintake activated\n");
             } else {
                 robot_->SetCargoIntakeOutput(0.0);
             }
             if(humanControl_->GetHatchEngageDesired()){
-                robot_->SetHatchDoubleSolenoid(true);
-            } else {
-                robot_->SetHatchDoubleSolenoid(false);
+                if(hatchEngaged_){
+                    hatchEngaged_ = false;
+                    robot_->SetHatchDoubleSolenoid(false); //TODO engage/diengage hatch at constructor
+                } else {
+                    hatchEngaged_ = true;
+                    robot_->SetHatchDoubleSolenoid(true);
+                }
             }
+            printf("hatch engaged : %d\n", hatchEngaged_);
 
             robot_->SetCargoFlywheelOutput(humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kLT));
             printf("cargo flywheel at %d speed\n", humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kLT));

@@ -83,6 +83,7 @@ class RobotModel {
   void ZeroNavXYaw(); //TODO
   
   void SetCargoIntakeOutput(double output);
+  void SetCargoUnintakeOutput(double output);
   void SetCargoFlywheelOutput(double output);
   void SetHatchDoubleSolenoid(bool change);
 

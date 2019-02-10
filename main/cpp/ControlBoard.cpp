@@ -46,6 +46,7 @@ ControlBoard::ControlBoard() {
 	quickTurnDesired_ = false;
 	reverseDriveDesired_ = false;
 	cargoIntakeDesired_ = false;
+	cargoUnintakeDesired_ = false;
 	cargoFlywheelDesired_ = false; //TODO NOT USING
 	hatchEngaged_ = false;
 
@@ -55,6 +56,7 @@ ControlBoard::ControlBoard() {
 	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //TODO FIX, aka add to shuffleboard
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
 	cargoIntakeButton_ = new ButtonReader(leftJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
+	cargoUnintakeButton_ = new ButtonReader(leftJoy_, CARGO_UNINTAKE_BUTTON_PORT); //TODO make op
 	cargoFlywheelButton_ = new ButtonReader(leftJoy_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
 	hatchDoubleSolenoidButton_ = new ButtonReader(leftJoy_, HATCH_DOUBLE_SOLENOID_BUTTON_PORT);
 
@@ -114,6 +116,7 @@ void ControlBoard::ReadControls() {
 	quickTurnDesired_ = quickTurnButton_->IsDown();
 
 	cargoIntakeDesired_ = cargoIntakeButton_->IsDown();
+	cargoUnintakeDesired_ = cargoUnintakeButton_->IsDown();
 	if(cargoFlywheelButton_->IsDown()){ //button clicked, flip polarity (same button for off and on)
 		if(cargoFlywheelDesired_){
 			cargoFlywheelDesired_ = false;
@@ -122,7 +125,7 @@ void ControlBoard::ReadControls() {
 		}
 	}
 
-	if(hatchDoubleSolenoidButton_->IsDown()){ //button clicked, flip polarity (same button for off and on)
+	if(hatchDoubleSolenoidButton_->WasJustPressed()){ //button clicked, flip polarity (same button for off and on)
 		if(hatchEngaged_){
 			hatchEngaged_ = false;
 		} else {
@@ -188,12 +191,16 @@ bool ControlBoard::GetCargoIntakeDesired(){
 	return cargoIntakeDesired_;
 }
 
+bool ControlBoard::GetCargoUnintakeDesired(){
+	return cargoUnintakeDesired_;
+}
+
 //TODO unused
 bool ControlBoard::GetCargoFlywheelDesired(){
 	return cargoFlywheelDesired_;
 }
 
-bool ControlBoard::GetHatchEngageDesired(){
+bool ControlBoard::GetHatchEngageDesired(){ //actually switch from engage->disengage and disengage->engage
 	return hatchEngaged_;
 }
 
@@ -205,6 +212,7 @@ void ControlBoard::ReadAllButtons() {
 	quickTurnButton_->ReadValue();
 
 	cargoIntakeButton_->ReadValue();
+	cargoUnintakeButton_->ReadValue();
 	cargoFlywheelButton_->ReadValue();
 	hatchDoubleSolenoidButton_->ReadValue();
 }

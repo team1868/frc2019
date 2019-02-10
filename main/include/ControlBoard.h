@@ -47,6 +47,7 @@ public:
 	bool GetTestDesired();
 
 	bool GetCargoIntakeDesired();
+	bool GetCargoUnintakeDesired();
 	bool GetCargoFlywheelDesired();
 	bool GetHatchEngageDesired();
 
@@ -71,7 +72,7 @@ private:
 	bool reverseDriveDesired_, highGearDesired_, arcadeDriveDesired_, quickTurnDesired_;
 
 	//Superstructure
-	bool cargoIntakeDesired_, cargoFlywheelDesired_, hatchEngaged_;
+	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, hatchEngaged_;
 
 	// Joysticks for drive
 	frc::Joystick *leftJoy_, *rightJoy_;
@@ -81,7 +82,7 @@ private:
 
 	// Buttons for drive
 	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_,
-		*cargoIntakeButton_, *cargoFlywheelButton_, *hatchDoubleSolenoidButton_;
+		*cargoIntakeButton_, *cargoUnintakeButton_, *cargoFlywheelButton_, *hatchDoubleSolenoidButton_;
 
 	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_;
 
