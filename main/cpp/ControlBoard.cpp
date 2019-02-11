@@ -18,11 +18,6 @@ ControlBoard::ControlBoard() {
 	rightJoyX_ = 0.0;
 	rightJoyY_ = 0.0;
 	rightJoyZ_ = 0.0;
-    
-	reverseDriveDesired_ = false;
-	highGearDesired_ = true; // TODO may want to fix this
-	arcadeDriveDesired_ = true;
-	quickTurnDesired_ = true;
 
     leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
 	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT); //if gamepad mode, just initialized and not used
@@ -43,12 +38,12 @@ ControlBoard::ControlBoard() {
 	
 	highGearDesired_ = false;
 	arcadeDriveDesired_ = true;
-	quickTurnDesired_ = false;
+	quickTurnDesired_ = true;
 	reverseDriveDesired_ = false;
 	cargoIntakeDesired_ = false;
 	cargoUnintakeDesired_ = false;
 	cargoFlywheelDesired_ = false; //TODO NOT USING
-	hatchEngaged_ = false;
+	hatchPickupEngaged_ = false;
 
 	gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
 	gearLowShiftButton_ = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
@@ -58,12 +53,10 @@ ControlBoard::ControlBoard() {
 	cargoIntakeButton_ = new ButtonReader(leftJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
 	cargoUnintakeButton_ = new ButtonReader(leftJoy_, CARGO_UNINTAKE_BUTTON_PORT); //TODO make op
 	cargoFlywheelButton_ = new ButtonReader(leftJoy_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
-	hatchDoubleSolenoidButton_ = new ButtonReader(leftJoy_, HATCH_DOUBLE_SOLENOID_BUTTON_PORT);
+	hatchOuttakeButton_ = new ButtonReader(operatorJoy_, HATCH_DOUBLE_SOLENOID_BUTTON_PORT);
 
 	//TODO DELETE
 	testButton_ = new ButtonReader(leftJoy_, 2);
-
-	highGearDesired_ = false;
 
 	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Left Joy Z (thrust sensitivity)", 0.0).GetEntry();
 	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Right Joy Z (rotate sensitivity)", 0.0).GetEntry();
@@ -125,12 +118,10 @@ void ControlBoard::ReadControls() {
 		}
 	}
 
-	if(hatchDoubleSolenoidButton_->WasJustPressed()){ //button clicked, flip polarity (same button for off and on)
-		if(hatchEngaged_){
-			hatchEngaged_ = false;
-		} else {
-			hatchEngaged_ = true;
-		}
+	if(hatchOuttakeButton_->IsDown()){ //button clicked, flip polarity (same button for off and on)
+		hatchPickupEngaged_ = true;
+	} else {
+		hatchPickupEngaged_ = false;
 	}
 
 }
@@ -200,8 +191,8 @@ bool ControlBoard::GetCargoFlywheelDesired(){
 	return cargoFlywheelDesired_;
 }
 
-bool ControlBoard::GetHatchEngageDesired(){ //actually switch from engage->disengage and disengage->engage
-	return hatchEngaged_;
+bool ControlBoard::GetHatchPickupEngageDesired(){ //actually switch from engage->disengage and disengage->engage
+	return hatchPickupEngaged_;
 }
 
 void ControlBoard::ReadAllButtons() {
@@ -214,7 +205,7 @@ void ControlBoard::ReadAllButtons() {
 	cargoIntakeButton_->ReadValue();
 	cargoUnintakeButton_->ReadValue();
 	cargoFlywheelButton_->ReadValue();
-	hatchDoubleSolenoidButton_->ReadValue();
+	hatchOuttakeButton_->ReadValue();
 }
 
 ControlBoard::~ControlBoard() {

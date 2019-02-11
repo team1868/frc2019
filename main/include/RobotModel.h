@@ -120,7 +120,7 @@ class RobotModel {
 
   //Power Distribution
   bool lastOver_;
-  double ratioAll_, ratioDrive_, ratioSuperstructure_; //TODO superstructure not implemented
+  double ratioAll_, ratioDrive_, ratioSuperstructure_;
   bool compressorOff_;
   
   //bool cutSlaves_; //remove one slave from drive
@@ -139,9 +139,11 @@ class RobotModel {
   int navXSpeed_; //in Hz
 
   frc::Compressor *compressor_; //TODO
-  frc::DoubleSolenoid *gearShiftSolenoid_; //TODO
+  frc::DoubleSolenoid *gearShiftSolenoid_;
   frc::Encoder *leftDriveEncoder_, *rightDriveEncoder_; //TODO
   frc::PowerDistributionPanel *pdp_; //TODO
+
+  bool highGear_;
 
   nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_,
     dPFacNet_, dIFacNet_, dDFacNet_, rPFacNet_, rIFacNet_, rDFacNet_, pivotPFacNet_, pivotIFacNet_, pivotDFacNet_,

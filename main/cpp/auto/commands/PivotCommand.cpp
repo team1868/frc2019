@@ -113,7 +113,7 @@ void PivotCommand::Reset() {
 }
 
 // update time variables
-void PivotCommand::Update(double currTimeSec, double deltaTimeSec) {
+void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible source of error TODO reset encoders
 	printf("Updating pivotcommand \n");
 
 	// calculate time difference
