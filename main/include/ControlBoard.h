@@ -49,12 +49,15 @@ public:
 	bool GetCargoIntakeDesired();
 	bool GetCargoUnintakeDesired();
 	bool GetCargoFlywheelDesired();
-	bool GetHatchPickupEngageDesired();
+	bool GetCargoFlywheelDesiredRocket();
+	bool GetCargoIntakeWristDesired();
+	bool GetHatchOuttakeDesired();
+	bool GetHatchBeakDesired();
+	bool GetHatchPickUpEngageDesired();
 
 	/**
 	 * Returns desired values for superstructure controls
 	 */
-
 
 	virtual ~ControlBoard();
 private:
@@ -71,9 +74,6 @@ private:
 	// Drive Modes
 	bool reverseDriveDesired_, highGearDesired_, arcadeDriveDesired_, quickTurnDesired_;
 
-	//Superstructure
-	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, hatchPickupEngaged_;
-
 	// Joysticks for drive
 	frc::Joystick *leftJoy_, *rightJoy_;
 
@@ -81,17 +81,20 @@ private:
 	frc::Joystick *operatorJoy_, *operatorJoyB_; //TODO implement
 
 	// Buttons for drive
-	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_,
-		*cargoIntakeButton_, *cargoUnintakeButton_, *cargoFlywheelButton_, *hatchOuttakeButton_;
+	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_;
 
 	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_;
+	
+	//Buttons for superstructure
+	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoIntakeButton_, *cargoUnintakeButton_,
+		*cargoIntakeWristButton_, *hatchOuttakeButton_, *hatchBeakButton_, *hatchPickupButton_;
 
-  //Buttons for superstructure
+	//Variables for superstructure
+		bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoIntakeWristDesired_,
+		hatchBeakDesired_, hatchOuttakeDesired_, hatchPickupEngaged_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_;
 
-  //Variables for superstructure
-
-  //TODO delete BELOW ALL GO AWAY DELETE DELETE DANG IT
-   ButtonReader *testButton_;
+  	//TODO delete BELOW ALL GO AWAY DELETE DELETE DANG IT
+   	ButtonReader *testButton_;
 
 };
 

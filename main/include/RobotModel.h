@@ -82,10 +82,20 @@ class RobotModel {
 
   void ZeroNavXYaw(); //TODO
   
+  //---------------SUPERSTRUCTURE------------------
   void SetCargoIntakeOutput(double output);
   void SetCargoUnintakeOutput(double output);
   void SetCargoFlywheelOutput(double output);
-  void SetHatchDoubleSolenoid(bool change);
+  void SetCargoIntakeWrist(bool change);
+  void SetHatchPickUp(bool change);
+  void SetHatchOuttake(bool change);
+  void SetHatchBeak(bool change);
+  void SetHood(bool change);
+
+  double GetCargoFlywheelMotorOutput();
+
+  Encoder* GetFlywheelEncoder();
+  Victor* GetFlywheelMotor();
 
   enum GameMode{SANDSTORM, NORMAL_TELEOP};
   
@@ -132,7 +142,8 @@ class RobotModel {
   WPI_VictorSPX *leftSlaveA_, *leftSlaveB_, *rightSlaveA_, *rightSlaveB_;
 
   Victor *cargoIntakeMotor_, *cargoFlywheelMotor_;
-  DoubleSolenoid *hatchOuttakeSolenoid_;
+  Encoder *flywheelEncoder_;
+  DoubleSolenoid *hoodSolenoid_, *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_ , *hatchPickUpSolenoid_, *hatchOuttakeSolenoid_;
 
   frc::Timer *timer_;
   AHRS *navX_; 

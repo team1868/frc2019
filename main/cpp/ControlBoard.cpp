@@ -12,14 +12,14 @@ ControlBoard::ControlBoard() {
 	curJoyMode = gamePad; 
 	curOpJoyMode_ = gamePad;
 
-    leftJoyX_ = 0.0;
+  leftJoyX_ = 0.0;
 	leftJoyY_ = 0.0;
 	leftJoyZ_ = 0.0;
 	rightJoyX_ = 0.0;
 	rightJoyY_ = 0.0;
 	rightJoyZ_ = 0.0;
 
-    leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
+  leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
 	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT); //if gamepad mode, just initialized and not used
 
 	/*switch(curJoyMode){
@@ -36,25 +36,38 @@ ControlBoard::ControlBoard() {
 	operatorJoy_ = new frc::Joystick(OPERATOR_JOY_USB_PORT);
 	operatorJoyB_ = new frc::Joystick(OPERATOR_JOY_B_USB_PORT); //if gamepad mode, just initialized and not used
 	
+	//Drive Buttons
 	highGearDesired_ = false;
 	arcadeDriveDesired_ = true;
 	quickTurnDesired_ = true;
 	reverseDriveDesired_ = false;
-	cargoIntakeDesired_ = false;
-	cargoUnintakeDesired_ = false;
-	cargoFlywheelDesired_ = false; //TODO NOT USING
-	hatchPickupEngaged_ = false;
+
 
 	gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
 	gearLowShiftButton_ = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); // TODO change this, delete actually
 	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //TODO FIX, aka add to shuffleboard
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
+	
+	//Superstructure Buttons
+	cargoIntakeDesired_ = false;
+	cargoUnintakeDesired_ = false;
+	cargoFlywheelDesired_ = false; 
+	cargoFlywheelDesiredRocket_ = false;
+	hatchBeakDesired_ = false;
+	hatchOuttakeDesired_ = false;
+	
+	hatchOuttakeEngaged_ = false;
+	hatchPickupEngaged_ = false;
+
 	cargoIntakeButton_ = new ButtonReader(leftJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
 	cargoUnintakeButton_ = new ButtonReader(leftJoy_, CARGO_UNINTAKE_BUTTON_PORT); //TODO make op
 	cargoFlywheelButton_ = new ButtonReader(leftJoy_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
-	hatchOuttakeButton_ = new ButtonReader(operatorJoy_, HATCH_DOUBLE_SOLENOID_BUTTON_PORT);
-
+	cargoFlywheelRocketButton_ = new ButtonReader(leftJoy_, CARGO_FLYWHEEL_BUTTON_PORT);
+	hatchOuttakeButton_ = new ButtonReader(operatorJoy_, HATCH_OUTTAKE_BUTTON_PORT);
+	hatchBeakButton_ = new ButtonReader(operatorJoy_, HATCH_BEAK_BUTTON_PORT);
+	hatchPickupButton_ = new ButtonReader(leftJoy_, HATCH_DOUBLE_SOLENOID_BUTTON_PORT);
+	
 	//TODO DELETE
 	testButton_ = new ButtonReader(leftJoy_, 2);
 
@@ -110,18 +123,28 @@ void ControlBoard::ReadControls() {
 
 	cargoIntakeDesired_ = cargoIntakeButton_->IsDown();
 	cargoUnintakeDesired_ = cargoUnintakeButton_->IsDown();
+
+
 	if(cargoFlywheelButton_->IsDown()){ //button clicked, flip polarity (same button for off and on)
-		if(cargoFlywheelDesired_){
-			cargoFlywheelDesired_ = false;
-		} else {
-			cargoFlywheelDesired_ = true;
-		}
+		cargoFlywheelDesired_ = !cargoFlywheelDesired_;
 	}
 
-	if(hatchOuttakeButton_->IsDown()){ //button clicked, flip polarity (same button for off and on)
-		hatchPickupEngaged_ = true;
-	} else {
-		hatchPickupEngaged_ = false;
+	if(cargoFlywheelRocketButton_->IsDown()){
+		cargoFlywheelDesiredRocket_ = !cargoFlywheelDesiredRocket_;
+	}
+
+	if(cargoIntakeWristButton_->WasJustPressed()){ //? or IsDown()
+		cargoIntakeWristDesired_ = !cargoIntakeWristDesired_;
+	}
+
+	hatchBeakDesired_ = hatchBeakButton_->IsDown();
+
+	if(hatchPickupButton_->WasJustPressed()){ 
+		hatchPickupEngaged_ = !hatchPickupEngaged_;
+	}
+
+	if(hatchOuttakeButton_->WasJustPressed()){
+		hatchOuttakeDesired_ = !hatchOuttakeDesired_;
 	}
 
 }
@@ -186,12 +209,27 @@ bool ControlBoard::GetCargoUnintakeDesired(){
 	return cargoUnintakeDesired_;
 }
 
-//TODO unused
 bool ControlBoard::GetCargoFlywheelDesired(){
 	return cargoFlywheelDesired_;
 }
 
-bool ControlBoard::GetHatchPickupEngageDesired(){ //actually switch from engage->disengage and disengage->engage
+bool ControlBoard::GetCargoFlywheelDesiredRocket(){
+	return cargoFlywheelDesiredRocket_;
+}
+
+bool ControlBoard::GetCargoIntakeWristDesired(){
+	return cargoIntakeWristDesired_;
+}
+
+bool ControlBoard::GetHatchBeakDesired(){
+	return hatchBeakDesired_;
+}
+
+bool ControlBoard::GetHatchOuttakeDesired(){
+	return hatchOuttakeDesired_;
+}
+
+bool ControlBoard::GetHatchPickUpEngageDesired(){ //actually switch from engage->disengage and disengage->engage
 	return hatchPickupEngaged_;
 }
 

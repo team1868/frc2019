@@ -16,6 +16,8 @@ const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*M_PI*16/15; //f
 const double ENCODER_COUNT_PER_ROTATION = 256.0;
 const int EDGES_PER_ENCODER_COUNT = 4;
 
+const double FLYWHEEL_DIAMETER = 1.0 / 12.0; //CHECK (in ft)
+
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO INCORRECT< FIX
 static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
 //ratios work in 5 or 10% increments (accumulative)
@@ -126,13 +128,19 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   gearShiftSolenoid_ = new frc::DoubleSolenoid(GEAR_SHIFT_FORWARD_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
   highGear_ = false; //NOTE: make match with ControlBoard
 
-  //TODO Superstructure
-  cargoIntakeMotor_ = new Victor(CARGO_INTAKE_MOTOR_PORT);
-  cargoFlywheelMotor_ = new Victor(CARGO_FLYWHEEL_MOTOR_PORT);
+  //Superstructure
+  hoodSolenoid_ = new frc::DoubleSolenoid(HOOD_UP_DOUBLE_SOLENOID_CHAN, HOOD_DOWN_DOUBLE_SOLENOID_CHAN);
+	cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
 
-  hatchOuttakeSolenoid_ = new DoubleSolenoid(HATCH_OUTTAKE_DOUBLE_SOLENOID_FORWARD_CHAN, HATCH_OUTTAKE_DOUBLE_SOLENOID_REVERSE_CHAN);
+	hatchBeakSolenoid_ = new frc::DoubleSolenoid(HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
+  hatchPickUpSolenoid_ = new DoubleSolenoid(HATCH_OUTTAKE_DOUBLE_SOLENOID_FORWARD_CHAN, HATCH_OUTTAKE_DOUBLE_SOLENOID_REVERSE_CHAN);
+	hatchOuttakeSolenoid_ = new frc::DoubleSolenoid(HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN, HATCH_OUTTAKE_DOWN_DOUBLE_SOLENOID_CHAN);
 
-  
+	flywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
+	flywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
+	flywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * M_PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
+
+
   // initiliaze encoders
   leftDriveEncoder_ = new frc::Encoder(LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT, LEFT_DRIVE_ENCODER_RED_PWM_PORT, true);		// TODO check if true or false
   if(highGear_){
@@ -332,17 +340,65 @@ void RobotModel::SetCargoUnintakeOutput(double output){
 }
 
 void RobotModel::SetCargoFlywheelOutput(double output){
-	output = ModifyCurrent(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, output);
+	//output = ModifyCurrent(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, output);
 	cargoFlywheelMotor_->Set(-output); //motor negatized
 }
 
-void RobotModel::SetHatchDoubleSolenoid(bool change){
+void RobotModel::GetCargoFlywheelMotorOutput(double output){
+	return cargoFlywheelMotor_->Get();
+}
+
+void RobotModel::SetHatchPickUp(bool change){
 	//has kOff, kForward, kReverse
 	if(change){
+		hatchPickUpSolenoid_->Set(DoubleSolenoid::kForward);
+	} else {
+		hatchPickUpSolenoid_->Set(DoubleSolenoid::kReverse);
+	}
+}
+
+void RobotModel::SetCargoIntakeWrist(bool change){
+	if(change) {
+		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kForward);
+	} else {
+		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kReverse); //TODO check if correct orientation
+	}
+}
+
+void RobotModel::SetHatchOuttake(bool change){
+	if(change) {
 		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kForward);
 	} else {
 		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kReverse);
 	}
+}
+
+void RobotModel::SetHatchBeak(bool change){
+	if(change) {
+		hatchBeakSolenoid_->Set(DoubleSolenoid::kForward);
+	} else {
+		hatchBeakSolenoid_->Set(DoubleSolenoid::kReverse);
+	}
+}
+
+void RobotModel::SetHood(bool change){
+	if(change) {
+		hoodSolenoid_->Set(DoubleSolenoid::kForward);
+	} else {
+		hoodSolenoid_->Set(DoubleSolenoid::kReverse); 
+	}
+}
+
+double RobotModel::GetFlywheelMotorOutput(){
+	return flywheelMotor_->Get();
+}
+
+Encoder* RobotModel::GetFlywheelEncoder(){
+	return flywheelEncoder_;
+}
+
+Victor* RobotModel::GetFlywheelMotor(){
+	return flywheelMotor_;
 }
 
 double RobotModel::ModifyCurrent(int channel, double value){
