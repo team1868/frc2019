@@ -48,13 +48,15 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     rocketDNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rocket D", 0.2).GetEntry();
 
     //shuffleboard PID values
-    cargoFlyPID_  = new PIDController(cargoPFac_, cargoIFac_, cargoDFac_, robot_->GetFlywheelEncoder(), robot_->GetFlywheelMotor());
+    cargoFlyPID_  = new PIDController(cargoPFac_, cargoIFac_, cargoDFac_, robot_->GetCargoFlywheelEncoder(),
+        robot_->GetCargoFlywheelMotor());
     cargoFlyPID_->SetSetpoint(desiredFlywheelVelocCargo_);  
     cargoFlyPID_->SetOutputRange(0.0, 1.0); //TODO
     cargoFlyPID_->SetAbsoluteTolerance(0.05); //TODO
     cargoFlyPID_->SetContinuous(false);
 
-    rocketFlyPID_ = new PIDController(rocketPFac_, rocketIFac_, rocketDFac_, robot_->GetFlywheelEncoder(), robot_->GetFlywheelMotor());
+    rocketFlyPID_ = new PIDController(rocketPFac_, rocketIFac_, rocketDFac_, robot_->GetCargoFlywheelEncoder(),
+        robot_->GetCargoFlywheelMotor());
     rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);  
     rocketFlyPID_->SetOutputRange(0.0, 1.0); //TODO
     rocketFlyPID_->SetAbsoluteTolerance(0.05); //TODO
@@ -94,13 +96,13 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             nextState_ = kIdle;
 
             //HATCH STUFF
-            if(humanControl_->GetHatchPickupDesired() && ){
-                hatchPickupEngaged_ = !hatchPickupEngaged_;
+            if(humanControl_->GetHatchPickupDesired()){ //toggle button
                 if(!hatchPickupEngaged_){
-                    robot_->SetHatchDoubleSolenoid(false); //TODO engage/diengage hatch at constructor
+                    robot_->SetHatchPickup(true); //TODO engage/diengage hatch at constructor
                 } else {
-                    robot_->SetHatchDoubleSolenoid(true);
+                    robot_->SetHatchPickup(false);
                 }
+                hatchPickupEngaged_ = !hatchPickupEngaged_;
                 printf("hatch Pickup engaged : %d\n", hatchPickupEngaged_);
             }
 
@@ -176,10 +178,10 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 nextState_ = kFlywheelCargo;
                 robot_->SetHood(true);
             } else if(humanControl_->GetCargoFlywheelDesired()){
-                robot_->SetFeederMotor(cargoIntakeOutput_);
+                robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
 				nextState_ = kFlywheelCargo;
             } else {
-                robot_->SetFeederMotor(0.0);
+                robot_->SetCargoIntakeOutput(0.0);
 				cargoFlyPID_->Disable();
 				flywheelStarted_ = false;
 				nextState_ = kIdle;
@@ -196,10 +198,10 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 nextState_ = kFlywheelRocket;
                 robot_->SetHood(false);
             } else if(humanControl_->GetCargoFlywheelDesiredRocket()){
-                robot_->SetFeederMotor(cargoIntakeOutput_);
+                robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
 				nextState_ = kFlywheelRocket;
             } else {
-                robot_->SetFeederMotor(0.0);
+                robot_->SetCargoIntakeOutput(0.0);
 				cargoFlyPID_->Disable();
 				flywheelStarted_ = false;
 				nextState_ = kIdle;

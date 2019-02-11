@@ -44,14 +44,15 @@ private:
 	PIDController *rocketFlyPID_;
 
 	double desiredFlywheelVelocCargo_, desiredFlywheelVelocRocket_, cargoIntakeOutput_, flywheelStartTime_;
-	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_, hatchPickUpEngaged_;
+	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_, hatchPickupEngaged_;
 
 	uint32_t currState_;
 	uint32_t nextState_;
 
 	double cargoPFac_, cargoIFac_, cargoDFac_, rocketPFac_, rocketIFac_, rocketDFac_;
 	
-	nt::NetworkTableEntry rocketPNet_, rocketINet_, rocketDNet_, cargoPNet_, cargoINet_, cargoDNet_;
+	nt::NetworkTableEntry rocketPNet_, rocketINet_, rocketDNet_, cargoPNet_, cargoINet_, cargoDNet_,
+		cargoVelocNet_, cargoRocketVelocNet_;
 };
 
 #endif /* SRC_CONTROLLERS_SUPERSTRUCTURECONTROLLER_H_ */

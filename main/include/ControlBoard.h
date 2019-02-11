@@ -53,7 +53,7 @@ public:
 	bool GetCargoIntakeWristDesired();
 	bool GetHatchOuttakeDesired();
 	bool GetHatchBeakDesired();
-	bool GetHatchPickUpEngageDesired();
+	bool GetHatchPickupDesired();
 
 	/**
 	 * Returns desired values for superstructure controls

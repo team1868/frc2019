@@ -86,16 +86,19 @@ class RobotModel {
   void SetCargoIntakeOutput(double output);
   void SetCargoUnintakeOutput(double output);
   void SetCargoFlywheelOutput(double output);
+
   void SetCargoIntakeWrist(bool change);
-  void SetHatchPickUp(bool change);
+  void SetHatchPickup(bool change);
   void SetHatchOuttake(bool change);
   void SetHatchBeak(bool change);
   void SetHood(bool change);
 
-  double GetCargoFlywheelMotorOutput();
+  double GetCargoFlywheelMotorOutput(double output);
 
-  Encoder* GetFlywheelEncoder();
-  Victor* GetFlywheelMotor();
+  //blahslkdjfslkdjflksjdfklsj
+  Encoder* GetCargoFlywheelEncoder();
+  Victor* GetCargoFlywheelMotor();
+  
 
   enum GameMode{SANDSTORM, NORMAL_TELEOP};
   
@@ -142,8 +145,8 @@ class RobotModel {
   WPI_VictorSPX *leftSlaveA_, *leftSlaveB_, *rightSlaveA_, *rightSlaveB_;
 
   Victor *cargoIntakeMotor_, *cargoFlywheelMotor_;
-  Encoder *flywheelEncoder_;
-  DoubleSolenoid *hoodSolenoid_, *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_ , *hatchPickUpSolenoid_, *hatchOuttakeSolenoid_;
+  Encoder *cargoFlywheelEncoder_;
+  DoubleSolenoid *hoodSolenoid_, *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_ , *hatchPickupSolenoid_, *hatchOuttakeSolenoid_;
 
   frc::Timer *timer_;
   AHRS *navX_; 
@@ -154,7 +157,7 @@ class RobotModel {
   frc::Encoder *leftDriveEncoder_, *rightDriveEncoder_; //TODO
   frc::PowerDistributionPanel *pdp_; //TODO
 
-  bool highGear_;
+  bool highGear_, hatchPickupEngaged_, cargoWristEngaged_, hatchOuttakeEngaged_, hatchBeakEngaged_, hoodEngaged_;
 
   nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_,
     dPFacNet_, dIFacNet_, dDFacNet_, rPFacNet_, rIFacNet_, rDFacNet_, pivotPFacNet_, pivotIFacNet_, pivotDFacNet_,

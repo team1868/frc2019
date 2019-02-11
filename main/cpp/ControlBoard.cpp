@@ -229,7 +229,7 @@ bool ControlBoard::GetHatchOuttakeDesired(){
 	return hatchOuttakeDesired_;
 }
 
-bool ControlBoard::GetHatchPickUpEngageDesired(){ //actually switch from engage->disengage and disengage->engage
+bool ControlBoard::GetHatchPickupDesired(){ //actually switch from engage->disengage and disengage->engage
 	return hatchPickupEngaged_;
 }
 

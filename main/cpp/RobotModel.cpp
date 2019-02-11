@@ -130,15 +130,22 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   //Superstructure
   hoodSolenoid_ = new frc::DoubleSolenoid(HOOD_UP_DOUBLE_SOLENOID_CHAN, HOOD_DOWN_DOUBLE_SOLENOID_CHAN);
-	cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
+  cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
 
-	hatchBeakSolenoid_ = new frc::DoubleSolenoid(HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
-  hatchPickUpSolenoid_ = new DoubleSolenoid(HATCH_OUTTAKE_DOUBLE_SOLENOID_FORWARD_CHAN, HATCH_OUTTAKE_DOUBLE_SOLENOID_REVERSE_CHAN);
-	hatchOuttakeSolenoid_ = new frc::DoubleSolenoid(HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN, HATCH_OUTTAKE_DOWN_DOUBLE_SOLENOID_CHAN);
+  hatchBeakSolenoid_ = new frc::DoubleSolenoid(HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
+  hatchPickupSolenoid_ = new DoubleSolenoid(HATCH_OUTTAKE_DOUBLE_SOLENOID_FORWARD_CHAN, HATCH_OUTTAKE_DOUBLE_SOLENOID_REVERSE_CHAN);
+  hatchOuttakeSolenoid_ = new frc::DoubleSolenoid(HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN, HATCH_OUTTAKE_DOWN_DOUBLE_SOLENOID_CHAN);
+  
+  //TODO MESS, also TODO check before matches
+  hatchPickupEngaged_ = false;
+  cargoWristEngaged_ = false;
+  hatchOuttakeEngaged_ = false;
+  hatchBeakEngaged_ = false;
+  hoodEngaged_ = false;
 
-	flywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
-	flywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
-	flywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * M_PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
+  cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
+  cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
+  cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * M_PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
 
 
   // initiliaze encoders
@@ -344,62 +351,74 @@ void RobotModel::SetCargoFlywheelOutput(double output){
 	cargoFlywheelMotor_->Set(-output); //motor negatized
 }
 
-void RobotModel::GetCargoFlywheelMotorOutput(double output){
+double RobotModel::GetCargoFlywheelMotorOutput(double output){
 	return cargoFlywheelMotor_->Get();
 }
 
-void RobotModel::SetHatchPickUp(bool change){
+void RobotModel::SetHatchPickup(bool change){
 	//has kOff, kForward, kReverse
-	if(change){
-		hatchPickUpSolenoid_->Set(DoubleSolenoid::kForward);
-	} else {
-		hatchPickUpSolenoid_->Set(DoubleSolenoid::kReverse);
+	if(change && !hatchPickupEngaged_){
+		hatchPickupEngaged_ = true;
+		hatchPickupSolenoid_->Set(DoubleSolenoid::kForward);
+	} else if(!change && hatchPickupEngaged_){
+		hatchPickupEngaged_ = false;
+		hatchPickupSolenoid_->Set(DoubleSolenoid::kReverse);
 	}
 }
 
-void RobotModel::SetCargoIntakeWrist(bool change){
-	if(change) {
+void RobotModel::SetCargoIntakeWrist(bool change){ //TODO RENAME
+	if(change && !cargoWristEngaged_) {
+		cargoWristEngaged_ = true;
 		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kForward);
-	} else {
+	} else if(!change && cargoWristEngaged_){
+		cargoWristEngaged_ = false;
 		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kReverse); //TODO check if correct orientation
 	}
 }
 
-void RobotModel::SetHatchOuttake(bool change){
-	if(change) {
+void RobotModel::SetHatchOuttake(bool change){ //TODO POSSIBLE ERROR, set on then MUST SET OFF, not automatic
+	if(change && !hatchOuttakeEngaged_) {
+		hatchOuttakeEngaged_ = true;
 		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kForward);
-	} else {
+	} else if(!change && hatchOuttakeEngaged_){
+		hatchOuttakeEngaged_ = false;
 		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kReverse);
 	}
 }
 
 void RobotModel::SetHatchBeak(bool change){
-	if(change) {
+	if(change && !hatchBeakEngaged_) {
+		hatchBeakEngaged_ = true;
 		hatchBeakSolenoid_->Set(DoubleSolenoid::kForward);
-	} else {
+	} else if(!change && hatchBeakEngaged_){
+		hatchBeakEngaged_ = false;
 		hatchBeakSolenoid_->Set(DoubleSolenoid::kReverse);
 	}
 }
 
 void RobotModel::SetHood(bool change){
-	if(change) {
+	if(change && !hoodEngaged_) {
+		hoodEngaged_ = true;
 		hoodSolenoid_->Set(DoubleSolenoid::kForward);
-	} else {
+	} else if(!change && hoodEngaged_){
+		hoodEngaged_ = false;
 		hoodSolenoid_->Set(DoubleSolenoid::kReverse); 
 	}
 }
-
+/*
 double RobotModel::GetFlywheelMotorOutput(){
 	return flywheelMotor_->Get();
 }
-
-Encoder* RobotModel::GetFlywheelEncoder(){
-	return flywheelEncoder_;
+*/
+//slkjdflksjdf;liargj;oinlgkvgalkaghapeiu;oskldfjnaldirghoaf;ildzkjxflkcj TODODODODODODODODODODO what the gecko is the following my life is a lie
+Encoder* RobotModel::GetCargoFlywheelEncoder(){ //TODO possible error, encoder* or *encoder
+	return cargoFlywheelEncoder_;
 }
 
-Victor* RobotModel::GetFlywheelMotor(){
-	return flywheelMotor_;
+Victor* RobotModel::GetCargoFlywheelMotor(){
+	return cargoFlywheelMotor_;
 }
+
 
 double RobotModel::ModifyCurrent(int channel, double value){
 	double power = value*ratioAll_;
