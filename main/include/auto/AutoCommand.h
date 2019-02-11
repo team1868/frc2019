@@ -11,10 +11,11 @@
 
 #include <frc/WPILib.h>
 //#include "Debugging.h"
-#include "RobotModel.h"
+#include "../RobotModel.h"
 #include <vector>
 #include <string>
 #include <iostream>
+#include <networktables/NetworkTableEntry.h>
 
 using namespace std;
 

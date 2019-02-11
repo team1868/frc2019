@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include <Commands/Command.h>
-#include <RobotModel.h>
-#include <PIDInputSource.h>
-#include <PIDOutputSource.h>
+#include "../AutoCommand.h"
+#include "../../RobotModel.h"
+#include "../PIDSource/PIDInputSource.h"
+#include "../PIDSource/PIDOutputSource.h"
 
-class CurveCommand : public frc::Command {
+class CurveCommand : public AutoCommand {
  public:
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle);
   void Init();
@@ -43,5 +43,5 @@ class CurveCommand : public frc::Command {
 
   bool isDone_;
 
-  NetworkTableEntry dOutputNet_, tOutputNet_, dErrorNet_, tErrorNet_, dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_, tDFacNet_;
+  nt::NetworkTableEntry dOutputNet_, tOutputNet_, dErrorNet_, tErrorNet_, dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_, tDFacNet_;
 };

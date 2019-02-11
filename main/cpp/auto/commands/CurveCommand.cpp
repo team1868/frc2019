@@ -5,12 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "CurveCommand.h"
+#include "../../../include/auto/commands/CurveCommand.h"
 #include <math.h>
 
 #define PI 3.141592653589 //TODO CHANGE, this is a mess
 
-CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle) { //using absolute angle, radius is inside wheel
+CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle) : AutoCommand() { //using absolute angle, radius is inside wheel
   robot_ = robot;
   desiredRadius_ = desiredRadius;
   desiredAngle_ = desiredAngle;
@@ -115,7 +115,7 @@ void CurveCommand::Update(){
     if(turnLeft_){
       dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - robot_->GetLeftDistance());
     } else {
-      dErrorNet_.SetDouble((2*PI/(360/desiredAngle_) - robot_->GetRightDistance());
+      dErrorNet_.SetDouble((2*PI/(360/desiredAngle_) - robot_->GetRightDistance()));
     }
     tErrorNet_.SetDouble(curAngleError_);
   }
