@@ -127,11 +127,11 @@ double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
 
 void CurveCommand::LoadPIDValues(){
   //TODO add to shuffleboard
-  dPFac_ = dPFacNet_.GetDouble();
-  dIFac_ = dIFacNet_.GetDouble();
-  dDFac_ = dDFacNet_.GetDouble();
+  dPFac_ = dPFacNet_.GetDouble(0.8);
+  dIFac_ = dIFacNet_.GetDouble(0.0);
+  dDFac_ = dDFacNet_.GetDouble(0.0);
 
-  tPFac_ = tPFacNet_.GetDouble();
-  tIFac_ = tIFacNet_.GetDouble();
-  tDFac_ = tDFacNet_.GetDouble();
+  tPFac_ = tPFacNet_.GetDouble(0.8);
+  tIFac_ = tIFacNet_.GetDouble(0.0);
+  tDFac_ = tDFacNet_.GetDouble(0.0);
 }
