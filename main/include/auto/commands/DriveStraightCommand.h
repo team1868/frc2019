@@ -16,7 +16,7 @@
 #include "../PIDSource/PIDInputSource.h"
 #include "../PIDSource/PIDOutputSource.h"
 #include "../AutoCommand.h"
-#include <NetworkTables/NetworkTableEntry.h>
+#include <networktables/NetworkTableEntry.h>
 
 class DriveStraightCommand : public AutoCommand {
 public:

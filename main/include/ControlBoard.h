@@ -12,7 +12,7 @@
 
 #include <frc/WPILib.h>
 #include "ButtonReader.h"
-#include <NetworkTables/NetworkTableEntry.h>
+#include <networktables/NetworkTableEntry.h>
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardTab.h> //is this one necessary

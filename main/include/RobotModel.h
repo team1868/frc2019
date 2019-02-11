@@ -14,7 +14,7 @@
 //#include "frc/Encoder.h"
 #include <AHRS.h>
 #include "ctre/Phoenix.h" //TODO <>
-#include <NetworkTables/NetworkTableEntry.h>
+#include <networktables/NetworkTableEntry.h>
 //#include "../ext/ini/ini.h"
 //#include <TalonSRX.h>
 //#include <VictorSPX.h>
