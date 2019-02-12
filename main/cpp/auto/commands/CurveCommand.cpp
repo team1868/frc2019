@@ -76,9 +76,9 @@ void CurveCommand::Update(){
         "Final Distance from PID Source: %f\n",
 				robot_->GetTime(), navXPIDSource_->PIDGet(), robot_->GetNavXYaw(), talonEncoderPIDSource_->PIDGet());
     if(turnLeft_){
-      printf("Final Distance from robot: %f\n", robot_->GetLeftDistance());
+      printf("Final Distance from robot: %f\n", robot_->GetRightDistance());//robot_->GetLeftDistance()); /fixed inversion
     } else {
-      printf("Final Distance from robot: %f\n", robot_->GetRightDistance());
+      printf("Final Distance from robot: %f\n", robot_->GetLeftDistance());
     }
 		//Reset();
 		isDone_ = true;
@@ -91,9 +91,9 @@ void CurveCommand::Update(){
   } else {
 
     if(turnLeft_){
-      curPivDistance_ = robot_->GetLeftDistance();
+      curPivDistance_ = robot_->GetRightDistance();//robot_->GetLeftDistance();
     } else {
-      curPivDistance_ = robot_->GetRightDistance();
+      curPivDistance_ = robot_->GetLeftDistance();
     }
     curDesiredAngle_ = CalcCurDesiredAngle(curPivDistance_);
     curAngleError_ = curDesiredAngle_ - curAngle_;
@@ -104,18 +104,18 @@ void CurveCommand::Update(){
     double tOutput = anglePIDOutput_->GetPIDOutput();
 
     if(turnLeft_){
-      robot_->SetDriveValues(RobotModel::kLeftWheels, -dOutput);
-      robot_->SetDriveValues(RobotModel::kRightWheels, -tOutput);
-    } else {
       robot_->SetDriveValues(RobotModel::kRightWheels, -dOutput);
       robot_->SetDriveValues(RobotModel::kLeftWheels, -tOutput);
+    } else {
+      robot_->SetDriveValues(RobotModel::kLeftWheels, -dOutput);
+      robot_->SetDriveValues(RobotModel::kRightWheels, -tOutput);
     }
     dOutputNet_.SetDouble(dOutput);
     tOutputNet_.SetDouble(tOutput);
     if(turnLeft_){
-      dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - robot_->GetLeftDistance());
+      dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - robot_->GetRightDistance());
     } else {
-      dErrorNet_.SetDouble((2*PI/(360/desiredAngle_) - robot_->GetRightDistance()));
+      dErrorNet_.SetDouble((2*PI/(360/desiredAngle_) - robot_->GetLeftDistance()));
     }
     tErrorNet_.SetDouble(curAngleError_);
   }
