@@ -15,7 +15,7 @@
 #include "ControlBoard.h"
 #include "../auto/PIDSource/PIDInputSource.h"
 #include "../auto/PIDSource/PIDOutputSource.h"
-#include <NetworkTables/NetworkTableEntry.h>
+#include <networktables/NetworkTableEntry.h>
 #include <frc/shuffleboard/BuiltInWidgets.h>
 
 

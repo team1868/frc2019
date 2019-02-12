@@ -16,7 +16,7 @@
 #include "RobotModel.h"
 #include "../AutoCommand.h"
 //#include "Profiler.h"
-#include <NetworkTables/NetworkTableEntry.h>
+#include <networktables/NetworkTableEntry.h>
 
 /**
  * A class implementing Pivot PID the WPILibrary PID Controller
