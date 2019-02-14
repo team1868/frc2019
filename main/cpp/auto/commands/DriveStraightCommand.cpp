@@ -279,6 +279,8 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 
 DriveStraightCommand::~DriveStraightCommand() {
 	//leftStraightNet_->Remove();
+	anglePID_->Disable();
+	distancePID_->Disable();
 	anglePID_->~PIDController();
 	distancePID_~PIDController();
 

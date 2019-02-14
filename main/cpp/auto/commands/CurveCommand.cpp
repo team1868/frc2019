@@ -174,6 +174,8 @@ void CurveCommand::LoadPIDValues(){
 }
 
 CurveCommand::~CurveCommand(){
+  dPID_->Disable();
+  tPID_->Disable();
 
   dPID_->~PIDController();
   tPID_->~PIDController();
