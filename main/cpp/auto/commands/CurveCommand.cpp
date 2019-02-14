@@ -122,7 +122,7 @@ void CurveCommand::Update(){
 }
 
 double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
-  return curPivDistance/desiredRadius_ *180/PI + initAngle_;
+  return 90 - (curPivDistance/desiredRadius_ *180/PI + initAngle_);
 }
 
 void CurveCommand::LoadPIDValues(){
