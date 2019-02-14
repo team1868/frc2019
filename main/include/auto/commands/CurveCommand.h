@@ -14,9 +14,13 @@
 
 class CurveCommand : public AutoCommand {
  public:
-  CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle);
+  CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
+    NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   void Init();
   void Update();
+
+  ~CurveCommand();
 
  private:
   double CalcCurDesiredAngle(double curPivDistance);
@@ -43,5 +47,5 @@ class CurveCommand : public AutoCommand {
 
   bool isDone_;
 
-  nt::NetworkTableEntry dOutputNet_, tOutputNet_, dErrorNet_, tErrorNet_, dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_, tDFacNet_;
+  nt::NetworkTableEntry dOutputNet_, tOutputNet_, lOutputNet_, rOutputNet_, dErrorNet_, tErrorNet_, dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_, tDFacNet_;
 };

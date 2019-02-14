@@ -12,15 +12,15 @@ ControlBoard::ControlBoard() {
 	curJoyMode = gamePad; 
 	curOpJoyMode_ = gamePad;
 
-  leftJoyX_ = 0.0;
+    leftJoyX_ = 0.0;
 	leftJoyY_ = 0.0;
 	leftJoyZ_ = 0.0;
 	rightJoyX_ = 0.0;
 	rightJoyY_ = 0.0;
 	rightJoyZ_ = 0.0;
 
-  leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
-	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT); //if gamepad mode, just initialized and not used
+  	leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
+	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT); //if gamepad mode, just initiaized and not used
 
 	/*switch(curJoyMode){
 		case(twoJoy):

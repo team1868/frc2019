@@ -171,15 +171,15 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 
 		}
 		// set drive outputs
-		rightMotorOutput_ = dOutput - rOutput;
-		leftMotorOutput_ = dOutput + rOutput;
+		rightMotorOutput_ = dOutput - rOutput; //sketch, check!
+		leftMotorOutput_ = dOutput + rOutput; //TODO sketch check! TODODODODODO SKETCH MAKE SURE NOT OVER 1.0
 		lastDOutput_ = dOutput;
 
 //		double maxOutput = fmax(fabs(rightMotorOutput_), fabs(leftMotorOutput_));
 	}
 	// drive motors
 	robot_->SetDriveValues(RobotModel::kLeftWheels, -leftMotorOutput_); //TODO: THIS IS FOR ARTEMIS< CHANGE INVERSION
-	robot_->SetDriveValues(RobotModel::kRightWheels, rightMotorOutput_);
+	robot_->SetDriveValues(RobotModel::kRightWheels, -rightMotorOutput_); //TODO ADDED FOR 2019>>> NOT RIGHT and UNTESTED
 }
 
 // repeatedly on target
@@ -279,4 +279,17 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 
 DriveStraightCommand::~DriveStraightCommand() {
 	//leftStraightNet_->Remove();
+	anglePID_->~PIDController();
+	distancePID_~PIDController();
+
+	leftStraightNet_.Delete();
+	rightStraightNet_.Delete();
+	angleErrorNet_.Delete();
+	angleErrorGraphNet_.Delete();
+	desiredAngleNet_.Delete();
+	encoderErrorNet_.Delete();
+	encoderErrorGraphNet_.Delete();
+	desiredTotalFeetNet_.Delete();
+	dPIDOutputNet_.Delete();
+	aPIDOutputNet_.Delete();
 }

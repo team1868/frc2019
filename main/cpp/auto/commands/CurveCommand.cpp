@@ -10,15 +10,25 @@
 
 #define PI 3.141592653589 //TODO CHANGE, this is a mess
 
-CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle) : AutoCommand() { //using absolute angle, radius is inside wheel
+CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
+  NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) : AutoCommand() { //using absolute angle, radius is inside wheel
+  
   robot_ = robot;
   desiredRadius_ = desiredRadius;
   desiredAngle_ = desiredAngle;
 
+  navXPIDSource_ = navXSource;
+  talonEncoderPIDSource_ = talonEncoderSource;
+  anglePIDOutput_ = anglePIDOutput;
+  distancePIDOutput_ = distancePIDOutput;
+
   dOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dO", 0.0).GetEntry(); 
   tOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tO", 0.0).GetEntry(); 
-  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dE", 0.0).GetEntry(); 
-  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tE", 0.0).GetEntry(); 
+  lOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve lO", 0.0).GetEntry();
+  rOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve rO", 0.0).GetEntry();
+  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dErr", 0.0).GetEntry(); 
+  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tErr", 0.0).GetEntry(); 
 
   dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dP", 0.8).GetEntry();
   dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dI", 0.0).GetEntry();
@@ -48,10 +58,10 @@ void CurveCommand::Init(){
 
   LoadPIDValues();
 
-  navXPIDSource_ = new NavXPIDSource(robot_);
-  talonEncoderPIDSource_ = new TalonEncoderPIDSource(robot_);
-  anglePIDOutput_ = new AnglePIDOutput();
-  distancePIDOutput_ = new DistancePIDOutput();
+  //navXPIDSource_ = new NavXPIDSource(robot_);
+  //talonEncoderPIDSource_ = new TalonEncoderPIDSource(robot_);
+  //anglePIDOutput_ = new AnglePIDOutput();
+  //distancePIDOutput_ = new DistancePIDOutput();
   dPID_ = new PIDController(dPFac_, dIFac_, dDFac_, talonEncoderPIDSource_, distancePIDOutput_);
   tPID_ = new PIDController(tPFac_, tIFac_, tDFac_, navXPIDSource_, anglePIDOutput_);
 
@@ -103,15 +113,42 @@ void CurveCommand::Update(){
     double dOutput = distancePIDOutput_->GetPIDOutput();
     double tOutput = anglePIDOutput_->GetPIDOutput();
 
+    double lOutput;
+    double rOutput;
+
     if(turnLeft_){
-      robot_->SetDriveValues(RobotModel::kRightWheels, -dOutput);
-      robot_->SetDriveValues(RobotModel::kLeftWheels, -tOutput);
+      lOutput = dOutput - tOutput; //TODO SKETCH
+      rOutput = dOutput + tOutput;
     } else {
-      robot_->SetDriveValues(RobotModel::kLeftWheels, -dOutput);
-      robot_->SetDriveValues(RobotModel::kRightWheels, -tOutput);
+      lOutput = dOutput + tOutput; //TODO SKETCH
+      rOutput = dOutput - tOutput;
+
     }
+    
+    //TODODODODO NEEDED OR IS THIS MESSING WITH THE PID????
+    //power output checks
+    if(lOutput > 1.0){
+      rOutput = rOutput/lOutput;
+      lOutput = 1.0;
+    } else if (lOutput < -1.0){
+      rOutput = rOutput/(-lOutput);
+      lOutput = -1.0;
+    }
+    if(rOutput > 1.0) {
+      lOutput = lOutput/rOutput;
+      rOutput = 1.0;
+    } else if (rOutput < -1.0) {
+      lOutput = lOutput/(-rOutput);
+      rOutput = -1.0;
+    }
+
+    robot_->SetDriveValues(RobotModel::kLeftWheels, -lOutput);
+    robot_->SetDriveValues(RobotModel::kRightWheels, -rOutput);
+    
     dOutputNet_.SetDouble(dOutput);
     tOutputNet_.SetDouble(tOutput);
+    lOutputNet_.SetDouble(lOutput);
+    rOutputNet_.SetDouble(rOutput);
     if(turnLeft_){
       dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - robot_->GetRightDistance());
     } else {
@@ -134,4 +171,26 @@ void CurveCommand::LoadPIDValues(){
   tPFac_ = tPFacNet_.GetDouble(0.8);
   tIFac_ = tIFacNet_.GetDouble(0.0);
   tDFac_ = tDFacNet_.GetDouble(0.0);
+}
+
+CurveCommand::~CurveCommand(){
+
+  dPID_->~PIDController();
+  tPID_->~PIDController();
+
+  dOutputNet_.Delete();
+  tOutputNet_.Delete();
+  lOutputNet_.Delete();
+  rOutputNet_.Delete();
+  dErrorNet_.Delete();
+  tErrorNet_.Delete();
+
+  dPFacNet_.Delete();
+  dIFacNet_.Delete();
+  dDFacNet_.Delete();
+
+  tPFacNet_.Delete();
+  tIFacNet_.Delete();
+  tDFacNet_.Delete();
+
 }
