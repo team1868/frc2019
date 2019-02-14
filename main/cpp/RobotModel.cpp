@@ -125,7 +125,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   // Initializing pneumatics
   compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
-  gearShiftSolenoid_ = new frc::DoubleSolenoid(GEAR_SHIFT_FORWARD_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
+  gearShiftSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARD_SOLENOID_PORT);//DoubleSolenoid(GEAR_SHIFT_FORWARD_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
+  gearShiftSolenoid_->Set(true);
   highGear_ = false; //NOTE: make match with ControlBoard
 
   //Superstructure
@@ -150,6 +151,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   // initiliaze encoders
   leftDriveEncoder_ = new frc::Encoder(LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT, LEFT_DRIVE_ENCODER_RED_PWM_PORT, true);		// TODO check if true or false
+  leftDriveEncoder_->SetMaxPeriod(0.1);
+  leftDriveEncoder_->SetMinRate(10);
   if(highGear_){
   	leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   } else {
@@ -158,6 +161,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   leftDriveEncoder_->SetReverseDirection(true);
 
   rightDriveEncoder_ = new frc::Encoder(RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT, RIGHT_DRIVE_ENCODER_RED_PWM_PORT, false);
+  rightDriveEncoder_->SetMaxPeriod(0.1);
+  leftDriveEncoder_->SetMinRate(10);
   if(highGear_){
 	rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   } else {
@@ -267,8 +272,9 @@ void RobotModel::SetTalonCoastMode() {
 
 // set motor high gear
 void RobotModel::SetHighGear() {
-	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
-	highGear_ = true;
+	//gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
+	//highGear_ = true;
+	gearShiftSolenoid_->Set(true); //must be called repeatedly
   	leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
   	rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
@@ -285,10 +291,12 @@ void RobotModel::SetLowGear() {
 
 // ------------------------ get drive values--------------------------------------------
 double RobotModel::GetLeftEncoderValue() {
+	printf("ENCODER TURNING SKDFJLSAKNDFLAKNDFLKABSDLGANSDKGNAOSLEDFANLSKDGLKENSFDSLJB DGSKFN\n\n\n");
 	return leftDriveEncoder_->Get();
 }
 
 double RobotModel::GetRightEncoderValue() {
+	printf("ENCODER B TURNING SKDFJLSAKNDFLAKNDFLKABSDLGANSDKGNAOSLEDFANLSKDGLKENSFDSLJB DGSKFN\n\n\n");
 	return rightDriveEncoder_->Get();
 }
 

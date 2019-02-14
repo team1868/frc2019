@@ -35,7 +35,7 @@ void Robot::RobotInit()  {
   //initialize controllers
   humanControl_ = new ControlBoard();
   driveController_ = new DriveController(robot_, humanControl_);
-  superstructureController_ = new SuperstructureController(robot_, humanControl_);
+  //superstructureController_ = new SuperstructureController(robot_, humanControl_);
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
 
@@ -48,6 +48,11 @@ void Robot::RobotInit()  {
   //m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   //m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   //frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+  
+	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
+	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
+  leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
+	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
 }
 
 /**
@@ -58,7 +63,12 @@ void Robot::RobotInit()  {
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() {}
+void Robot::RobotPeriodic() {
+  leftEncoderNet_.SetDouble(robot_->GetLeftEncoderValue());
+  rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
+  leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
+  rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
+}
 
 /**
  * This autonomous (along with the chooser code above) shows how to select
@@ -81,12 +91,12 @@ void Robot::AutonomousInit() {
   TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
-  /*driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
-  driveStraight_->Init();*/
+  driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
+  driveStraight_->Init();
   /*pivot_ = new PivotCommand(robot_, 90.0, true, navXSource);
   pivot_->Init();*/
-  curve_ = new CurveCommand(robot_, 3, 90, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
-  curve_->Init();
+  //curve_ = new CurveCommand(robot_, 3, 90, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  //curve_->Init();
 
 
   m_autoSelected = m_chooser.GetSelected();
@@ -104,10 +114,11 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {
   //frc::Shuffleboard::Update();
 
-  //driveStraight_->Update(currTimeSec_, deltaTimeSec_);
   UpdateTimerVariables();
+
+  driveStraight_->Update(currTimeSec_, deltaTimeSec_);
   //pivot_->Update(currTimeSec_, deltaTimeSec_);
-  curve_->Update(currTimeSec_, deltaTimeSec_);
+  //curve_->Update(currTimeSec_, deltaTimeSec_);
 
   if (m_autoSelected == kAutoNameCustom) {
     // Custom Auto goes here
@@ -132,6 +143,10 @@ void Robot::TeleopInit() {
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
+  leftEncoderNet_.SetDouble(robot_->GetLeftEncoderValue());
+  rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
+  leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
+  rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
 
   //if(humanControl_->GetTestDesired()){
   //  spark_->Set(1.0);
@@ -151,7 +166,7 @@ void Robot::TeleopPeriodic() {
       robot_->UpdateCurrent();
 		  humanControl_->ReadControls();
 		  driveController_->Update(currTimeSec_, deltaTimeSec_);
-		  superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used
+		  //superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used
 		  Logger::LogState(robot_, humanControl_);
       break;
     default:
@@ -177,7 +192,7 @@ void Robot::UpdateTimerVariables(){
 // reset controllers
 void Robot::ResetControllers() {
 	driveController_->Reset();
-	superstructureController_->Reset();
+	//superstructureController_->Reset();
 }
 
 

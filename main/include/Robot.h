@@ -22,6 +22,7 @@
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardTab.h>
+#include <networktables/NetworkTableEntry.h>
 
 class Robot : public frc::TimedRobot { //TODO CHANGE
  public:
@@ -59,4 +60,6 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   PivotCommand *pivot_; //testing TODO delte
   CurveCommand *curve_; //TODO DELETE
   frc::Spark *spark_, *spark2_; //TODO delete
+
+  nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_;
 };

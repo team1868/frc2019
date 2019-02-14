@@ -153,7 +153,8 @@ class RobotModel {
   int navXSpeed_; //in Hz
 
   frc::Compressor *compressor_; //TODO
-  frc::DoubleSolenoid *gearShiftSolenoid_;
+  //frc::DoubleSolenoid *gearShiftSolenoid_;
+  Solenoid *gearShiftSolenoid_;
   frc::Encoder *leftDriveEncoder_, *rightDriveEncoder_; //TODO
   frc::PowerDistributionPanel *pdp_; //TODO
 
