@@ -171,7 +171,7 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
     }
 
     robot_->SetDriveValues(RobotModel::kLeftWheels, -lOutput);
-    robot_->SetDriveValues(RobotModel::kRightWheels, -rOutput);
+    robot_->SetDriveValues(RobotModel::kRightWheels, rOutput);
     
     dOutputNet_.SetDouble(dOutput);
     tOutputNet_.SetDouble(tOutput);

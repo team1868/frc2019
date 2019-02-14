@@ -179,7 +179,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	}
 	// drive motors
 	robot_->SetDriveValues(RobotModel::kLeftWheels, -leftMotorOutput_); //TODO: THIS IS FOR ARTEMIS< CHANGE INVERSION
-	robot_->SetDriveValues(RobotModel::kRightWheels, -rightMotorOutput_); //TODO ADDED FOR 2019>>> NOT RIGHT and UNTESTED
+	robot_->SetDriveValues(RobotModel::kRightWheels, rightMotorOutput_); 
 }
 
 // repeatedly on target
@@ -282,7 +282,7 @@ DriveStraightCommand::~DriveStraightCommand() {
 	anglePID_->Disable();
 	distancePID_->Disable();
 	anglePID_->~PIDController();
-	distancePID_~PIDController();
+	distancePID_->~PIDController();
 
 	leftStraightNet_.Delete();
 	rightStraightNet_.Delete();
