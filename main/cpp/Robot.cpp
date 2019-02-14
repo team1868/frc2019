@@ -83,9 +83,10 @@ void Robot::AutonomousInit() {
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
   /*driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
   driveStraight_->Init();*/
-  pivot_ = new PivotCommand(robot_, 90.0, true, navXSource);
-  pivot_->Init();
-  
+  /*pivot_ = new PivotCommand(robot_, 90.0, true, navXSource);
+  pivot_->Init();*/
+  curve_ = new CurveCommand(robot_, 3, 90, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  curve_->Init();
 
 
   m_autoSelected = m_chooser.GetSelected();
@@ -105,7 +106,8 @@ void Robot::AutonomousPeriodic() {
 
   //driveStraight_->Update(currTimeSec_, deltaTimeSec_);
   UpdateTimerVariables();
-  pivot_->Update(currTimeSec_, deltaTimeSec_);
+  //pivot_->Update(currTimeSec_, deltaTimeSec_);
+  curve_->Update(currTimeSec_, deltaTimeSec_);
 
   if (m_autoSelected == kAutoNameCustom) {
     // Custom Auto goes here
@@ -124,17 +126,17 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
 
   //TODO DELETE
-  spark_ = new Spark(7);
+  //spark_ = new Spark(7);
   //spark2_ = new Spark(8);
 }
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
 
-  if(humanControl_->GetTestDesired()){
-    spark_->Set(1.0);
+  //if(humanControl_->GetTestDesired()){
+  //  spark_->Set(1.0);
     //spark2_->Set(1.0);
-  }
+  //}
 
 
 

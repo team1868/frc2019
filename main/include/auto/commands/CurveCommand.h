@@ -18,7 +18,9 @@ class CurveCommand : public AutoCommand {
     NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   void Init();
-  void Update();
+  void Update(double currTimeSec, double deltaTimeSec);
+  bool IsDone();
+  void Reset();
 
   ~CurveCommand();
 

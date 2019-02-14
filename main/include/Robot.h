@@ -18,6 +18,7 @@
 #include "../include/auto/PIDSource/PIDInputSource.h"
 #include "../include/auto/commands/DriveStraightCommand.h"
 #include "../include/auto/commands/PivotCommand.h"
+#include "../include/auto/commands/CurveCommand.h"
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardTab.h>
@@ -42,7 +43,6 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   DriveController *driveController_;
   SuperstructureController *superstructureController_;
   TalonEncoderPIDSource *talonEncoderSource_;
-  PivotCommand *pivot_; //testing TODO delte
 
 
   double currTimeSec_;
@@ -56,5 +56,7 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
 
 
   DriveStraightCommand *driveStraight_;//TODO delete
+  PivotCommand *pivot_; //testing TODO delte
+  CurveCommand *curve_; //TODO DELETE
   frc::Spark *spark_, *spark2_; //TODO delete
 };

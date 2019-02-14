@@ -78,7 +78,35 @@ void CurveCommand::Init(){
 
 }
 
-void CurveCommand::Update(){
+void CurveCommand::Reset(){
+  robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
+  robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
+  
+	// destroy angle PID
+	if (tPID_ != NULL) {
+		tPID_->Disable();
+
+		delete(tPID_);
+
+		tPID_ = NULL;
+
+		printf("Reset Angle PID %f \n", robot_->GetNavXYaw());
+	}
+
+	// destroy distance PID
+	if (dPID_ != NULL) {
+		dPID_->Disable();
+
+		delete(dPID_);
+
+		dPID_ = NULL;
+//		printf("Reset Distance PID");
+
+	}
+	isDone_ = true;
+}
+
+void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add timeout!
 
   if(dPID_->OnTarget() && tPID_->OnTarget()){ //TODO add timeout here, also TODO possible source of error if one done and one not?
     printf("%f Final NavX Angle from PID Source: %f\n"
@@ -171,6 +199,10 @@ void CurveCommand::LoadPIDValues(){
   tPFac_ = tPFacNet_.GetDouble(0.8);
   tIFac_ = tIFacNet_.GetDouble(0.0);
   tDFac_ = tDFacNet_.GetDouble(0.0);
+}
+
+bool CurveCommand::IsDone(){
+  return isDone_;
 }
 
 CurveCommand::~CurveCommand(){
