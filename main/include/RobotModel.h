@@ -86,19 +86,18 @@ class RobotModel {
   void SetCargoIntakeOutput(double output);
   void SetCargoUnintakeOutput(double output);
   void SetCargoFlywheelOutput(double output);
+  void SetHatchWristOutput(double output);
+  void SetHatchIntakeWheelOutput(double output);
 
   void SetCargoIntakeWrist(bool change);
-  void SetHatchPickup(bool change);
   void SetHatchOuttake(bool change);
   void SetHatchBeak(bool change);
-  void SetHood(bool change);
 
   double GetCargoFlywheelMotorOutput(double output);
 
   //blahslkdjfslkdjflksjdfklsj
   Encoder* GetCargoFlywheelEncoder();
   Victor* GetCargoFlywheelMotor();
-  
 
   enum GameMode{SANDSTORM, NORMAL_TELEOP};
   
@@ -144,21 +143,21 @@ class RobotModel {
   WPI_TalonSRX *leftMaster_, *rightMaster_; //TODO this is weird, frc:: or not?
   WPI_VictorSPX *leftSlaveA_, *leftSlaveB_, *rightSlaveA_, *rightSlaveB_;
 
-  Victor *cargoIntakeMotor_, *cargoFlywheelMotor_;
+  Victor *cargoIntakeMotor_, *cargoFlywheelMotor_, *hatchIntakeWheelMotor_, *hatchWristMotor_;
   Encoder *cargoFlywheelEncoder_;
-  DoubleSolenoid *hoodSolenoid_, *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_ , *hatchPickupSolenoid_, *hatchOuttakeSolenoid_;
+  DoubleSolenoid *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_;
+  Solenoid *hatchOuttakeSolenoid_;
 
   frc::Timer *timer_;
   AHRS *navX_; 
   int navXSpeed_; //in Hz
 
   frc::Compressor *compressor_; //TODO
-  //frc::DoubleSolenoid *gearShiftSolenoid_;
-  Solenoid *gearShiftSolenoid_;
+  frc::Solenoid *gearShiftSolenoid_;
   frc::Encoder *leftDriveEncoder_, *rightDriveEncoder_; //TODO
   frc::PowerDistributionPanel *pdp_; //TODO
 
-  bool highGear_, hatchPickupEngaged_, cargoWristEngaged_, hatchOuttakeEngaged_, hatchBeakEngaged_, hoodEngaged_;
+  bool highGear_, cargoWristEngaged_, hatchOuttakeEngaged_, hatchBeakEngaged_;
 
   nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_,
     dPFacNet_, dIFacNet_, dDFacNet_, rPFacNet_, rIFacNet_, rDFacNet_, pivotPFacNet_, pivotIFacNet_, pivotDFacNet_,

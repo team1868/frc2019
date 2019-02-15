@@ -124,35 +124,31 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   Wait(1.0); // NavX takes a second to calibrate
 
   // Initializing pneumatics
-  compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_ID);
-  gearShiftSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_ID, GEAR_SHIFT_FORWARD_SOLENOID_PORT);//DoubleSolenoid(GEAR_SHIFT_FORWARD_SOLENOID_PORT, GEAR_SHIFT_REVERSE_SOLENOID_PORT);
-  gearShiftSolenoid_->Set(true);
+  compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_A_ID);
+  gearShiftSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, GEAR_SHIFT_FORWARD_SOLENOID_PORT);
   highGear_ = false; //NOTE: make match with ControlBoard
 
   //Superstructure
-  hoodSolenoid_ = new frc::DoubleSolenoid(HOOD_UP_DOUBLE_SOLENOID_CHAN, HOOD_DOWN_DOUBLE_SOLENOID_CHAN);
   cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
-
   hatchBeakSolenoid_ = new frc::DoubleSolenoid(HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
-  hatchPickupSolenoid_ = new DoubleSolenoid(HATCH_OUTTAKE_DOUBLE_SOLENOID_FORWARD_CHAN, HATCH_OUTTAKE_DOUBLE_SOLENOID_REVERSE_CHAN);
-  hatchOuttakeSolenoid_ = new frc::DoubleSolenoid(HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN, HATCH_OUTTAKE_DOWN_DOUBLE_SOLENOID_CHAN);
-  
-  //TODO MESS, also TODO check before matches
-  hatchPickupEngaged_ = false;
-  cargoWristEngaged_ = false;
-  hatchOuttakeEngaged_ = false;
-  hatchBeakEngaged_ = false;
-  hoodEngaged_ = false;
+  hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_SOLENOID_CHAN);
+
+	cargoIntakeMotor_ = new Victor(CARGO_INTAKE_MOTOR_PORT);
+	cargoFlywheelMotor_ = new Victor(CARGO_FLYWHEEL_MOTOR_PORT);
+	hatchIntakeWheelMotor_ = new Victor(HATCH_INTAKE_WHEEL_MOTOR_PORT);
+	hatchWristMotor_ = new Victor(HATCH_WRIST_MOTOR_PORT);
 
   cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
   cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
   cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * M_PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
 
+  //TODO MESS, also TODO check before matches
+  cargoWristEngaged_ = false;
+  hatchOuttakeEngaged_ = false;
+  hatchBeakEngaged_ = false;
 
   // initiliaze encoders
   leftDriveEncoder_ = new frc::Encoder(LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT, LEFT_DRIVE_ENCODER_RED_PWM_PORT, true);		// TODO check if true or false
-  leftDriveEncoder_->SetMaxPeriod(0.1);
-  leftDriveEncoder_->SetMinRate(10);
   if(highGear_){
   	leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   } else {
@@ -161,8 +157,6 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   leftDriveEncoder_->SetReverseDirection(true);
 
   rightDriveEncoder_ = new frc::Encoder(RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT, RIGHT_DRIVE_ENCODER_RED_PWM_PORT, false);
-  rightDriveEncoder_->SetMaxPeriod(0.1);
-  leftDriveEncoder_->SetMinRate(10);
   if(highGear_){
 	rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   } else {
@@ -272,9 +266,8 @@ void RobotModel::SetTalonCoastMode() {
 
 // set motor high gear
 void RobotModel::SetHighGear() {
-	//gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
-	//highGear_ = true;
-	gearShiftSolenoid_->Set(true); //must be called repeatedly
+	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
+	highGear_ = true;
   	leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
   	rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
@@ -291,12 +284,10 @@ void RobotModel::SetLowGear() {
 
 // ------------------------ get drive values--------------------------------------------
 double RobotModel::GetLeftEncoderValue() {
-	printf("ENCODER TURNING SKDFJLSAKNDFLAKNDFLKABSDLGANSDKGNAOSLEDFANLSKDGLKENSFDSLJB DGSKFN\n\n\n");
 	return leftDriveEncoder_->Get();
 }
 
 double RobotModel::GetRightEncoderValue() {
-	printf("ENCODER B TURNING SKDFJLSAKNDFLAKNDFLKABSDLGANSDKGNAOSLEDFANLSKDGLKENSFDSLJB DGSKFN\n\n\n");
 	return rightDriveEncoder_->Get();
 }
 
@@ -346,73 +337,53 @@ double RobotModel::GetNavXRoll() {
 // ****************************REMINDER:::::::: USE POWER CONTROLLER DON'T DO RANDOM MOTOR ON DANG IT
 void RobotModel::SetCargoIntakeOutput(double output){
 	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
-	cargoIntakeMotor_->Set(-output); //motor is negatized
+	cargoIntakeMotor_->Set(output); //motor is negatized
 }
 
 void RobotModel::SetCargoUnintakeOutput(double output){
 	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
-	cargoIntakeMotor_->Set(output); //motor is negatized
+	cargoIntakeMotor_->Set(-output); //motor is negatized
 }
 
 void RobotModel::SetCargoFlywheelOutput(double output){
 	//output = ModifyCurrent(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, output);
-	cargoFlywheelMotor_->Set(-output); //motor negatized
+	cargoFlywheelMotor_->Set(output); //motor negatized
+}
+
+void RobotModel::SetHatchIntakeWheelOutput(double output){
+	hatchIntakeWheelMotor_->Set(output);
+}
+
+void RobotModel::SetHatchWristOutput(double output){
+	hatchWristMotor_->Set(output);
+}
+
+void RobotModel::SetCargoIntakeWrist(bool change){ //TODO RENAME
+	if(change) {
+		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kForward);
+		printf("forward cargo intake wrist\n");
+	} else {
+		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kReverse); //TODO check if correct orientation
+		printf("reverse cargo intake wrist\n");
+	}
+}
+
+void RobotModel::SetHatchOuttake(bool change){ //TODO POSSIBLE ERROR, set on then MUST SET OFF, not automatic
+	hatchOuttakeSolenoid_->Set(change);
+}
+
+void RobotModel::SetHatchBeak(bool change){
+	if(change) {
+		hatchBeakSolenoid_->Set(DoubleSolenoid::kForward);
+	} else {
+		hatchBeakSolenoid_->Set(DoubleSolenoid::kReverse);
+	}
 }
 
 double RobotModel::GetCargoFlywheelMotorOutput(double output){
 	return cargoFlywheelMotor_->Get();
 }
 
-void RobotModel::SetHatchPickup(bool change){
-	//has kOff, kForward, kReverse
-	if(change && !hatchPickupEngaged_){
-		hatchPickupEngaged_ = true;
-		hatchPickupSolenoid_->Set(DoubleSolenoid::kForward);
-	} else if(!change && hatchPickupEngaged_){
-		hatchPickupEngaged_ = false;
-		hatchPickupSolenoid_->Set(DoubleSolenoid::kReverse);
-	}
-}
-
-void RobotModel::SetCargoIntakeWrist(bool change){ //TODO RENAME
-	if(change && !cargoWristEngaged_) {
-		cargoWristEngaged_ = true;
-		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kForward);
-	} else if(!change && cargoWristEngaged_){
-		cargoWristEngaged_ = false;
-		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kReverse); //TODO check if correct orientation
-	}
-}
-
-void RobotModel::SetHatchOuttake(bool change){ //TODO POSSIBLE ERROR, set on then MUST SET OFF, not automatic
-	if(change && !hatchOuttakeEngaged_) {
-		hatchOuttakeEngaged_ = true;
-		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kForward);
-	} else if(!change && hatchOuttakeEngaged_){
-		hatchOuttakeEngaged_ = false;
-		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kReverse);
-	}
-}
-
-void RobotModel::SetHatchBeak(bool change){
-	if(change && !hatchBeakEngaged_) {
-		hatchBeakEngaged_ = true;
-		hatchBeakSolenoid_->Set(DoubleSolenoid::kForward);
-	} else if(!change && hatchBeakEngaged_){
-		hatchBeakEngaged_ = false;
-		hatchBeakSolenoid_->Set(DoubleSolenoid::kReverse);
-	}
-}
-
-void RobotModel::SetHood(bool change){
-	if(change && !hoodEngaged_) {
-		hoodEngaged_ = true;
-		hoodSolenoid_->Set(DoubleSolenoid::kForward);
-	} else if(!change && hoodEngaged_){
-		hoodEngaged_ = false;
-		hoodSolenoid_->Set(DoubleSolenoid::kReverse); 
-	}
-}
 /*
 double RobotModel::GetFlywheelMotorOutput(){
 	return flywheelMotor_->Get();
@@ -503,7 +474,7 @@ void RobotModel::UpdateCurrent() {
 	//TODO fix and check logic
 	if((GetTotalCurrent() > MAX_CURRENT_OUTPUT || GetVoltage() <= MIN_VOLTAGE_BROWNOUT) && !lastOver_){
 		printf("\nSTOPPING\n\n");
-		StopCompressor();
+		//StopCompressor();
 		compressorOff_ = true;
 		if(ratioAll_-0.05 > MIN_RATIO_ALL_CURRENT){
 			ratioAll_ -= 0.05;
@@ -639,7 +610,7 @@ bool RobotModel::CollisionDetected() {
 }
 //------------------------------------compressors--------------------------------
 void RobotModel::StopCompressor() {
-	compressor_->Stop();
+	//compressor_->Stop();
 }
 
 void RobotModel::StartCompressor() {

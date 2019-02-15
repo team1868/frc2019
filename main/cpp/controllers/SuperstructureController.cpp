@@ -14,10 +14,10 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
 	currState_ = kInit;
 	nextState_ = kIdle;
 
-    desiredFlywheelVelocCargo_ = 0.56; //tune 
-    desiredFlywheelVelocRocket_ = 0.25; //tune
+    desiredFlywheelVelocCargo_ = 0.7; //TODO this is /1 not actual velocity
+    desiredFlywheelVelocRocket_ = 0.25; //TODO this is /1 not actual velocity
 
-    cargoVelocNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("cargo veloc", 0.56).GetEntry(); //0.56
+    cargoVelocNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("cargo veloc", 0.7).GetEntry(); //0.7
     cargoRocketVelocNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rocket veloc", 0.25).GetEntry(); //0.25
 
     cargoIntakeOutput_ = 1.0; 
@@ -27,7 +27,6 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
 
     cargoIntakeWristEngaged_ = false;
     hatchOuttakeEngaged_ = false;
-    hatchPickupEngaged_ = false;
 
     //get PID vals for cargo ship
     cargoPFac_ = 0.8;
@@ -51,14 +50,14 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     cargoFlyPID_  = new PIDController(cargoPFac_, cargoIFac_, cargoDFac_, robot_->GetCargoFlywheelEncoder(),
         robot_->GetCargoFlywheelMotor());
     cargoFlyPID_->SetSetpoint(desiredFlywheelVelocCargo_);  
-    cargoFlyPID_->SetOutputRange(0.0, 1.0); //TODO
+    cargoFlyPID_->SetOutputRange(-1.0, 1.0); //TODO
     cargoFlyPID_->SetAbsoluteTolerance(0.05); //TODO
     cargoFlyPID_->SetContinuous(false);
 
     rocketFlyPID_ = new PIDController(rocketPFac_, rocketIFac_, rocketDFac_, robot_->GetCargoFlywheelEncoder(),
         robot_->GetCargoFlywheelMotor());
     rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);  
-    rocketFlyPID_->SetOutputRange(0.0, 1.0); //TODO
+    rocketFlyPID_->SetOutputRange(-1.0, 1.0); //TODO
     rocketFlyPID_->SetAbsoluteTolerance(0.05); //TODO
     rocketFlyPID_->SetContinuous(false);
 
@@ -72,14 +71,16 @@ void SuperstructureController::Reset() {
     cargoFlyPID_->Reset();
     rocketFlyPID_->Reset();
 
+    RefreshShuffleboard();
+
     robot_->SetCargoIntakeOutput(0.0);
+    robot_->SetHatchIntakeWheelOutput(0.0);
 }
 
 void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
     SetOutputs(); 
-    RefreshShuffleboard();
-
+    
 	switch(currState_) {
         case kInit:
             cargoFlyPID_->Reset();
@@ -88,47 +89,55 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             rocketFlyPID_->Reset();
             rocketFlyPID_->Disable();
 
-            robot_->SetCargoIntakeOutput(0.0);
+            robot_->SetCargoIntakeOutput(0.0); 
             robot_->SetCargoFlywheelOutput(0.0);
+            robot_->SetHatchIntakeWheelOutput(0.0);
 
             nextState_ = kIdle;
         case kIdle:
             nextState_ = kIdle;
-
             //HATCH STUFF
-            if(humanControl_->GetHatchPickupDesired()){ //toggle button
-                if(!hatchPickupEngaged_){
-                    robot_->SetHatchPickup(true); //TODO engage/diengage hatch at constructor
-                } else {
-                    robot_->SetHatchPickup(false);
-                }
-                hatchPickupEngaged_ = !hatchPickupEngaged_;
-                printf("hatch Pickup engaged : %d\n", hatchPickupEngaged_);
+            
+            if(humanControl_->GetHatchIntakeWheelDesired()){
+                printf("hatch intaking\n");
+                robot_->SetHatchIntakeWheelOutput(0.8);
+            } else if (humanControl_->GetHatchUnintakeWheelDesired()){
+                printf("hatch intaking\n");
+                robot_->SetHatchIntakeWheelOutput(-0.8);
+            } else {
+                robot_->SetHatchIntakeWheelOutput(0.8);
             }
+
+
+            //TODO INTEGRATE GYRO
+            if (humanControl_->GetHatchWristUpDesired()) {
+			    printf("hatch intake up\n");
+			    robot_->SetHatchWristOutput(-0.3);
+            } else if (humanControl_->GetHatchWristDownDesired()) {
+                printf("hatch intake down\n");
+			    robot_->SetHatchWristOutput(0.3);
+		    } else {
+			    robot_->SetHatchWristOutput(0.0);
+	    	}
 
             if(humanControl_->GetHatchBeakDesired()){
                 robot_->SetHatchBeak(true);
+            } else {
+                robot_->SetHatchBeak(false);
             }
 
-            if(humanControl_->GetHatchOuttakeDesired()){
-                hatchOuttakeEngaged_ = !hatchOuttakeEngaged_;
-                if(hatchOuttakeEngaged_){
-                    robot_->SetHatchOuttake(true);
-                } else {
-                    robot_->SetHatchOuttake(false);
-                }
+            if(humanControl_->GetHatchOuttakeDesired()){ //TODO different state: time delay
                 robot_->SetHatchOuttake(true);
+            } else {
+                robot_->SetHatchOuttake(false);
             }
 
             //CARGO STUFF
 
             if(humanControl_->GetCargoIntakeWristDesired()){
-                cargoIntakeWristEngaged_ = !cargoIntakeWristEngaged_;
-                if(cargoIntakeWristEngaged_){
-                    robot_->SetCargoIntakeWrist(true);
-                } else {
-                    robot_->SetCargoIntakeWrist(false);
-                }
+                robot_->SetCargoIntakeWrist(true);
+            } else {
+                robot_->SetCargoIntakeWrist(false);
             }
 
             if(humanControl_->GetCargoIntakeDesired()){
@@ -142,12 +151,38 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             }
 
             if(humanControl_->GetCargoFlywheelDesired()){ //flywheel for cargo ship
-                cargoFlyPID_->Enable();
-                nextState_ = kFlywheelCargo;
+                printf("cargo shooting into cargo ship\n");
+                /*if(!flywheelStarted_){
+                    flywheelStarted_ = true;
+                    cargoFlyPID_->Enable();
+                }*/
+                robot_->SetCargoFlywheelOutput(desiredFlywheelVelocCargo_);
+            } else {
+                /*
+                cargoFlyPID_->Disable(); 
+                flywheelStarted_ = false;
+                */
+               robot_->SetCargoFlywheelOutput(0.0);
             }
+
             if(humanControl_->GetCargoFlywheelDesiredRocket()){ //flywheel for rocket ship
-                rocketFlyPID_->Enable();
-                nextState_ = kFlywheelRocket;
+                printf("cargo shooting into rocket ship\n");
+                /*
+                if(!flywheelStarted_){
+                    rocketFlyPID_->Enable();
+                    flywheelStarted_=true;
+                }*/
+                robot_->SetCargoFlywheelOutput(desiredFlywheelVelocRocket_);
+            } else {
+                /*rocketFlyPID_->Disable(); 
+                flywheelStarted_ = false;*/
+                robot_->SetCargoFlywheelOutput(0.0);
+            }
+
+            if(humanControl_->GetHighGearDesired()){
+                robot_->SetHighGear();
+            } else {
+                robot_->SetLowGear();
             }
 
            /* robot_->SetCargoFlywheelOutput(humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kLT));
@@ -161,51 +196,6 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             }
             */
 
-            if(humanControl_->GetHighGearDesired()){
-                robot_->SetHighGear();
-            } else {
-                robot_->SetLowGear();
-            }
-            break;
-        case kFlywheelCargo:
-            printf("outtaking cargo into cargo ship bay\n");
-
-            if(!flywheelStarted_){
-                flywheelStartTime_ = robot_->GetTime();
-                flywheelStarted_ = true;
-                nextState_ = kFlywheelCargo;
-            } else if(robot_->GetTime() - flywheelStartTime_ < 1.5){ //test for time delay
-                nextState_ = kFlywheelCargo;
-                robot_->SetHood(true);
-            } else if(humanControl_->GetCargoFlywheelDesired()){
-                robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
-				nextState_ = kFlywheelCargo;
-            } else {
-                robot_->SetCargoIntakeOutput(0.0);
-				cargoFlyPID_->Disable();
-				flywheelStarted_ = false;
-				nextState_ = kIdle;
-            }
-            break;
-        case kFlywheelRocket:
-            printf("outtaking cargo into rocket\n");
-
-            if(!flywheelStarted_){
-                flywheelStartTime_ = robot_->GetTime();
-                flywheelStarted_ = true;
-                nextState_ = kFlywheelRocket;
-            } else if(robot_->GetTime() - flywheelStartTime_ < 2){ //test for time delay
-                nextState_ = kFlywheelRocket;
-                robot_->SetHood(false);
-            } else if(humanControl_->GetCargoFlywheelDesiredRocket()){
-                robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
-				nextState_ = kFlywheelRocket;
-            } else {
-                robot_->SetCargoIntakeOutput(0.0);
-				cargoFlyPID_->Disable();
-				flywheelStarted_ = false;
-				nextState_ = kIdle;
-            }
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
@@ -215,10 +205,11 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
 void SuperstructureController::SetOutputs() {
     cargoFlyPID_->SetSetpoint(desiredFlywheelVelocCargo_);
+    rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);
 }
 
 void SuperstructureController::RefreshShuffleboard() {
-    desiredFlywheelVelocCargo_ = cargoVelocNet_.GetDouble(0.56);
+    desiredFlywheelVelocCargo_ = cargoVelocNet_.GetDouble(0.7);
     desiredFlywheelVelocRocket_ = cargoRocketVelocNet_.GetDouble(0.25);
 
     cargoPFac_ = cargoPNet_.GetDouble(0.8);

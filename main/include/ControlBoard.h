@@ -45,7 +45,10 @@ public:
 
 	//TODO DELETE
 	bool GetTestDesired();
-
+	
+	/**
+	 * Returns desired values for superstructure controls
+	 */
 	bool GetCargoIntakeDesired();
 	bool GetCargoUnintakeDesired();
 	bool GetCargoFlywheelDesired();
@@ -53,11 +56,10 @@ public:
 	bool GetCargoIntakeWristDesired();
 	bool GetHatchOuttakeDesired();
 	bool GetHatchBeakDesired();
-	bool GetHatchPickupDesired();
-
-	/**
-	 * Returns desired values for superstructure controls
-	 */
+	bool GetHatchIntakeWheelDesired();
+	bool GetHatchUnintakeWheelDesired();
+	bool GetHatchWristUpDesired();
+	bool GetHatchWristDownDesired();
 
 	virtual ~ControlBoard();
 private:
@@ -87,11 +89,13 @@ private:
 	
 	//Buttons for superstructure
 	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoIntakeButton_, *cargoUnintakeButton_,
-		*cargoIntakeWristButton_, *hatchOuttakeButton_, *hatchBeakButton_, *hatchPickupButton_;
+		*cargoIntakeWristButton_, *hatchOuttakeButton_, *hatchBeakButton_, *hatchIntakeWheelButton_, *hatchUnintakeWheelButton_,
+		*hatchWristUpButton_, *hatchWristDownButton_;
 
 	//Variables for superstructure
-		bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoIntakeWristDesired_,
-		hatchBeakDesired_, hatchOuttakeDesired_, hatchPickupEngaged_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_;
+	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoIntakeWristDesired_,
+		hatchBeakDesired_, hatchOuttakeDesired_, hatchIntakeWheelDesired_, hatchUnintakeWheelDesired_, hatchWristUpDesired_, hatchWristDownDesired_;
+	bool cargoIntakeWristEngaged_, hatchOuttakeEngaged_;
 
   	//TODO delete BELOW ALL GO AWAY DELETE DELETE DANG IT
    	ButtonReader *testButton_;

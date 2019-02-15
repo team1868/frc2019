@@ -31,7 +31,7 @@ public:
 	virtual ~SuperstructureController();
 
 	enum SuperstructureState {
-		kInit, kIdle, kFlywheelCargo, kFlywheelRocket
+		kInit, kIdle, kDeployHatch
 	};
 
 private:
@@ -44,7 +44,7 @@ private:
 	PIDController *rocketFlyPID_;
 
 	double desiredFlywheelVelocCargo_, desiredFlywheelVelocRocket_, cargoIntakeOutput_, flywheelStartTime_;
-	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_, hatchPickupEngaged_;
+	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_;
 
 	uint32_t currState_;
 	uint32_t nextState_;
