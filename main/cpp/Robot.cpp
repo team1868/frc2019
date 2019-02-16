@@ -54,6 +54,8 @@ void Robot::RobotInit()  {
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
+
+  testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.1).GetEntry();
 }
 
 /**
@@ -139,7 +141,7 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
 
   //TODO DELETE
-  //spark_ = new Spark(7);
+  spark_ = new Spark(7);
   //spark2_ = new Spark(8);
 }
 
@@ -150,10 +152,10 @@ void Robot::TeleopPeriodic() {
   leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
   rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
 
-  //if(humanControl_->GetTestDesired()){
-  //  spark_->Set(1.0);
+  if(humanControl_->GetTestDesired()){
+    spark_->Set(testerPowerNet_.GetDouble(0.1));
     //spark2_->Set(1.0);
-  //}
+  }
 
 
 

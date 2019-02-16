@@ -126,7 +126,10 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   // Initializing pneumatics
   compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_A_ID);
   gearShiftSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, GEAR_SHIFT_FORWARD_SOLENOID_PORT);
+
+	//TODODODODODOD TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE EEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!
   highGear_ = false; //NOTE: make match with ControlBoard
+	SetLowGear();
 
   //Superstructure
   cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
@@ -450,7 +453,8 @@ double RobotModel::ModifyCurrent(int channel, double value){
 		default:
 			printf("WARNING: current not found to modify.  In ModifyCurrents() in RobotModel.cpp");
 	}
-	printf("ratio current %f, drive ratio current %f, super ratio current %d", ratioAll_, ratioDrive_, ratioSuperstructure_);
+	//debugging:
+	//printf("ratio current %f, drive ratio current %f, super ratio current %d", ratioAll_, ratioDrive_, ratioSuperstructure_);
 	return power;
 }
 

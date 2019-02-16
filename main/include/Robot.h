@@ -61,5 +61,5 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   CurveCommand *curve_; //TODO DELETE
   frc::Spark *spark_, *spark2_; //TODO delete
 
-  nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_;
+  nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_, testerPowerNet_;
 };
