@@ -5,29 +5,29 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "../../../include/auto/commands/OuttakeHatchCommand.h"
+#include "../../../include/auto/commands/IntakeHatchBeakCommand.h"
 
-OuttakeHatchCommand::OuttakeHatchCommand(RobotModel *robot, bool hatchOut) : AutoCommand() {
+IntakeHatchBeakCommand::IntakeHatchBeakCommand(RobotModel *robot, bool hatchIn) : AutoCommand() {
     robot_ = robot;
-    hatchOut_ = hatchOut;
+    hatchIn_ = hatchIn;
     isDone_ = false;
 }
 
-void OuttakeHatchCommand::Init() {}
-void OuttakeHatchCommand::Update(double currTimeSec, double deltaTimeSec) {
-    if (hatchOut_) {
-        robot_->SetHatchOuttake(true);
+void IntakeHatchBeakCommand::Init() {}
+void IntakeHatchBeakCommand::Update(double currTimeSec, double deltaTimeSec) {
+    if (hatchIn_) {
+        robot_->SetHatchBeak(true);
     } else {
-        robot_->SetHatchOuttake(false);
+        robot_->SetHatchBeak(false);
     }
     isDone_ = true;
 }
 
-bool OuttakeHatchCommand::IsDone() {
+bool IntakeHatchBeakCommand::IsDone() {
     return isDone_;
 }
 
-void OuttakeHatchCommand::Reset() {}
+void IntakeHatchBeakCommand::Reset() {}
 
-OuttakeHatchCommand::~OuttakeHatchCommand() {
+IntakeHatchBeakCommand::~IntakeHatchBeakCommand() {
 }
