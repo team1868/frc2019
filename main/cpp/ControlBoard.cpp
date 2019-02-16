@@ -10,8 +10,14 @@
 
 ControlBoard::ControlBoard() {
 	printf("in control board\n");
+
+	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Left Joy Z (thrust sensitivity)", 0.0).GetEntry();
+	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Right Joy Z (rotate sensitivity)", 0.0).GetEntry();
+	joyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad", true).GetEntry(); //hm, consider for ooperator
+	opJoyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad op", false).GetEntry();
+
 	curJoyMode = gamePad; 
-	curOpJoyMode_ = gamePad;
+	curOpJoyMode_ = twoJoy;//gamePad;
 
   leftJoyX_ = 0.0;
 	leftJoyY_ = 0.0;
@@ -64,26 +70,39 @@ ControlBoard::ControlBoard() {
 	cargoIntakeWristEngaged_ = false;
 	hatchOuttakeEngaged_ = false;
 
-	cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
-	cargoUnintakeButton_ = new ButtonReader(operatorJoy_, CARGO_UNINTAKE_BUTTON_PORT); //TODO make op
-	cargoFlywheelButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
-	cargoFlywheelRocketButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_BUTTON_PORT);
-	cargoIntakeWristButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_WRIST_BUTTON_PORT);
-	hatchOuttakeButton_ = new ButtonReader(operatorJoyB_, HATCH_OUTTAKE_BUTTON_PORT);
-	hatchBeakButton_ = new ButtonReader(operatorJoyB_, HATCH_BEAK_BUTTON_PORT);
-	hatchWristUpButton_ = new ButtonReader(operatorJoyB_, HATCH_WRIST_UP_BUTTON_PORT);
-	hatchWristDownButton_ = new ButtonReader(operatorJoyB_, HATCH_WRIST_DOWN_BUTTON_PORT);
-	hatchIntakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_INTAKE_WHEEL_BUTTON_PORT);
-	hatchUnintakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT);
+	switch(curOpJoyMode_){
+		case twoJoy:
+			cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
+			cargoUnintakeButton_ = new ButtonReader(operatorJoy_, CARGO_UNINTAKE_BUTTON_PORT); //TODO make op
+			cargoFlywheelButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
+			cargoFlywheelRocketButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_BUTTON_PORT);
+			cargoIntakeWristButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_WRIST_BUTTON_PORT);
+			hatchOuttakeButton_ = new ButtonReader(operatorJoyB_, HATCH_OUTTAKE_BUTTON_PORT);
+			hatchBeakButton_ = new ButtonReader(operatorJoyB_, HATCH_BEAK_BUTTON_PORT);
+			hatchWristUpButton_ = new ButtonReader(operatorJoyB_, HATCH_WRIST_UP_BUTTON_PORT);
+			hatchWristDownButton_ = new ButtonReader(operatorJoyB_, HATCH_WRIST_DOWN_BUTTON_PORT);
+			hatchIntakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_INTAKE_WHEEL_BUTTON_PORT);
+			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT);
+			break;
+		case gamePad:
+			cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT_G);
+			//cargoUnintake 2:LT
+			//cargoFlywheel 5:RY
+			//cargo intake wrist pov 270 or not -1
+			hatchOuttakeButton_ = new ButtonReader(operatorJoy_, HATCH_OUTTAKE_BUTTON_PORT_G);
+			//hatch beak  3:RT
+			//hatch wrist 1:LY
+			hatchIntakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_INTAKE_WHEEL_BUTTON_PORT_G);
+			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT_G);
+			break;
+		default:
+			printf("ERROR: operator Joystick Mode not set in ControlBoard()\n");
+	}
 	
 	//TODO DELETE
 	testButton_ = new ButtonReader(leftJoy_, 2);
 
-	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Left Joy Z (thrust sensitivity)", 0.0).GetEntry();
-	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Right Joy Z (rotate sensitivity)", 0.0).GetEntry();
-	joyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad", true).GetEntry(); //hm, consider for ooperator
-
-    ReadControls();
+  ReadControls();
 }
 
 void ControlBoard::ReadControls() {
@@ -125,26 +144,46 @@ void ControlBoard::ReadControls() {
 		highGearDesired_ = true;
 	} //else remain as is
 	//gearHighShiftButton_->IsDown();
-	arcadeDriveDesired_ = arcadeDriveButton_->IsDown();
+	arcadeDriveDesired_ = arcadeDriveButton_->IsDown(); //TODO DEAD CODE
 	quickTurnDesired_ = quickTurnButton_->IsDown();
-	//TODO check all of this for logic
-	cargoIntakeDesired_ = cargoIntakeButton_->IsDown();
-	cargoUnintakeDesired_ = cargoUnintakeButton_->IsDown();
 
-	cargoFlywheelDesired_ = cargoFlywheelButton_->IsDown();
-	cargoFlywheelDesiredRocket_ = cargoFlywheelRocketButton_->IsDown();
 
-	cargoIntakeWristDesired_ = cargoIntakeWristButton_->IsDown();
+	//-----------SUPERSTRUCTURE-------------------
+	switch(curOpJoyMode_){
+		case twoJoy:
+			cargoIntakeDesired_ = cargoIntakeButton_->IsDown();
+			cargoUnintakeDesired_ = cargoUnintakeButton_->IsDown();
 
-	hatchBeakDesired_ = hatchBeakButton_->IsDown();
-	hatchOuttakeDesired_ = hatchOuttakeButton_->IsDown();
+			cargoFlywheelDesired_ = cargoFlywheelButton_->IsDown();
+			cargoFlywheelDesiredRocket_ = cargoFlywheelRocketButton_->IsDown();
 
-	hatchWristUpDesired_ = hatchWristUpButton_->IsDown();
-	hatchWristDownDesired_ = hatchWristDownButton_->IsDown();
+			cargoIntakeWristDesired_ = cargoIntakeWristButton_->IsDown();
 
-	hatchIntakeWheelDesired_ = hatchIntakeWheelButton_->IsDown();
-	hatchUnintakeWheelDesired_ = hatchUnintakeWheelButton_->IsDown();
+			hatchBeakDesired_ = hatchBeakButton_->IsDown();
+			hatchOuttakeDesired_ = hatchOuttakeButton_->IsDown();
+			//TODODO bug! is normal wrist state in the middle then?  It will constantly draw current and do we want that
+			hatchWristUpDesired_ = hatchWristUpButton_->IsDown();
+			hatchWristDownDesired_ = hatchWristDownButton_->IsDown();
 
+			hatchIntakeWheelDesired_ = hatchIntakeWheelButton_->IsDown();
+			hatchUnintakeWheelDesired_ = hatchUnintakeWheelButton_->IsDown();
+			break;
+		case gamePad: //TODODODODODODODODODOSLDKJFALSDKJAFOIEWHGNLKDGAILEDFJOILEJAOIEJOIJ             TUNE DEADBANDS!
+			cargoIntakeDesired_ = cargoIntakeButton_->IsDown();
+			cargoUnintakeDesired_ = (operatorJoy_->GetRawAxis(CARGO_UNINTAKE_JOY_PORT_G)) >= 0.5; //TODO review raw vs getleft() or getRight()
+			cargoFlywheelDesired_ = (operatorJoy_->GetRawAxis(CARGO_FLYWHEEL_JOY_PORT_G)) >= 0.2;
+			cargoFlywheelDesiredRocket_ = (operatorJoy_->GetRawAxis(CARGO_FLYWHEEL_JOY_PORT_G)) <= -0.2;
+			cargoIntakeWristDesired_ = (operatorJoy_->GetPOV()) != -1;
+			hatchBeakDesired_ = (operatorJoy_->GetRawAxis(HATCH_BEAK_JOY_PORT_G)) >= 0.5;
+			hatchOuttakeDesired_ = hatchOuttakeButton_->IsDown();
+			hatchWristDownDesired_ = (operatorJoy_->GetRawAxis(HATCH_WRIST_JOY_PORT_G)) <= -0.5;
+			hatchWristUpDesired_ = (operatorJoy_->GetRawAxis(HATCH_WRIST_JOY_PORT_G)) >= 0.5;
+			hatchIntakeWheelDesired_ = hatchIntakeWheelButton_->IsDown();
+			hatchUnintakeWheelDesired_ = hatchUnintakeWheelButton_->IsDown();
+			break;
+		default:
+			printf("ERROR op joystick mode not correct\n");
+	}
 }
 
 double ControlBoard::GetJoystickValue(Joysticks j, Axes a) {
@@ -172,7 +211,7 @@ double ControlBoard::GetJoystickValue(Joysticks j, Axes a) {
 		}
 		break;
 	  default:
-        printf("WARNING: Joystick value not received in ControlBoard::GetJoystickValue\n");
+      printf("WARNING: Joystick value not received in ControlBoard::GetJoystickValue\n");
 	}
 	return 0;
 }
@@ -251,17 +290,30 @@ void ControlBoard::ReadAllButtons() {
 	arcadeDriveButton_->ReadValue();
 	quickTurnButton_->ReadValue();
 
-	cargoIntakeButton_->ReadValue();
-	cargoUnintakeButton_->ReadValue();
-	cargoFlywheelButton_->ReadValue();
-	cargoFlywheelRocketButton_->ReadValue();
-	cargoIntakeWristButton_->ReadValue();
-	hatchOuttakeButton_->ReadValue();
-	hatchBeakButton_->ReadValue();
-	hatchIntakeWheelButton_->ReadValue();
-	hatchUnintakeWheelButton_->ReadValue();
-	hatchWristUpButton_->ReadValue();
-	hatchWristDownButton_->ReadValue();
+	//TODO maybe chang this format, it is disgusting
+	switch(curOpJoyMode_){
+		case(twoJoy):
+			cargoIntakeButton_->ReadValue();
+			cargoUnintakeButton_->ReadValue();
+			cargoFlywheelButton_->ReadValue();
+			cargoFlywheelRocketButton_->ReadValue();
+			cargoIntakeWristButton_->ReadValue();
+			hatchOuttakeButton_->ReadValue();
+			hatchBeakButton_->ReadValue();
+			hatchIntakeWheelButton_->ReadValue();
+			hatchUnintakeWheelButton_->ReadValue();
+			hatchWristUpButton_->ReadValue();
+			hatchWristDownButton_->ReadValue();
+			break;
+		case gamePad:
+			cargoIntakeButton_->ReadValue();
+			hatchOuttakeButton_->ReadValue();
+			hatchIntakeWheelButton_->ReadValue();
+			hatchUnintakeWheelButton_->ReadValue();
+			break;
+		default:
+			printf("ERROR op joystick mode incorrect\n");
+	}
 
 }
 

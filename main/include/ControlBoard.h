@@ -85,7 +85,7 @@ private:
 	// Buttons for drive
 	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_;
 
-	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_;
+	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_, opJoyModeNet_;
 	
 	//Buttons for superstructure
 	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoIntakeButton_, *cargoUnintakeButton_,

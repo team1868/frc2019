@@ -42,6 +42,7 @@ static const int ARCADE_DRIVE_BUTTON_PORT     = 5;
 static const int QUICK_TURN_BUTTON_PORT       = 6;
 static const int DRIVE_DIRECTION_BUTTON_PORT  = 7;
 
+//---------------superstructure twoJoyMode ports-----------------
 static const int CARGO_INTAKE_BUTTON_PORT     = 2;
 static const int CARGO_UNINTAKE_BUTTON_PORT   = 3;
 
@@ -55,6 +56,19 @@ static const int HATCH_INTAKE_WHEEL_BUTTON_PORT    = 7;
 static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT  = 8;
 static const int HATCH_OUTTAKE_BUTTON_PORT     = 3;
 static const int HATCH_BEAK_BUTTON_PORT        = 4;
+
+//------------------superstruture gamePad ports------------------------
+static const int CARGO_INTAKE_BUTTON_PORT_G     = 5;
+static const int CARGO_UNINTAKE_JOY_PORT_G      = 2; //LT
+//static const int CARGO_FLYWHEEL_BUTTON_PORT   = 7; //unused
+static const int CARGO_FLYWHEEL_JOY_PORT_G      = 5; //RY
+static const int CARGO_INTAKE_WRIST_POV_DEG_G   = 270; //TODO CONSIDER not -1?, actually cur is not -1
+
+static const int HATCH_WRIST_JOY_PORT_G              = 1; //LY
+static const int HATCH_INTAKE_WHEEL_BUTTON_PORT_G    = 4;
+static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT_G  = 1;
+static const int HATCH_OUTTAKE_BUTTON_PORT_G         = 6;
+static const int HATCH_BEAK_JOY_PORT_G               = 3; //TODO TUNE
 
 //----------------------Superstructure-----------------------
 static const int CARGO_INTAKE_MOTOR_PORT                    = 8;
