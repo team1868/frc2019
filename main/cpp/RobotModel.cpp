@@ -39,9 +39,9 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   frc::Shuffleboard::GetTab("Private_Code_Input"); //ini replacement
   
   // initialize pid value nets
-  dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance P", 0.8).GetEntry();
+  dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance P", 0.01).GetEntry();
   dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance I", 0.0).GetEntry();
-  dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance D", 0.2).GetEntry();
+  dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance D", 0.02).GetEntry();
 
   rPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional P", 0.8).GetEntry();
   rIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional I", 0.0).GetEntry();
@@ -631,7 +631,7 @@ RobotModel::GameMode RobotModel::GetGameMode(){
 //-------------------------------get PID values from user--------------------------
 //distance p
 double RobotModel::GetDPFac(){
-	double dPFac = dPFacNet_.GetDouble(0.8);
+	double dPFac = dPFacNet_.GetDouble(0.01);
 	if(dPFac > 1.0 || dPFac < 0.0){
 		return 0.0;
 	} else {
@@ -651,7 +651,7 @@ double RobotModel::GetDIFac(){
 
 // distance D
 double RobotModel::GetDDFac(){
-	double dDFac = dDFacNet_.GetDouble(0.2);
+	double dDFac = dDFacNet_.GetDouble(0.02);
 	if(dDFac > 1.0 || dDFac < 0.0){
 		return 0.0;
 	} else {
