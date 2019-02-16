@@ -30,16 +30,25 @@ void Robot::RobotInit()  {
 
   //initialize RobotModel
   robot_ = new RobotModel();
+
+  printf("hello -4\n");
   robot_->ZeroNavXYaw();
+
+  printf("hello -3\n");
   
   //initialize controllers
   humanControl_ = new ControlBoard();
+  printf("hello -2\n");
   driveController_ = new DriveController(robot_, humanControl_);
+
+  printf("hello -1\n");
   //superstructureController_ = new SuperstructureController(robot_, humanControl_);
+  printf("hello 0\n");
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
 
   //Sandstorm stuffs Here, Grace
+  printf("hello 1\n");
 
   ResetTimerVariables();
 
@@ -54,8 +63,9 @@ void Robot::RobotInit()  {
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
-
+  printf("ded before tester shuffleboard or nah?\n");
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.1).GetEntry();
+  printf("after tester shuffledboard?\n");
 }
 
 /**
@@ -141,7 +151,8 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
 
   //TODO DELETE
-  spark_ = new Spark(7);
+  spark_ = new rev::CANSparkMax(7, rev::CANSparkMax::MotorType::kBrushless);
+  // spark_ = new Spark(7);
   //spark2_ = new Spark(8);
 }
 
@@ -153,8 +164,11 @@ void Robot::TeleopPeriodic() {
   rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
 
   if(humanControl_->GetTestDesired()){
-    spark_->Set(testerPowerNet_.GetDouble(0.1));
+    spark_->Set(-(testerPowerNet_.GetDouble(0.1)));
+    // spark_->Set(testerPowerNet_.GetDouble(0.1));
     //spark2_->Set(1.0);
+  } else {
+     spark_->Set(0.0);
   }
 
 

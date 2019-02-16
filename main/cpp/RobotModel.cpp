@@ -32,6 +32,7 @@ static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are
 
 RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
+  printf("robot model ocnstructor\n");
   //initialize base variables
   currentGameMode_ = NORMAL_TELEOP;//SANDSTORM;
 
@@ -51,8 +52,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   pivotIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command I", 0.0).GetEntry();
   pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.2).GetEntry();
 
+  printf("tabs done for pid\n");
   frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
-
   // initialize variables
   leftDriveOutput_ = 0.0;
   rightDriveOutput_ = 0.0;
@@ -129,13 +130,11 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
 	//TODODODODODOD TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE EEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!
   highGear_ = false; //NOTE: make match with ControlBoard
-	SetLowGear();
 
   //Superstructure
   cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
   hatchBeakSolenoid_ = new frc::DoubleSolenoid(HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
   hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_SOLENOID_CHAN);
-
 	cargoIntakeMotor_ = new Victor(CARGO_INTAKE_MOTOR_PORT);
 	cargoFlywheelMotor_ = new Victor(CARGO_FLYWHEEL_MOTOR_PORT);
 	hatchIntakeWheelMotor_ = new Victor(HATCH_INTAKE_WHEEL_MOTOR_PORT);
@@ -167,6 +166,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   }
   rightDriveEncoder_->SetReverseDirection(false);
 
+  SetLowGear();
+
   //Shuffleboard prints
   jerkYNet_ = tab_.Add("Jerk Y", navX_->GetWorldLinearAccelY()).GetEntry();
   jerkXNet_ = tab_.Add("Jerk X", navX_->GetWorldLinearAccelX()).GetEntry();
@@ -177,11 +178,11 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   pitchNet_ = tab_.Add("NavX Pitch", GetNavXPitch()).GetEntry();
   rollNet_ = tab_.Add("NavX Roll", GetNavXRoll()).GetEntry();
   pressureNet_ = tab_.Add("Pressure", GetPressureSensorVal()).GetEntry();
-  
+
   ratioAllNet_ = tab_.Add("Ratio All", ratioAll_).GetEntry();
   ratioDriveNet_ = tab_.Add("Ratio Drive", ratioDrive_).GetEntry();
   ratioSuperNet_ = tab_.Add("Ratio Superstructure", ratioSuperstructure_).GetEntry();
-	
+
 }
 
 // reset timer
@@ -283,9 +284,12 @@ void RobotModel::SetLowGear() {
 	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kForward); // TODO Check if right
 	*/
 	gearShiftSolenoid_->Set(true);
+
 	highGear_ = false;
+
 	leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
-  rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+
+    rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
