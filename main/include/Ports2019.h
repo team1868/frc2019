@@ -3,10 +3,10 @@
 
 //Currently for practice bot - Valkarie
 
-static const int LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT  = 0;
-static const int RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT = 2;
-static const int LEFT_DRIVE_ENCODER_RED_PWM_PORT     = 1;
-static const int RIGHT_DRIVE_ENCODER_RED_PWM_PORT    = 3;
+static const int LEFT_DRIVE_ENCODER_YELLOW_PWM_PORT  = 6;
+static const int RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT = 8;
+static const int LEFT_DRIVE_ENCODER_RED_PWM_PORT     = 7;
+static const int RIGHT_DRIVE_ENCODER_RED_PWM_PORT    = 9;
 
 static const int PNEUMATICS_CONTROL_MODULE_A_ID        = 0;
 static const int PNEUMATICS_CONTROL_MODULE_B_ID        = 1;
@@ -43,16 +43,16 @@ static const int QUICK_TURN_BUTTON_PORT       = 6;
 static const int DRIVE_DIRECTION_BUTTON_PORT  = 7;
 
 static const int CARGO_INTAKE_BUTTON_PORT     = 2;
-static const int CARGO_UNINTAKE_BUTTON_PORT   = 1;
+static const int CARGO_UNINTAKE_BUTTON_PORT   = 3;
 
-static const int CARGO_FLYWHEEL_BUTTON_PORT   = 6; //unused
-static const int CARGO_FLYWHEEL_ROCKET_BUTTON_PORT = 7; //TODO CHANGE THIS
+static const int CARGO_FLYWHEEL_BUTTON_PORT   = 7; //unused
+static const int CARGO_FLYWHEEL_ROCKET_BUTTON_PORT = 8; //TODO CHANGE THIS
 
-static const int CARGO_INTAKE_WRIST_BUTTON_PORT    = 7;
-static const int HATCH_WRIST_UP_BUTTON_PORT        = 6;
-static const int HATCH_WRIST_DOWN_BUTTON_PORT      = 5;
-static const int HATCH_INTAKE_WHEEL_BUTTON_PORT    = 8;
-static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT  = 9;
+static const int CARGO_INTAKE_WRIST_BUTTON_PORT    = 9;
+static const int HATCH_WRIST_UP_BUTTON_PORT        = 1;
+static const int HATCH_WRIST_DOWN_BUTTON_PORT      = 2;
+static const int HATCH_INTAKE_WHEEL_BUTTON_PORT    = 7;
+static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT  = 8;
 static const int HATCH_OUTTAKE_BUTTON_PORT     = 3;
 static const int HATCH_BEAK_BUTTON_PORT        = 4;
 

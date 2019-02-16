@@ -112,7 +112,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             //TODO INTEGRATE GYRO
             if (humanControl_->GetHatchWristUpDesired()) {
 			    printf("hatch intake up\n");
-			    robot_->SetHatchWristOutput(-0.3);
+			    robot_->SetHatchWristOutput(-0.3); //TODO MAKE VARIABLES
             } else if (humanControl_->GetHatchWristDownDesired()) {
                 printf("hatch intake down\n");
 			    robot_->SetHatchWristOutput(0.3);

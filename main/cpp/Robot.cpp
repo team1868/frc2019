@@ -49,6 +49,7 @@ void Robot::RobotInit()  {
   //m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   //frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   
+  //TODODODOD MOVE TO ROBOT MODEL
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
@@ -115,8 +116,9 @@ void Robot::AutonomousPeriodic() {
   //frc::Shuffleboard::Update();
 
   UpdateTimerVariables();
-
-  driveStraight_->Update(currTimeSec_, deltaTimeSec_);
+  if(!driveStraight_->IsDone()){
+    driveStraight_->Update(currTimeSec_, deltaTimeSec_);
+  }
   //pivot_->Update(currTimeSec_, deltaTimeSec_);
   //curve_->Update(currTimeSec_, deltaTimeSec_);
 

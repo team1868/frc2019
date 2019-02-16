@@ -12,7 +12,7 @@
 
 const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
 const double HIGH_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*M_PI*32/34; //ft
-const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*M_PI*16/15; //ft
+const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*M_PI*16/50;//15; //ft 762
 const double ENCODER_COUNT_PER_ROTATION = 256.0;
 const int EDGES_PER_ENCODER_COUNT = 4;
 
@@ -152,15 +152,15 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   if(highGear_){
   	leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   } else {
-	leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+		leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   }
   leftDriveEncoder_->SetReverseDirection(true);
 
   rightDriveEncoder_ = new frc::Encoder(RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT, RIGHT_DRIVE_ENCODER_RED_PWM_PORT, false);
   if(highGear_){
-	rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+		rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   } else {
-	rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+		rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   }
   rightDriveEncoder_->SetReverseDirection(false);
 
@@ -266,24 +266,29 @@ void RobotModel::SetTalonCoastMode() {
 
 // set motor high gear
 void RobotModel::SetHighGear() {
-	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
+	//gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
+	gearShiftSolenoid_->Set(false);
 	highGear_ = true;
-  	leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
-  	rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+  leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
+  rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
 // set motor low gear
 void RobotModel::SetLowGear() {
+	/* Double Solenoid code
 	gearShiftSolenoid_->Set(frc::DoubleSolenoid::kForward); // TODO Check if right
+	*/
+	gearShiftSolenoid_->Set(true);
 	highGear_ = false;
 	leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
-  	rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+  rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
 // ------------------------ get drive values--------------------------------------------
 double RobotModel::GetLeftEncoderValue() {
+	//printf("HELLO BLAH left encoder val???????? %d \n\n\n\n", leftDriveEncoder_->Get());
 	return leftDriveEncoder_->Get();
 }
 
@@ -434,14 +439,14 @@ double RobotModel::ModifyCurrent(int channel, double value){
 			}
 			power = individualPowerRatio;
 			break;
-		case CARGO_INTAKE_MOTOR_PDP_CHAN:
+		/*case CARGO_INTAKE_MOTOR_PDP_CHAN:
 			power *= ratioSuperstructure_;
 			power = CheckMotorCurrentOver(CARGO_INTAKE_MOTOR_PDP_CHAN, power);
 			break;
 		case CARGO_FLYWHEEL_MOTOR_PDP_CHAN: //unused, dont want to slow flywheel of wont shoot
 			power *= ratioSuperstructure_;
 			power = CheckMotorCurrentOver(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, power);
-			break;
+			break;*/
 		default:
 			printf("WARNING: current not found to modify.  In ModifyCurrents() in RobotModel.cpp");
 	}
