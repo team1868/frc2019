@@ -31,25 +31,19 @@ void Robot::RobotInit()  {
   //initialize RobotModel
   robot_ = new RobotModel();
 
-  printf("hello -4\n");
   robot_->ZeroNavXYaw();
-  printf("hello -3\n");
   robot_->CalibrateGyro();
   robot_->ResetGyro();
   
   //initialize controllers
   humanControl_ = new ControlBoard();
-  printf("hello -2\n");
   driveController_ = new DriveController(robot_, humanControl_);
 
-  printf("hello -1\n");
   superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
-  printf("hello 0\n");
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
 
   //Sandstorm stuffs Here, Grace
-  printf("hello 1\n");
 
   ResetTimerVariables();
 
@@ -64,9 +58,7 @@ void Robot::RobotInit()  {
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
-  printf("ded before tester shuffleboard or nah?\n");
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.1).GetEntry();
-  printf("after tester shuffledboard?\n");
 }
 
 /**

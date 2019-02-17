@@ -50,7 +50,7 @@ static const int CARGO_FLYWHEEL_BUTTON_PORT   = 7; //unused
 static const int CARGO_FLYWHEEL_ROCKET_BUTTON_PORT = 8; //TODO CHANGE THIS
 //operatorJoyB_
 static const int CARGO_INTAKE_WRIST_BUTTON_PORT    = 5;
-static const int HATCH_WRIST_UP_BUTTON_PORT        = 1;
+static const int HATCH_WRIST_UP_BUTTON_PORT        = 1; //to 90º
 static const int HATCH_WRIST_DOWN_BUTTON_PORT      = 2;
 static const int HATCH_INTAKE_WHEEL_BUTTON_PORT    = 7;
 static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT  = 8;

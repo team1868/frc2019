@@ -60,6 +60,7 @@ ControlBoard::ControlBoard() {
 	cargoUnintakeDesired_ = false;
 	cargoFlywheelDesired_ = false; 
 	cargoFlywheelDesiredRocket_ = false;
+	cargoIntakeWristDesired_ = false;
 	hatchBeakDesired_ = false;
 	hatchOuttakeDesired_ = false;
 	hatchWristUpDesired_ = false;

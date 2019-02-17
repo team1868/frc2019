@@ -32,7 +32,7 @@ static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are
 
 RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
-  printf("robot model ocnstructor\n");
+  printf("robot model constructor\n");
   //initialize base variables
   currentGameMode_ = NORMAL_TELEOP;//SANDSTORM;
 
@@ -132,6 +132,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   highGear_ = false; //NOTE: make match with ControlBoard
 
   //Superstructure
+
+	// Initialzing Gyro 
 	gyro_ = new frc::AnalogGyro(GYRO_PORT);
 	gyro_->InitGyro();
 	gyro_->Calibrate();
