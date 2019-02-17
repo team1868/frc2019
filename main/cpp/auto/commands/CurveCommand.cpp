@@ -10,25 +10,19 @@
 
 #define PI 3.141592653589 //TODO CHANGE, this is a mess
 
-CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
+CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft,
   NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) : AutoCommand() { //using absolute angle, radius is inside wheel
   
   robot_ = robot;
   desiredRadius_ = desiredRadius;
   desiredAngle_ = desiredAngle;
+  turnLeft_ = turnLeft;
 
   navXPIDSource_ = navXSource;
   talonEncoderPIDSource_ = talonEncoderSource;
   anglePIDOutput_ = anglePIDOutput;
   distancePIDOutput_ = distancePIDOutput;
-
-  dOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dO", 0.0).GetEntry(); 
-  tOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tO", 0.0).GetEntry(); 
-  lOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve lO", 0.0).GetEntry();
-  rOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve rO", 0.0).GetEntry();
-  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dErr", 0.0).GetEntry(); 
-  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tErr", 0.0).GetEntry(); 
 
   dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dP", 0.8).GetEntry();
   dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dI", 0.0).GetEntry();
@@ -41,20 +35,27 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
 
 void CurveCommand::Init(){
 
+  dOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dO", 0.0).GetEntry(); 
+  tOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tO", 0.0).GetEntry(); 
+  lOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve lO", 0.0).GetEntry();
+  rOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve rO", 0.0).GetEntry();
+  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dErr", 0.0).GetEntry(); 
+  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tErr", 0.0).GetEntry(); 
+
   initAngle_ = robot_->GetNavXYaw();
 
   curAngle_ = initAngle_;
   curPivDistance_ = 0.0;
   curDesiredAngle_ = curAngle_;
 
-  if(curAngle_>desiredAngle_) turnLeft_ = true;
-  else turnLeft_ = false;
+  //if(curAngle_>desiredAngle_) turnLeft_ = true;
+  //else turnLeft_ = false;
 
   curAngleError_ = 0.0;
 
   robot_->SetTalonCoastMode();
   robot_->SetHighGear(); //TODO tune/fix
-  robot_->ResetDriveEncoders();
+  robot_->ResetDriveEncoders(); //TODODODODODODOD FIXXXXXXXXXXXXXXXXXXXXXX
 
   LoadPIDValues();
 
@@ -62,16 +63,27 @@ void CurveCommand::Init(){
   //talonEncoderPIDSource_ = new TalonEncoderPIDSource(robot_);
   //anglePIDOutput_ = new AnglePIDOutput();
   //distancePIDOutput_ = new DistancePIDOutput();
+
   dPID_ = new PIDController(dPFac_, dIFac_, dDFac_, talonEncoderPIDSource_, distancePIDOutput_);
   tPID_ = new PIDController(tPFac_, tIFac_, tDFac_, navXPIDSource_, anglePIDOutput_);
+
+  tPID_->SetPID(tPFac_, tIFac_, tDFac_);
+	dPID_->SetPID(dPFac_, dIFac_, dDFac_);
 
   dPID_->SetSetpoint(2*PI*desiredRadius_/(360/desiredAngle_));
   tPID_->SetSetpoint(curAngleError_);
 
+  dPID_->SetAbsoluteTolerance(3.0/12.0); //this too U DUDE
+  tPID_->SetAbsoluteTolerance(0.5); //HM TUNE TODODODODODOD
+
   tPID_->SetContinuous(true);
+  tPID_->SetInputRange(-180, 180);
+	dPID_->SetContinuous(false);
 	//tPID_->SetInputRange(-180, 180);
-	tPID_->SetOutputRange(-0.9, 0.9); //MAKE VARIABLES TODO TODO     //adjust for 2019
-	tPID_->SetAbsoluteTolerance(0.3);	 //MAKE VARIABLES TODO TODO   //adjust for 2019
+
+  tPID_->SetOutputRange(-0.9, 0.9);
+	dPID_->SetOutputRange(-0.9, 0.9); //MAKE VARIABLES TODO TODO     //adjust for 2019
+	//tPID_->SetAbsoluteTolerance(0.3);	 //MAKE VARIABLES TODO TODO   //adjust for 2019
 
   dPID_->Enable();
   tPID_->Enable();
@@ -85,6 +97,7 @@ void CurveCommand::Reset(){
 	// destroy angle PID
 	if (tPID_ != NULL) {
 		tPID_->Disable();
+    tPID_->~PIDController();
 
 		delete(tPID_);
 
@@ -96,6 +109,7 @@ void CurveCommand::Reset(){
 	// destroy distance PID
 	if (dPID_ != NULL) {
 		dPID_->Disable();
+    dPID_->~PIDController();
 
 		delete(dPID_);
 
@@ -122,7 +136,7 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 		isDone_ = true;
 		robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
 		robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
-		printf("%f PIVOT IS DONE \n", robot_->GetTime());
+		printf("%f CurveCommand IS DONE \n", robot_->GetTime());
 		//if (timeOut) {
 		//	printf("%f FROM CURVE TIME OUT GO LEAVEEEEEE %f\n", robot_->GetTime(), timeDiff);
 		//}
@@ -187,7 +201,7 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 }
 
 double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
-  return 90 - (curPivDistance/desiredRadius_ *180/PI + initAngle_);
+  return 90 - (curPivDistance/desiredRadius_ *180/PI) + initAngle_;
 }
 
 void CurveCommand::LoadPIDValues(){
@@ -206,11 +220,12 @@ bool CurveCommand::IsDone(){
 }
 
 CurveCommand::~CurveCommand(){
-  dPID_->Disable();
+  /*dPID_->Disable();
   tPID_->Disable();
 
   dPID_->~PIDController();
-  tPID_->~PIDController();
+  tPID_->~PIDController();*/
+  Reset();
 
   dOutputNet_.Delete();
   tOutputNet_.Delete();
