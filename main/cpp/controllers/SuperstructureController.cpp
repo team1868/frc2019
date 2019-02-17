@@ -80,7 +80,10 @@ void SuperstructureController::Reset() {
 void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
     SetOutputs(); 
-    
+
+    //TODO TAKE THIS OUT
+    HatchWristAngleTest();
+
 	switch(currState_) {
         case kInit:
             cargoFlyPID_->Reset();
@@ -206,6 +209,11 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 void SuperstructureController::SetOutputs() {
     cargoFlyPID_->SetSetpoint(desiredFlywheelVelocCargo_);
     rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);
+}
+
+void SuperstructureController::HatchWristAngleTest() {
+    currHatchWristAngle_ = robot_->GetGyroAngle();
+    printf("Gryo Angle is the following %f\n", currHatchWristAngle_);
 }
 
 void SuperstructureController::RefreshShuffleboard() {

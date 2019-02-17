@@ -83,6 +83,10 @@ class RobotModel {
   void ZeroNavXYaw(); //TODO
   
   //---------------SUPERSTRUCTURE------------------
+  void ResetGyro();
+  void CalibrateGyro();
+  double GetGyroAngle();
+  
   void SetCargoIntakeOutput(double output);
   void SetCargoUnintakeOutput(double output);
   void SetCargoFlywheelOutput(double output);
@@ -150,6 +154,7 @@ class RobotModel {
 
   frc::Timer *timer_;
   AHRS *navX_; 
+  AnalogGyro *gyro_; //gyro for hatch wrist
   int navXSpeed_; //in Hz
 
   frc::Compressor *compressor_; //TODO

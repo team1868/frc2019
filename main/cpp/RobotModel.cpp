@@ -132,9 +132,14 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   highGear_ = false; //NOTE: make match with ControlBoard
 
   //Superstructure
+	gyro_ = new frc::AnalogGyro(GYRO_PORT);
+	gyro_->InitGyro();
+	gyro_->Calibrate();
+
   cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
   hatchBeakSolenoid_ = new frc::DoubleSolenoid(HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
   hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_SOLENOID_CHAN);
+	
 	cargoIntakeMotor_ = new Victor(CARGO_INTAKE_MOTOR_PORT);
 	cargoFlywheelMotor_ = new Victor(CARGO_FLYWHEEL_MOTOR_PORT);
 	hatchIntakeWheelMotor_ = new Victor(HATCH_INTAKE_WHEEL_MOTOR_PORT);
@@ -346,6 +351,20 @@ double RobotModel::GetNavXRoll() {
 }
 
 //-------------------------SUPERSTRUCTURE control-------------------------------------
+
+void RobotModel::ResetGyro(){
+	gyro_->Reset();
+}
+
+double RobotModel::GetGyroAngle(){
+	gyro_->GetAngle();
+}
+
+void RobotModel::CalibrateGyro(){
+	gyro_->InitGyro();
+	gyro_->Calibrate();
+}
+
 // ****************************REMINDER:::::::: USE POWER CONTROLLER DON'T DO RANDOM MOTOR ON DANG IT
 void RobotModel::SetCargoIntakeOutput(double output){
 	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
@@ -376,7 +395,7 @@ void RobotModel::SetCargoIntakeWrist(bool change){ //TODO RENAME
 		printf("forward cargo intake wrist\n");
 	} else {
 		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kReverse); //TODO check if correct orientation
-		printf("reverse cargo intake wrist\n");
+		//printf("reverse cargo intake wrist\n");
 	}
 }
 

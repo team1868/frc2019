@@ -43,13 +43,13 @@ static const int QUICK_TURN_BUTTON_PORT       = 6;
 static const int DRIVE_DIRECTION_BUTTON_PORT  = 7;
 
 //---------------superstructure twoJoyMode ports-----------------
+//operatorJoy_
 static const int CARGO_INTAKE_BUTTON_PORT     = 2;
 static const int CARGO_UNINTAKE_BUTTON_PORT   = 3;
-
 static const int CARGO_FLYWHEEL_BUTTON_PORT   = 7; //unused
 static const int CARGO_FLYWHEEL_ROCKET_BUTTON_PORT = 8; //TODO CHANGE THIS
-
-static const int CARGO_INTAKE_WRIST_BUTTON_PORT    = 9;
+//operatorJoyB_
+static const int CARGO_INTAKE_WRIST_BUTTON_PORT    = 5;
 static const int HATCH_WRIST_UP_BUTTON_PORT        = 1;
 static const int HATCH_WRIST_DOWN_BUTTON_PORT      = 2;
 static const int HATCH_INTAKE_WHEEL_BUTTON_PORT    = 7;
@@ -93,3 +93,5 @@ static const int HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN       = 2; //A
 
 static const int FLYWHEEL_ENCODER_A_PWM_PORT = 0; //INCORRECT, TODO
 static const int FLYWHEEL_ENCODER_B_PWM_PORT = 1; //INCORRECT, TODO
+
+static const int GYRO_PORT                                  = 1; //Analog IO

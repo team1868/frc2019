@@ -33,8 +33,9 @@ void Robot::RobotInit()  {
 
   printf("hello -4\n");
   robot_->ZeroNavXYaw();
-
   printf("hello -3\n");
+  robot_->CalibrateGyro();
+  robot_->ResetGyro();
   
   //initialize controllers
   humanControl_ = new ControlBoard();
@@ -42,7 +43,7 @@ void Robot::RobotInit()  {
   driveController_ = new DriveController(robot_, humanControl_);
 
   printf("hello -1\n");
-  //superstructureController_ = new SuperstructureController(robot_, humanControl_);
+  superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
   printf("hello 0\n");
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
@@ -184,7 +185,7 @@ void Robot::TeleopPeriodic() {
       robot_->UpdateCurrent();
 		  humanControl_->ReadControls();
 		  driveController_->Update(currTimeSec_, deltaTimeSec_);
-		  //superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used
+		  superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used, comment out
 		  Logger::LogState(robot_, humanControl_);
       break;
     default:

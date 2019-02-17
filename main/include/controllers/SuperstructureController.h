@@ -24,6 +24,8 @@ public:
 
 	void SetOutputs();
 
+	void HatchWristAngleTest();
+
 	void RefreshShuffleboard();
 
 	void RefreshIni();
@@ -44,6 +46,7 @@ private:
 	PIDController *rocketFlyPID_;
 
 	double desiredFlywheelVelocCargo_, desiredFlywheelVelocRocket_, cargoIntakeOutput_, flywheelStartTime_;
+	double desiredHatchWristAngle_, currHatchWristAngle_;
 	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_;
 
 	uint32_t currState_;
