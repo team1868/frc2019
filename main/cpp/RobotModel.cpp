@@ -147,6 +147,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 	hatchIntakeWheelMotor_ = new Victor(HATCH_INTAKE_WHEEL_MOTOR_PORT);
 	hatchWristMotor_ = new Victor(HATCH_WRIST_MOTOR_PORT);
 
+	habSparkMotor_ = new rev::CANSparkMax(HAB_MOTOR_PORT, rev::CANSparkMax::MotorType::kBrushless); //changed 7 to HAB_MOTOR_PORT, correct?
+
   cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
   cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
   cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * M_PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
@@ -385,6 +387,10 @@ void RobotModel::SetCargoFlywheelOutput(double output){
 
 void RobotModel::SetHatchIntakeWheelOutput(double output){
 	hatchIntakeWheelMotor_->Set(output);
+}
+
+void RobotModel::SetHabMotorOutput(double output){
+	habSparkMotor_->Set(output);
 }
 
 void RobotModel::SetHatchWristOutput(double output){

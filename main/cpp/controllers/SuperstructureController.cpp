@@ -199,6 +199,12 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             }
             */
 
+           if(humanControl_->GetHabDeployDesired()){
+               robot_->SetHabMotorOutput(0.4); //WHAT IS THIS VALUE CHECK W LILLIAN
+           } else {
+               robot_->SetHabMotorOutput(0.0);
+           }
+
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");

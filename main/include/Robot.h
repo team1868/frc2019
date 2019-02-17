@@ -60,8 +60,6 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   DriveStraightCommand *driveStraight_;//TODO delete
   PivotCommand *pivot_; //testing TODO delte
   CurveCommand *curve_; //TODO DELETE
-  // frc::Spark *spark_, *spark2_; //TODO delete
-  rev::CANSparkMax *spark_;
 
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_, testerPowerNet_;
 };

@@ -67,6 +67,7 @@ ControlBoard::ControlBoard() {
 	hatchWristDownDesired_ = false;
 	hatchIntakeWheelDesired_ = false;
 	hatchUnintakeWheelDesired_ = false;
+	habDeployDesired_ = false;
 	
 	cargoIntakeWristEngaged_ = false;
 	hatchOuttakeEngaged_ = false;
@@ -84,6 +85,7 @@ ControlBoard::ControlBoard() {
 			hatchWristDownButton_ = new ButtonReader(operatorJoyB_, HATCH_WRIST_DOWN_BUTTON_PORT);
 			hatchIntakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_INTAKE_WHEEL_BUTTON_PORT);
 			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT);
+			habDeployButton_ = new ButtonReader(operatorJoyB_, HAB_DEPLOY_BUTTON_PORT);
 			break;
 		case gamePad:
 			cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT_G);
@@ -95,6 +97,7 @@ ControlBoard::ControlBoard() {
 			//hatch wrist 1:LY
 			hatchIntakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_INTAKE_WHEEL_BUTTON_PORT_G);
 			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT_G);
+			//hab deploy TODOD
 			break;
 		default:
 			printf("ERROR: operator Joystick Mode not set in ControlBoard()\n");
@@ -168,6 +171,9 @@ void ControlBoard::ReadControls() {
 
 			hatchIntakeWheelDesired_ = hatchIntakeWheelButton_->IsDown();
 			hatchUnintakeWheelDesired_ = hatchUnintakeWheelButton_->IsDown();
+
+			habDeployDesired_ = habDeployButton_->IsDown();
+
 			break;
 		case gamePad: //TODODODODODODODODODOSLDKJFALSDKJAFOIEWHGNLKDGAILEDFJOILEJAOIEJOIJ             TUNE DEADBANDS!
 			cargoIntakeDesired_ = cargoIntakeButton_->IsDown();
@@ -181,6 +187,7 @@ void ControlBoard::ReadControls() {
 			hatchWristUpDesired_ = (operatorJoy_->GetRawAxis(HATCH_WRIST_JOY_PORT_G)) >= 0.5;
 			hatchIntakeWheelDesired_ = hatchIntakeWheelButton_->IsDown();
 			hatchUnintakeWheelDesired_ = hatchUnintakeWheelButton_->IsDown();
+			//TODO HAB DEPLOY BUTTON
 			break;
 		default:
 			printf("ERROR op joystick mode not correct\n");
@@ -284,6 +291,10 @@ bool ControlBoard::GetHatchWristDownDesired(){
 	return hatchWristDownDesired_;
 }
 
+bool ControlBoard::GetHabDeployDesired(){
+	return habDeployDesired_;
+}
+
 void ControlBoard::ReadAllButtons() {
 	driveDirectionButton_->ReadValue();
 	gearHighShiftButton_->ReadValue();
@@ -291,7 +302,7 @@ void ControlBoard::ReadAllButtons() {
 	arcadeDriveButton_->ReadValue();
 	quickTurnButton_->ReadValue();
 
-	//TODO maybe chang this format, it is disgusting
+	//TODO maybe change this format, it is disgusting
 	switch(curOpJoyMode_){
 		case(twoJoy):
 			cargoIntakeButton_->ReadValue();
@@ -305,6 +316,7 @@ void ControlBoard::ReadAllButtons() {
 			hatchUnintakeWheelButton_->ReadValue();
 			hatchWristUpButton_->ReadValue();
 			hatchWristDownButton_->ReadValue();
+			habDeployButton_->ReadValue();
 			break;
 		case gamePad:
 			cargoIntakeButton_->ReadValue();

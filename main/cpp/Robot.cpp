@@ -143,10 +143,6 @@ void Robot::TeleopInit() {
 	ResetControllers();
 	robot_->StartCompressor();
 
-  //TODO DELETE
-  spark_ = new rev::CANSparkMax(7, rev::CANSparkMax::MotorType::kBrushless);
-  // spark_ = new Spark(7);
-  //spark2_ = new Spark(8);
 }
 
 // read controls and get current time from controllers
@@ -155,14 +151,6 @@ void Robot::TeleopPeriodic() {
   rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
   leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
   rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
-
-  if(humanControl_->GetTestDesired()){
-    spark_->Set(-(testerPowerNet_.GetDouble(0.1)));
-    // spark_->Set(testerPowerNet_.GetDouble(0.1));
-    //spark2_->Set(1.0);
-  } else {
-     spark_->Set(0.0);
-  }
 
 
 

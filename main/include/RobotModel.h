@@ -19,6 +19,7 @@
 //#include <TalonSRX.h>
 //#include <VictorSPX.h>
 //#include "CANTalon.h"
+#include "rev/CANSparkMax.h"
 
 class RobotModel {
  public:
@@ -92,6 +93,7 @@ class RobotModel {
   void SetCargoFlywheelOutput(double output);
   void SetHatchWristOutput(double output);
   void SetHatchIntakeWheelOutput(double output);
+  void SetHabMotorOutput(double output);
 
   void SetCargoIntakeWrist(bool change);
   void SetHatchOuttake(bool change);
@@ -148,6 +150,7 @@ class RobotModel {
   WPI_VictorSPX *leftSlaveA_, *leftSlaveB_, *rightSlaveA_, *rightSlaveB_;
 
   Victor *cargoIntakeMotor_, *cargoFlywheelMotor_, *hatchIntakeWheelMotor_, *hatchWristMotor_;
+  rev::CANSparkMax *habSparkMotor_;
   Encoder *cargoFlywheelEncoder_;
   DoubleSolenoid *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_;
   Solenoid *hatchOuttakeSolenoid_;
