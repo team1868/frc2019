@@ -72,13 +72,13 @@ static const int HATCH_OUTTAKE_BUTTON_PORT_G         = 6;
 static const int HATCH_BEAK_JOY_PORT_G               = 3; //TODO TUNE
 
 //----------------------Superstructure-----------------------
-static const int CARGO_INTAKE_MOTOR_PORT                    = 8;
-static const int CARGO_FLYWHEEL_MOTOR_PORT                  = 9;
+static const int CARGO_INTAKE_MOTOR_PORT                    = 1;//8;
+static const int CARGO_FLYWHEEL_MOTOR_PORT                  = 0;//9;
 
 //static const int CARGO_INTAKE_MOTOR_PDP_CHAN                = 11; //TODO DOESN'T WORKKK, incorrect
 //static const int CARGO_FLYWHEEL_MOTOR_PDP_CHAN              = 12; //TODO DOESN'T WORKKK, incorrect
 
-static const int HATCH_WRIST_MOTOR_PORT                     = 4;
+static const int HATCH_WRIST_MOTOR_PORT                     = 2;//4;
 static const int HATCH_INTAKE_WHEEL_MOTOR_PORT              = 3;
 
 static const int HAB_MOTOR_PORT                             = 7;

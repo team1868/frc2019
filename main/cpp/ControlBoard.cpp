@@ -77,8 +77,8 @@ ControlBoard::ControlBoard() {
 			cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
 			cargoUnintakeButton_ = new ButtonReader(operatorJoy_, CARGO_UNINTAKE_BUTTON_PORT); //TODO make op
 			cargoFlywheelButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
-			cargoFlywheelRocketButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_BUTTON_PORT);
-			cargoIntakeWristButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_WRIST_BUTTON_PORT);
+			cargoFlywheelRocketButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_ROCKET_BUTTON_PORT);
+			cargoIntakeWristButton_ = new ButtonReader(operatorJoyB_, CARGO_INTAKE_WRIST_BUTTON_PORT);
 			hatchOuttakeButton_ = new ButtonReader(operatorJoyB_, HATCH_OUTTAKE_BUTTON_PORT);
 			hatchBeakButton_ = new ButtonReader(operatorJoyB_, HATCH_BEAK_BUTTON_PORT);
 			hatchWristUpButton_ = new ButtonReader(operatorJoyB_, HATCH_WRIST_UP_BUTTON_PORT);

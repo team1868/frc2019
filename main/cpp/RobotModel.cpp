@@ -10,9 +10,11 @@
 #include "Ports2019.h"
 #include <math.h>
 
+#define PI 3.141592
+
 const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
-const double HIGH_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*M_PI*32/34; //ft
-const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*M_PI*16/50;//15; //ft 762
+const double HIGH_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft
+const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50;//15; //ft 762
 const double ENCODER_COUNT_PER_ROTATION = 256.0;
 const int EDGES_PER_ENCODER_COUNT = 4;
 
@@ -151,7 +153,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
   cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
-  cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * M_PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
+  cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
 
   //TODO MESS, also TODO check before matches
   cargoWristEngaged_ = false;

@@ -18,7 +18,7 @@ EllipseCommand::EllipseCommand(RobotModel *robot, double a, double b, double des
     a_ = a;
     b_ = b;
     desiredAngle_ = desiredAngle;
-    double t = atan(a/b*tan((desiredAngle * M_PI/180.0)));
+    double t = atan(a/b*tan((desiredAngle * PI/180.0)));
     desiredTotalDistance_ = (pow((b_*b_+a_*a_)/2.0 + (b_*b_-a_*a_)/2.0*cos(2*t), 3.0/2.0)-b_*b_*b_)/3.0;
     turnLeft_ = turnLeft;
 
@@ -201,7 +201,7 @@ bool EllipseCommand::IsDone(){
 
 double EllipseCommand::CalcCurDesiredAngle(double curDistance){
     double t = acos((2.0*pow(3.0*curDistance+b_*b_*b_, 2.0/3.0) - b_*b_ + a_*a_) / (b_*b_-a_*a_))/2.0;
-    double angle = 90 - (atan((b_*cos(t)) / (-a_*sin(t))) * 180/M_PI);
+    double angle = 90 - (atan((b_*cos(t)) / (-a_*sin(t))) * 180/PI);
     if(turnLeft_){
         angle = -angle;
     }

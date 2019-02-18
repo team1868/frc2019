@@ -108,7 +108,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 printf("hatch intaking\n");
                 robot_->SetHatchIntakeWheelOutput(-0.8);
             } else {
-                robot_->SetHatchIntakeWheelOutput(0.8);
+                robot_->SetHatchIntakeWheelOutput(0.0);
             }
 
 
@@ -153,7 +153,13 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 robot_->SetCargoIntakeOutput(0.0);
             }
 
-            if(humanControl_->GetCargoFlywheelDesired()){ //flywheel for cargo ship
+            if (humanControl_->GetCargoFlywheelDesiredRocket()){ //Note: check if less power first, don't want accident more power
+                /*
+                cargoFlyPID_->Disable(); 
+                flywheelStarted_ = false;
+                */
+               robot_->SetCargoFlywheelOutput(desiredFlywheelVelocRocket_);
+            } else if(humanControl_->GetCargoFlywheelDesired()){ //flywheel for cargo ship
                 printf("cargo shooting into cargo ship\n");
                 /*if(!flywheelStarted_){
                     flywheelStarted_ = true;
@@ -161,13 +167,9 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 }*/
                 robot_->SetCargoFlywheelOutput(desiredFlywheelVelocCargo_);
             } else {
-                /*
-                cargoFlyPID_->Disable(); 
-                flywheelStarted_ = false;
-                */
                robot_->SetCargoFlywheelOutput(0.0);
             }
-
+            /*
             if(humanControl_->GetCargoFlywheelDesiredRocket()){ //flywheel for rocket ship
                 printf("cargo shooting into rocket ship\n");
                 /*
@@ -175,12 +177,12 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                     rocketFlyPID_->Enable();
                     flywheelStarted_=true;
                 }*/
-                robot_->SetCargoFlywheelOutput(desiredFlywheelVelocRocket_);
-            } else {
+                
+            //} else {
                 /*rocketFlyPID_->Disable(); 
                 flywheelStarted_ = false;*/
-                robot_->SetCargoFlywheelOutput(0.0);
-            }
+            //    robot_->SetCargoFlywheelOutput(0.0);
+            //}
 
             if(humanControl_->GetHighGearDesired()){
                 robot_->SetHighGear();
