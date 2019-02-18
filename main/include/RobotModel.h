@@ -105,6 +105,9 @@ class RobotModel {
   Encoder* GetCargoFlywheelEncoder();
   Victor* GetCargoFlywheelMotor();
 
+  AnalogGyro* GetGyro();
+  Victor* GetHatchWristMotor();
+
   enum GameMode{SANDSTORM, NORMAL_TELEOP};
   
   RobotModel::GameMode GetGameMode();

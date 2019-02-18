@@ -98,6 +98,7 @@ ControlBoard::ControlBoard() {
 			hatchIntakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_INTAKE_WHEEL_BUTTON_PORT_G);
 			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT_G);
 			//hab deploy TODOD
+			//Calibrate gyro button todo
 			break;
 		default:
 			printf("ERROR: operator Joystick Mode not set in ControlBoard()\n");

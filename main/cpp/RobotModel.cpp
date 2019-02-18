@@ -40,6 +40,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   //create private tab to get user input
   frc::Shuffleboard::GetTab("Private_Code_Input"); //ini replacement
+	frc::Shuffleboard::GetTab("Operator_Input");
   
   // initialize pid value nets
   dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance P", 0.01).GetEntry();
@@ -437,6 +438,14 @@ Encoder* RobotModel::GetCargoFlywheelEncoder(){ //TODO possible error, encoder* 
 
 Victor* RobotModel::GetCargoFlywheelMotor(){
 	return cargoFlywheelMotor_;
+}
+
+AnalogGyro* RobotModel::GetGyro(){
+	return gyro_;
+}
+
+Victor* RobotModel::GetHatchWristMotor(){
+	return hatchWristMotor_;
 }
 
 

@@ -26,6 +26,8 @@ public:
 
 	void HatchWristAngleTest();
 
+	void HatchWristControllerUpdate(double newAngle_, double pFac_, double iFac_, double dFac_);
+
 	void RefreshShuffleboard();
 
 	void RefreshIni();
@@ -33,7 +35,7 @@ public:
 	virtual ~SuperstructureController();
 
 	enum SuperstructureState {
-		kInit, kIdle, kDeployHatch
+		kInit, kIdle, kDeployHatch//, kHabDeploy
 	};
 
 private:
@@ -44,18 +46,20 @@ private:
 	PIDController *cargoFlyPID_;
 	//PID for cargo shooter into the rocket ship
 	PIDController *rocketFlyPID_;
+	//PID for hatch wrist motor controller
+	PIDController *hatchWristPID_;
 
 	double desiredFlywheelVelocCargo_, desiredFlywheelVelocRocket_, cargoIntakeOutput_, flywheelStartTime_;
 	double desiredHatchWristAngle_, currHatchWristAngle_;
-	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_;
+	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_, hatchWristNewAngle_;
 
 	uint32_t currState_;
 	uint32_t nextState_;
 
-	double cargoPFac_, cargoIFac_, cargoDFac_, rocketPFac_, rocketIFac_, rocketDFac_;
+	double cargoPFac_, cargoIFac_, cargoDFac_, rocketPFac_, rocketIFac_, rocketDFac_, hatchPFac_, hatchIFac_, hatchDFac_;
 	
 	nt::NetworkTableEntry rocketPNet_, rocketINet_, rocketDNet_, cargoPNet_, cargoINet_, cargoDNet_,
-		cargoVelocNet_, cargoRocketVelocNet_;
+		cargoVelocNet_, cargoRocketVelocNet_, hatchPNet_, hatchINet_, hatchDNet_;
 };
 
 #endif /* SRC_CONTROLLERS_SUPERSTRUCTURECONTROLLER_H_ */
