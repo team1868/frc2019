@@ -17,9 +17,12 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     desiredFlywheelVelocCargo_ = 0.7; //TODO this is /1 not actual velocity
     desiredFlywheelVelocRocket_ = 0.25; //TODO this is /1 not actual velocity
 
-    cargoVelocNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("cargo veloc", 0.7).GetEntry(); //0.7
-    cargoRocketVelocNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rocket veloc", 0.25).GetEntry(); //0.25
+    desiredHatchWristAngle_ = 90;
+    hatchWristNewAngle_ = true;
 
+    cargoVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo veloc", 0.7).GetEntry(); //0.7
+    cargoRocketVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket veloc", 0.25).GetEntry(); //0.25
+    
     cargoIntakeOutput_ = 1.0; 
 
     flywheelStartTime_ = 0.0;
@@ -38,13 +41,22 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     rocketIFac_ = 0.0;
     rocketDFac_ = 0.2;
 
-    cargoPNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("cargo P", 0.8).GetEntry();
-    cargoINet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("cargo I", 0.0).GetEntry();
-    cargoDNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("cargo D", 0.2).GetEntry();
+    //PID vals for hatch wrist
+    hatchPFac_ = 0.8;
+    hatchIFac_ = 0.0;
+    hatchDFac_ = 0.2;
 
-    rocketPNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rocket P", 0.8).GetEntry();
-    rocketINet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rocket I", 0.0).GetEntry();
-    rocketDNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rocket D", 0.2).GetEntry();
+    cargoPNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo P", 0.8).GetEntry();
+    cargoINet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo I", 0.0).GetEntry();
+    cargoDNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo D", 0.2).GetEntry();
+
+    rocketPNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket P", 0.8).GetEntry();
+    rocketINet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket I", 0.0).GetEntry();
+    rocketDNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket D", 0.2).GetEntry();
+
+    hatchPNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch P", 0.8).GetEntry();
+    hatchINet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch I", 0.0).GetEntry();
+    hatchDNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch D", 0.2).GetEntry();
 
     //shuffleboard PID values
     cargoFlyPID_  = new PIDController(cargoPFac_, cargoIFac_, cargoDFac_, robot_->GetCargoFlywheelEncoder(),
@@ -61,6 +73,12 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     rocketFlyPID_->SetAbsoluteTolerance(0.05); //TODO
     rocketFlyPID_->SetContinuous(false);
 
+    hatchWristPID_ = new PIDController(hatchPFac_, hatchIFac_, hatchDFac_, robot_->GetGyro(), robot_->GetHatchWristMotor());
+    hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
+    hatchWristPID_->SetOutputRange(-1.0, 1.0);
+    hatchWristPID_->SetAbsoluteTolerance(0.1); //TODO CHANGE
+    hatchWristPID_->SetContinuous(true);
+
     //TODO INIT highgear disengaged whatever whatever (like last year's wrist engage asap)
 }
 
@@ -70,6 +88,7 @@ void SuperstructureController::Reset() {
 
     cargoFlyPID_->Reset();
     rocketFlyPID_->Reset();
+    hatchWristPID_->Reset();
 
     RefreshShuffleboard();
 
@@ -111,17 +130,24 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 robot_->SetHatchIntakeWheelOutput(0.0);
             }
 
-
-            //TODO INTEGRATE GYRO
-            if (humanControl_->GetHatchWristUpDesired()) {
-			    printf("hatch intake up\n");
-			    robot_->SetHatchWristOutput(-0.3); //TODO MAKE VARIABLES
-            } else if (humanControl_->GetHatchWristDownDesired()) {
-                printf("hatch intake down\n");
-			    robot_->SetHatchWristOutput(0.3);
-		    } else {
-			    robot_->SetHatchWristOutput(0.0);
-	    	}
+            //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
+            if (humanControl_->GetHatchWristUpDesired()) { //90 degree point
+			    printf("hatch intake up to 90\n");
+                //does this need to be disabled before changing setpoint and PID vals?
+                desiredHatchWristAngle_ = 90;
+                hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
+			    //robot_->SetHatchWristOutput(-0.3); 
+            } else if (humanControl_->GetHatchWristDownDesired()) { //on the floor point
+                //see comment above
+                desiredHatchWristAngle_ = 0;
+                hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
+			    //robot_->SetHatchWristOutput(0.3);
+		    } else { //otherwise, keep in past 90 degree point
+                //see comment above
+                desiredHatchWristAngle_ = 95;
+                hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
+			    //robot_->SetHatchWristOutput(0.0);
+            }
             //CARGO STUFF
 
             //note: combined wrist and intake/unintake (so if wrist down and not unintaking, auto intake + no two controllers on same motor)
@@ -226,6 +252,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 void SuperstructureController::SetOutputs() {
     cargoFlyPID_->SetSetpoint(desiredFlywheelVelocCargo_);
     rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);
+    hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
 }
 
 void SuperstructureController::HatchWristAngleTest() {
@@ -244,6 +271,19 @@ void SuperstructureController::RefreshShuffleboard() {
     rocketPFac_ = rocketPNet_.GetDouble(0.8);
     rocketIFac_ = rocketINet_.GetDouble(0.0);
     rocketDFac_ = rocketDNet_.GetDouble(0.2);
+    
+    hatchPFac_ = hatchPNet_.GetDouble(0.8);
+    hatchIFac_ = hatchINet_.GetDouble(0.0);
+    hatchDFac_ = hatchDNet_.GetDouble(0.2);
+}
+
+void SuperstructureController::HatchWristControllerUpdate(double newAngle_, double pFac_, double iFac_, double dFac_) { //todo make multiple hatch PIDs
+    hatchWristPID_->Disable();
+    desiredHatchWristAngle_ = newAngle_;
+    hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
+    hatchWristPID_->SetPID(hatchPFac_, hatchIFac_, hatchDFac_); //todo make multiple p, i, d
+    //enable
+    //if this is just the pid running, else ...
 }
 
 void SuperstructureController::RefreshIni() { //TODO remove

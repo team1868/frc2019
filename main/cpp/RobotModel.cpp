@@ -428,6 +428,14 @@ void RobotModel::SetHatchBeak(bool change){
 	}
 }
 
+AnalogGyro* RobotModel::GetGyro(){
+	return gyro_;
+}
+
+Victor* RobotModel::GetHatchWristMotor(){
+	return hatchWristMotor_;
+}
+
 double RobotModel::GetCargoFlywheelMotorOutput(double output){
 	return cargoFlywheelMotor_->Get();
 }
