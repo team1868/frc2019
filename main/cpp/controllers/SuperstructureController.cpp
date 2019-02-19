@@ -119,16 +119,6 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
         case kIdle:
             nextState_ = kIdle;
             //HATCH STUFF
-            
-            if(humanControl_->GetHatchIntakeWheelDesired()){
-                printf("hatch intaking\n");
-                robot_->SetHatchIntakeWheelOutput(0.8);
-            } else if (humanControl_->GetHatchUnintakeWheelDesired()){
-                printf("hatch intaking\n");
-                robot_->SetHatchIntakeWheelOutput(-0.8);
-            } else {
-                robot_->SetHatchIntakeWheelOutput(0.0);
-            }
 
             //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
             if (humanControl_->GetHatchWristUpDesired()) { //90 degree point
@@ -142,6 +132,15 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 desiredHatchWristAngle_ = 0;
                 hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
 			    //robot_->SetHatchWristOutput(0.3);
+                if(humanControl_->GetHatchIntakeWheelDesired()){ //only run wheels if wrist down (otherwise wheels are irrelevant)
+                printf("hatch intaking\n");
+                    robot_->SetHatchIntakeWheelOutput(0.8);
+                } else if (humanControl_->GetHatchUnintakeWheelDesired()){
+                    printf("hatch intaking\n");
+                    robot_->SetHatchIntakeWheelOutput(-0.8);
+                } else {
+                    robot_->SetHatchIntakeWheelOutput(0.0);
+                }
 		    } else { //otherwise, keep in past 90 degree point
                 //see comment above
                 desiredHatchWristAngle_ = 95;
