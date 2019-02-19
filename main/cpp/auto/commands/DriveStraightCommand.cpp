@@ -46,6 +46,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 
 // initialize class for run
 void DriveStraightCommand::Init() {
+	printf("IN DRIVESTRAIGHT INIT\n");
 	robot_->SetTalonBrakeMode();
 	isDone_ = false;
 
@@ -87,7 +88,8 @@ void DriveStraightCommand::Init() {
 	anglePID_->Enable();
 	distancePID_->Enable();
 
-	driveTimeoutSec_ = fabs(desiredDistance_ / 3.0); // Assuming 5.0 ft / sec from the low gear speed
+	 // Assuming 5.0 ft / sec from the low gear speed
+	driveTimeoutSec_ = fabs(desiredDistance_ / 3.0); //TODO: add physics, also TODO remove +5
 	initialDriveTime_ = robot_->GetTime();
 	printf("%f Start chicken tenders drivestraight time driveTimeoutSec is %f\n", initialDriveTime_, driveTimeoutSec_);
 
@@ -180,6 +182,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	// drive motors
 	robot_->SetDriveValues(RobotModel::kLeftWheels, -leftMotorOutput_); //TODO: THIS IS FOR ARTEMIS< CHANGE INVERSION
 	robot_->SetDriveValues(RobotModel::kRightWheels, rightMotorOutput_); 
+	printf("times on target at %f \n\n", numTimesOnTarget_);
 }
 
 // repeatedly on target
@@ -250,7 +253,8 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 	initialAvgDistance_ = talonEncoderSource_->PIDGet();
 
 	desiredDistance_ = desiredDistance;
-	desiredTotalAvgDistance_ = initialAvgDistance_ + desiredDistance_;
+	desiredTotalAvgDistance_ = 2.0; //TODO CHANGE //initialAvgDistance_ + desiredDistance_;
+	printf("Total desired distance is: %f", desiredTotalAvgDistance_);
 
 	leftMotorOutput_ = 0.0;
 	rightMotorOutput_ = 0.0;

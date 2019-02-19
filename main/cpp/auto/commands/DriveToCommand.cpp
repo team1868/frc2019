@@ -6,13 +6,22 @@
 /*----------------------------------------------------------------------------*/
 
 //TODO CONSIDER USING INHERITENCE FOR FOLLOWING CLASSES
-/*
+
 #include "../../../include/auto/commands/DriveToCommand.h"
 
+/*
+DriveToCommand::DriveToCommand(){
+    
+}
+*/
+
+/*
 DriveToWithPivotCommand::DriveToWithPivotCommand() : AutoCommand(){}
 
 DriveToWithCurveCommand::DriveToWithCurveCommand() : AutoCommand(){}
+*/
 
+/*
 //TODO NEED TUNING
 DriveToWithEllipseCommand::DriveToWithEllipseCommand(RobotModel *robot, double x, double y, double finalDesiredAngle,
     NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
@@ -43,4 +52,5 @@ void DriveToWithEllipseCommand::Init(){
 
 void DriveToWithEllipseCommand::Update(double currTimeSec, double deltaTimeSec){
 
-}*/
+}
+*/

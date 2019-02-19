@@ -45,6 +45,8 @@ public:
 
 	//TODO DELETE
 	bool GetTestDesired();
+	bool GetTest2Desired();
+	bool GetTest3Desired();
 	
 	/**
 	 * Returns desired values for superstructure controls
@@ -91,7 +93,7 @@ private:
 	//Buttons for superstructure
 	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoIntakeButton_, *cargoUnintakeButton_,
 		*cargoIntakeWristButton_, *hatchOuttakeButton_, *hatchBeakButton_, *hatchIntakeWheelButton_, *hatchUnintakeWheelButton_,
-		*hatchWristUpButton_, *hatchWristDownButton_, *habDeployButton_;
+		*hatchWristUpButton_, *hatchWristDownButton_, *habDeployButton_, *testButton_, *testButton2, *testButton3;
 
 	//Variables for superstructure
 	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoIntakeWristDesired_,
@@ -100,7 +102,7 @@ private:
 	bool cargoIntakeWristEngaged_, hatchOuttakeEngaged_;
 
   	//TODO delete BELOW ALL GO AWAY DELETE DELETE DANG IT
-   	ButtonReader *testButton_;
+   	//ButtonReader *testButton_;
 
 };
 

@@ -8,11 +8,11 @@
 #pragma once
 
 //TODO CONSIDER USING INHERITENCE FOR FOLLOWING CLASSES
-/*
+
 #include "CurveCommand.h"
 #include "EllipseCommand.h"
 #include "PivotCommand.h"
-#include "DriveStraigtCommand.h"
+#include "DriveStraightCommand.h"
 
 //NEEDED? TODO
 #include <frc/WPILib.h>
@@ -22,7 +22,15 @@
 #include "../PIDSource/PIDOutputSource.h"
 #include "../AutoCommand.h"
 #include <networktables/NetworkTableEntry.h>
+/*
+class DriveToCommand : public AutoCommand{
+  public:
+    DriveToCommand();
+  private:
+}
+*/
 
+/*
 class DriveToWithPivotCommand : public AutoCommand{
  public:
   DriveToWithPivotCommand();
@@ -32,7 +40,8 @@ class DriveToWithCurveCommand : public AutoCommand{
  public:
   DriveToWithCurveCommand();
 };
-
+*/
+/*
 class DriveToWithEllipseCommand : public AutoCommand{
  public:
   DriveToWithEllipseCommand();
@@ -47,3 +56,4 @@ class DriveToWithEllipseCommand : public AutoCommand{
   bool twoTurn_;
 };
 */
+

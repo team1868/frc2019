@@ -46,6 +46,9 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   SuperstructureController *superstructureController_;
   TalonEncoderPIDSource *talonEncoderSource_;
 
+  DoubleSolenoid *testHabPiston;
+  DigitalInput *habLimitSwitch_;
+
 
   double currTimeSec_;
 	double lastTimeSec_;
@@ -60,6 +63,8 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   DriveStraightCommand *driveStraight_;//TODO delete
   PivotCommand *pivot_; //testing TODO delte
   CurveCommand *curve_; //TODO DELETE
+  //double autoStartTime;
 
-  nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_, testerPowerNet_;
+  nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
+    testerPowerNet_;
 };

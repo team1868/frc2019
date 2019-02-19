@@ -25,7 +25,7 @@
 #include "../include/auto/PIDSource/PIDOutputSource.h"
 
 void Robot::RobotInit()  {
-  
+
   printf("In robot init.\n");
 
   //initialize RobotModel
@@ -42,8 +42,14 @@ void Robot::RobotInit()  {
   superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
+  habLimitSwitch_ = new DigitalInput(4);
 
-  //Sandstorm stuffs Here, Grace
+  testHabPiston = new DoubleSolenoid(0, 7, 1);
+  testHabPiston->Set(DoubleSolenoid::kReverse);
+
+  robot_->SetLowGear();
+  robot_->ResetDriveEncoders(); //needed?
+
 
   ResetTimerVariables();
 
@@ -74,6 +80,7 @@ void Robot::RobotPeriodic() {
   rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
   leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
   rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
+  robot_->PrintState();
 }
 
 /**
@@ -98,7 +105,9 @@ void Robot::AutonomousInit() {
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
   driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
+  //autoStartTime = currTimeSec_;
   driveStraight_->Init();
+  //printf("\n\n AUTO BEGINS AT %f\n\n", autoStartTime);
   /*pivot_ = new PivotCommand(robot_, 90.0, true, navXSource);
   pivot_->Init();*/
   //curve_ = new CurveCommand(robot_, 3, 90, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
@@ -147,6 +156,23 @@ void Robot::TeleopInit() {
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
+
+  if(humanControl_->GetTest2Desired()){
+    testHabPiston->Set(DoubleSolenoid::kForward);
+  } /*else {
+    testHabPiston->Set(DoubleSolenoid::kReverse);
+  }*/
+
+  if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards
+    printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
+    robot_->SetHabMotorOutput(testerPowerNet_.GetBoolean(0.4));
+  } else if (humanControl_->GetTest3Desired()){
+    robot_->SetHabMotorOutput(-testerPowerNet_.GetBoolean(0.4));
+  } else {
+    robot_->SetHabMotorOutput(0.0);
+  }
+
+
   leftEncoderNet_.SetDouble(robot_->GetLeftEncoderValue());
   rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
   leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
@@ -191,7 +217,7 @@ void Robot::UpdateTimerVariables(){
 // reset controllers
 void Robot::ResetControllers() {
 	driveController_->Reset();
-	//superstructureController_->Reset();
+	superstructureController_->Reset();
 }
 
 

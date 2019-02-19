@@ -98,7 +98,6 @@ ControlBoard::ControlBoard() {
 			hatchIntakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_INTAKE_WHEEL_BUTTON_PORT_G);
 			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT_G);
 			//hab deploy TODOD
-			//Calibrate gyro button todo
 			break;
 		default:
 			printf("ERROR: operator Joystick Mode not set in ControlBoard()\n");
@@ -106,6 +105,8 @@ ControlBoard::ControlBoard() {
 	
 	//TODO DELETE
 	testButton_ = new ButtonReader(leftJoy_, 2);
+	testButton2 = new ButtonReader(leftJoy_, 7);
+	testButton3 = new ButtonReader(leftJoy_, 3); 
 
   ReadControls();
 }
@@ -247,6 +248,16 @@ bool ControlBoard::GetTestDesired() {
 	return testButton_->IsDown(); // don't follow this example: is test
 }
 
+bool ControlBoard::GetTest2Desired(){
+	testButton2->ReadValue();
+	return testButton2->IsDown();
+}
+
+bool ControlBoard::GetTest3Desired(){
+	testButton3->ReadValue();
+	return testButton3->IsDown();
+}
+
 bool ControlBoard::GetCargoIntakeDesired(){
 	return cargoIntakeDesired_;
 }
@@ -328,7 +339,6 @@ void ControlBoard::ReadAllButtons() {
 		default:
 			printf("ERROR op joystick mode incorrect\n");
 	}
-
 }
 
 ControlBoard::~ControlBoard() {

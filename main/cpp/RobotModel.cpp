@@ -40,10 +40,9 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   //create private tab to get user input
   frc::Shuffleboard::GetTab("Private_Code_Input"); //ini replacement
-	frc::Shuffleboard::GetTab("Operator_Input");
   
   // initialize pid value nets
-  dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance P", 0.01).GetEntry();
+  dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance P", 0.8).GetEntry();
   dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance I", 0.0).GetEntry();
   dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance D", 0.02).GetEntry();
 
@@ -143,7 +142,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
   hatchBeakSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
-  hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_SOLENOID_CHAN); //TODO possible error?
+  hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN); //TODO possible error?
 	
 	cargoIntakeMotor_ = new Victor(CARGO_INTAKE_MOTOR_PORT);
 	cargoFlywheelMotor_ = new Victor(CARGO_FLYWHEEL_MOTOR_PORT);
@@ -179,6 +178,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   rightDriveEncoder_->SetReverseDirection(false);
 
   SetLowGear();
+  StartCompressor();
 
   //Shuffleboard prints
   jerkYNet_ = tab_.Add("Jerk Y", navX_->GetWorldLinearAccelY()).GetEntry();
@@ -375,21 +375,21 @@ void RobotModel::CalibrateGyro(){
 // ****************************REMINDER:::::::: USE POWER CONTROLLER DON'T DO RANDOM MOTOR ON DANG IT
 void RobotModel::SetCargoIntakeOutput(double output){
 	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
-	cargoIntakeMotor_->Set(output); //motor is negatized
+	cargoIntakeMotor_->Set(-output); //motor is negatized
 }
 
 void RobotModel::SetCargoUnintakeOutput(double output){
 	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
-	cargoIntakeMotor_->Set(-output); //motor is negatized
+	cargoIntakeMotor_->Set(output); //motor is negatized
 }
 
 void RobotModel::SetCargoFlywheelOutput(double output){
 	//output = ModifyCurrent(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, output);
-	cargoFlywheelMotor_->Set(output); //motor negatized
+	cargoFlywheelMotor_->Set(-output); //motor negatized
 }
 
 void RobotModel::SetHatchIntakeWheelOutput(double output){
-	hatchIntakeWheelMotor_->Set(output);
+	hatchIntakeWheelMotor_->Set(-output);
 }
 
 void RobotModel::SetHabMotorOutput(double output){
@@ -397,21 +397,27 @@ void RobotModel::SetHabMotorOutput(double output){
 }
 
 void RobotModel::SetHatchWristOutput(double output){
-	hatchWristMotor_->Set(output);
+	hatchWristMotor_->Set(-output);
 }
 
 void RobotModel::SetCargoIntakeWrist(bool change){ //TODO RENAME
 	if(change) {
-		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kForward);
+		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kReverse);
 		printf("forward cargo intake wrist\n");
 	} else {
-		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kReverse); //TODO check if correct orientation
+		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kForward); //TODO check if correct orientation
 		//printf("reverse cargo intake wrist\n");
 	}
 }
 
-void RobotModel::SetHatchOuttake(bool change){ //TODO POSSIBLE ERROR, set on then MUST SET OFF, not automatic
+void RobotModel::SetHatchOuttake(bool change){
 	hatchOuttakeSolenoid_->Set(change);
+	/*
+	if(change) {
+		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kForward);
+	} else {
+		hatchOuttakeSolenoid_->Set(DoubleSolenoid::kReverse); //TODO check if correct orientation
+	}*/
 }
 
 void RobotModel::SetHatchBeak(bool change){
@@ -438,14 +444,6 @@ Encoder* RobotModel::GetCargoFlywheelEncoder(){ //TODO possible error, encoder* 
 
 Victor* RobotModel::GetCargoFlywheelMotor(){
 	return cargoFlywheelMotor_;
-}
-
-AnalogGyro* RobotModel::GetGyro(){
-	return gyro_;
-}
-
-Victor* RobotModel::GetHatchWristMotor(){
-	return hatchWristMotor_;
 }
 
 
@@ -677,7 +675,7 @@ RobotModel::GameMode RobotModel::GetGameMode(){
 //-------------------------------get PID values from user--------------------------
 //distance p
 double RobotModel::GetDPFac(){
-	double dPFac = dPFacNet_.GetDouble(0.01);
+	double dPFac = dPFacNet_.GetDouble(0.8);
 	if(dPFac > 1.0 || dPFac < 0.0){
 		return 0.0;
 	} else {
