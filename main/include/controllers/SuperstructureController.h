@@ -56,10 +56,13 @@ private:
 	uint32_t currState_;
 	uint32_t nextState_;
 
-	double cargoPFac_, cargoIFac_, cargoDFac_, rocketPFac_, rocketIFac_, rocketDFac_, hatchPFac_, hatchIFac_, hatchDFac_;
+	double cargoPFac_, cargoIFac_, cargoDFac_, rocketPFac_, rocketIFac_, rocketDFac_, 
+		hatchPDownFac_, hatchIDownFac_, hatchDDownFac_, hatchPUpFac_, hatchIUpFac_, hatchDUpFac_;
 	
 	nt::NetworkTableEntry rocketPNet_, rocketINet_, rocketDNet_, cargoPNet_, cargoINet_, cargoDNet_,
-		cargoVelocNet_, cargoRocketVelocNet_, hatchPNet_, hatchINet_, hatchDNet_;
+		cargoVelocNet_, cargoRocketVelocNet_, hatchPDownNet_, hatchIDownNet_, hatchDDownNet_, 
+		hatchPUpNet_, hatchIUpNet_, hatchDUpNet_;
+
 };
 
 #endif /* SRC_CONTROLLERS_SUPERSTRUCTURECONTROLLER_H_ */
