@@ -42,13 +42,13 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     rocketDFac_ = 0.2;
 
     //PID vals for hatch wrist
-    hatchPDownFac_ = 0.8;
+    hatchPDownFac_ = 0.00;
     hatchIDownFac_ = 0.0;
-    hatchDDownFac_ = 0.2;
+    hatchDDownFac_ = 0.02;
 
-    hatchPUpFac_ = 0.8;
+    hatchPUpFac_ = 0.00;
     hatchIUpFac_ = 0.0;
-    hatchDUpFac_ = 0.2;
+    hatchDUpFac_ = 0.02;
 
     cargoPNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo P", 0.8).GetEntry();
     cargoINet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo I", 0.0).GetEntry();
@@ -58,13 +58,13 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     rocketINet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket I", 0.0).GetEntry();
     rocketDNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket D", 0.2).GetEntry();
 
-    hatchPDownNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Pd", 0.8).GetEntry(); //down pid
+    hatchPDownNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Pd", 0.00).GetEntry(); //down pid
     hatchIDownNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Id", 0.0).GetEntry();
-    hatchDDownNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Dd", 0.2).GetEntry();
+    hatchDDownNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Dd", 0.02).GetEntry();
 
-    hatchPUpNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Pu", 0.8).GetEntry(); //up pid
+    hatchPUpNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Pu", 0.00).GetEntry(); //up pid
     hatchIUpNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Iu", 0.0).GetEntry();
-    hatchDUpNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Du", 0.2).GetEntry();
+    hatchDUpNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Du", 0.02).GetEntry();
 
     //shuffleboard PID values
     cargoFlyPID_  = new PIDController(cargoPFac_, cargoIFac_, cargoDFac_, robot_->GetCargoFlywheelEncoder(),
@@ -138,6 +138,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             //HATCH STUFF
 
             //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
+            //TODO ERRORRRRRRR, was switching automatically between being upright and being down
             if (humanControl_->GetHatchWristDownDesired()) { 
 			    printf("hatch intake wrist to floor\n");
                 HatchWristControllerUpdate(0, hatchPDownFac_, hatchIDownFac_, hatchDDownFac_);
@@ -169,7 +170,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                     robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
                 }
             } else {
-                robot_->SetCargoUnintakeOutput(false);
+                robot_->SetCargoIntakeWrist(false);
                 if(humanControl_->GetCargoIntakeDesired()){
                     robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
                 } else if (humanControl_->GetCargoUnintakeDesired()){
@@ -258,13 +259,13 @@ void SuperstructureController::RefreshShuffleboard() {
     rocketIFac_ = rocketINet_.GetDouble(0.0);
     rocketDFac_ = rocketDNet_.GetDouble(0.2);
     
-    hatchPUpFac_ = hatchPUpNet_.GetDouble(0.8);
+    hatchPUpFac_ = hatchPUpNet_.GetDouble(0.00);
     hatchIUpFac_ = hatchIUpNet_.GetDouble(0.0);
-    hatchDUpFac_ = hatchDUpNet_.GetDouble(0.2);
+    hatchDUpFac_ = hatchDUpNet_.GetDouble(0.02);
 
-    hatchPDownFac_ = hatchPDownNet_.GetDouble(0.8);
+    hatchPDownFac_ = hatchPDownNet_.GetDouble(0.00);
     hatchIDownFac_ = hatchIDownNet_.GetDouble(0.0);
-    hatchDDownFac_ = hatchDDownNet_.GetDouble(0.2);
+    hatchDDownFac_ = hatchDDownNet_.GetDouble(0.02);
 }
 
 void SuperstructureController::HatchWristControllerUpdate(double newAngle_, double pFac_, double iFac_, double dFac_) { 

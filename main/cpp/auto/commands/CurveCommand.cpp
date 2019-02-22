@@ -214,7 +214,12 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 }
 
 double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
-  return (curPivDistance/desiredRadius_ *180/PI) + initAngle_; //TODO POSSIBLE ERROR WITH INIT ANGLE
+  double rawAngle = (curPivDistance/desiredRadius_ *180/PI) + initAngle_; //TODO POSSIBLE ERROR WITH INIT ANGLE
+  if(turnLeft_){ //CHECK LOGIC??? why is right negative makes no sense
+    return rawAngle;
+  } else {
+    return -rawAngle;
+  }
 }
 
 void CurveCommand::LoadPIDValues(){
