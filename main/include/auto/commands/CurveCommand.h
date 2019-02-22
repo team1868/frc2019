@@ -50,5 +50,5 @@ class CurveCommand : public AutoCommand {
   bool isDone_;
 
   nt::NetworkTableEntry dOutputNet_, tOutputNet_, lOutputNet_, rOutputNet_,
-    dErrorNet_, tErrorNet_, dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_, tDFacNet_;
+    dErrorNet_, tErrorNet_, dPFacNet_, dIFacNet_, dDFacNet_, tPFacNet_, tIFacNet_, tDFacNet_, pidSourceNet_;
 };

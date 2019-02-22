@@ -21,6 +21,7 @@
 #include <frc/WPILib.h>
 
 #include "../include/auto/commands/DriveStraightCommand.h"
+#include "../include/auto/commands/CurveCommand.h"
 #include "../include/auto/PIDSource/PIDInputSource.h"
 #include "../include/auto/PIDSource/PIDOutputSource.h"
 
@@ -98,20 +99,22 @@ void Robot::AutonomousInit() {
   frc::Shuffleboard::StartRecording();
 
   printf("IN AUTONOMOUS \n");
+  robot_->ResetDriveEncoders();
+  robot_->ZeroNavXYaw();
 
   ResetTimerVariables();
   NavXPIDSource *navXSource = new NavXPIDSource(robot_);
   TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
-  driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
+  //driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
   //autoStartTime = currTimeSec_;
-  driveStraight_->Init();
+  //driveStraight_->Init();
   //printf("\n\n AUTO BEGINS AT %f\n\n", autoStartTime);
-  /*pivot_ = new PivotCommand(robot_, 90.0, true, navXSource);
-  pivot_->Init();*/
-  //curve_ = new CurveCommand(robot_, 3, 90, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
-  //curve_->Init();
+  //pivot_ = new PivotCommand(robot_, -90.0, true, navXSource);
+  //pivot_->Init();
+  curve_ = new CurveCommand(robot_, 2, 90, false, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  curve_->Init();
 
 
   m_autoSelected = m_chooser.GetSelected();
@@ -130,11 +133,14 @@ void Robot::AutonomousPeriodic() {
   //frc::Shuffleboard::Update();
 
   UpdateTimerVariables();
-  if(!driveStraight_->IsDone()){
+  /*if(!driveStraight_->IsDone()){
     driveStraight_->Update(currTimeSec_, deltaTimeSec_);
-  }
-  //pivot_->Update(currTimeSec_, deltaTimeSec_);
-  //curve_->Update(currTimeSec_, deltaTimeSec_);
+  }*/
+  /*if(!pivot_->IsDone()){
+    pivot_->Update(currTimeSec_, deltaTimeSec_);
+  }*/
+  if (!curve_->IsDone())
+    curve_->Update(currTimeSec_, deltaTimeSec_);
 
   if (m_autoSelected == kAutoNameCustom) {
     // Custom Auto goes here
@@ -151,6 +157,8 @@ void Robot::TeleopInit() {
 	ResetTimerVariables();
 	ResetControllers();
 	robot_->StartCompressor();
+  robot_->ResetDriveEncoders();
+  robot_->ZeroNavXYaw();
 
 }
 
@@ -167,7 +175,7 @@ void Robot::TeleopPeriodic() {
     printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
     robot_->SetHabMotorOutput(testerPowerNet_.GetBoolean(0.4));
   } else if (humanControl_->GetTest3Desired()){
-    robot_->SetHabMotorOutput(-testerPowerNet_.GetBoolean(0.4));
+    robot_->SetHabMotorOutput(-0.1);
   } else {
     robot_->SetHabMotorOutput(0.0);
   }

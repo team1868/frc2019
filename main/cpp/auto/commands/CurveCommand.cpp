@@ -28,19 +28,22 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dI", 0.0).GetEntry();
   dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dD", 0.2).GetEntry();
 
-  tPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tP", 0.8).GetEntry();
+  tPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tP", 0.07).GetEntry();
   tIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tI", 0.0).GetEntry();
-  tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tD", 0.2).GetEntry();
+  tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tD", 0.0).GetEntry();
+
+  
+  dOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve dO", 0.0).GetEntry(); 
+  tOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve tO", 0.0).GetEntry(); 
+  lOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve lO", 0.0).GetEntry();
+  rOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve rO", 0.0).GetEntry();
+  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve dErr", 0.0).GetEntry(); 
+  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve tErr", 0.0).GetEntry(); 
+
+  pidSourceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve PID Get", 0.0).GetEntry(); 
 }
 
 void CurveCommand::Init(){
-
-  dOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dO", 0.0).GetEntry(); 
-  tOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tO", 0.0).GetEntry(); 
-  lOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve lO", 0.0).GetEntry();
-  rOutputNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve rO", 0.0).GetEntry();
-  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve dErr", 0.0).GetEntry(); 
-  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSTUFFSYAYS").Add("Curve tErr", 0.0).GetEntry(); 
 
   initAngle_ = robot_->GetNavXYaw();
 
@@ -70,8 +73,8 @@ void CurveCommand::Init(){
   tPID_->SetPID(tPFac_, tIFac_, tDFac_);
 	dPID_->SetPID(dPFac_, dIFac_, dDFac_);
 
-  dPID_->SetSetpoint(2*PI*desiredRadius_/(360/desiredAngle_));
-  tPID_->SetSetpoint(curAngleError_);
+  dPID_->SetSetpoint(desiredAngle_*desiredRadius_*PI/180);//2*PI*desiredRadius_/(360/desiredAngle_));
+  tPID_->SetSetpoint(desiredAngle_);
 
   dPID_->SetAbsoluteTolerance(3.0/12.0); //this too U DUDE
   tPID_->SetAbsoluteTolerance(0.5); //HM TUNE TODODODODODOD
@@ -122,11 +125,14 @@ void CurveCommand::Reset(){
 
 void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add timeout!
 
+  pidSourceNet_.SetDouble(talonEncoderPIDSource_->PIDGet());
+
   if(dPID_->OnTarget() && tPID_->OnTarget()){ //TODO add timeout here, also TODO possible source of error if one done and one not?
-    printf("%f Final NavX Angle from PID Source: %f\n"
+    printf("%f Original Desired Distance: %f\n"
+        "Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
         "Final Distance from PID Source: %f\n",
-				robot_->GetTime(), navXPIDSource_->PIDGet(), robot_->GetNavXYaw(), talonEncoderPIDSource_->PIDGet());
+				robot_->GetTime(), desiredAngle_*desiredRadius_*PI/180, navXPIDSource_->PIDGet(), robot_->GetNavXYaw(), talonEncoderPIDSource_->PIDGet());
     if(turnLeft_){
       printf("Final Distance from robot: %f\n", robot_->GetRightDistance());//robot_->GetLeftDistance()); /fixed inversion
     } else {
@@ -201,7 +207,7 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 }
 
 double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
-  return 90 - (curPivDistance/desiredRadius_ *180/PI) + initAngle_;
+  return (curPivDistance/desiredRadius_ *180/PI) + initAngle_; //TODO POSSIBLE ERROR WITH INIT ANGLE
 }
 
 void CurveCommand::LoadPIDValues(){
@@ -210,7 +216,7 @@ void CurveCommand::LoadPIDValues(){
   dIFac_ = dIFacNet_.GetDouble(0.0);
   dDFac_ = dDFacNet_.GetDouble(0.0);
 
-  tPFac_ = tPFacNet_.GetDouble(0.8);
+  tPFac_ = tPFacNet_.GetDouble(0.07);
   tIFac_ = tIFacNet_.GetDouble(0.0);
   tDFac_ = tDFacNet_.GetDouble(0.0);
 }

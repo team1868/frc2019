@@ -89,7 +89,7 @@ void DriveStraightCommand::Init() {
 	distancePID_->Enable();
 
 	 // Assuming 5.0 ft / sec from the low gear speed
-	driveTimeoutSec_ = fabs(desiredDistance_ / 3.0); //TODO: add physics, also TODO remove +5
+	driveTimeoutSec_ = fabs(desiredDistance_ / 3.0)+2; //TODO: add physics, also TODO remove +5
 	initialDriveTime_ = robot_->GetTime();
 	printf("%f Start chicken tenders drivestraight time driveTimeoutSec is %f\n", initialDriveTime_, driveTimeoutSec_);
 
@@ -271,7 +271,7 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 	dTolerance_ = 3.0 / 12.0;
 
 	rMaxOutput_ = 0.15;
-	dMaxOutput_ = 0.85; // 0.85
+	dMaxOutput_ = 0.85;
 
 	// initializing number of times robot is on target
 	numTimesOnTarget_ = 0;

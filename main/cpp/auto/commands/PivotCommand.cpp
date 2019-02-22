@@ -20,7 +20,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	} else {
 		desiredAngle_ = initYaw_ + desiredAngle;
 		if (desiredAngle_ > 180) {
-			desiredAngle_ -= -360;
+			desiredAngle_ -= -360; //TODO bug that doesn't matter
 		} else if (desiredAngle_ < -180) {
 			desiredAngle_ += 360;
 		}
@@ -35,7 +35,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 	// initialize time variables
 	pivotCommandStartTime_ = robot_->GetTime();
-	pivotTimeoutSec_ = 0.0;
+	pivotTimeoutSec_ = 5.0;//0.0; //note edited from last year
 
 	// retrieve pid values from user
 	pFac_ = robot_->GetPivotPFac();
@@ -126,11 +126,13 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	} else {
 		numTimesOnTarget_ = 0;
 	}
-	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 1)){// TODO TEMP CHANGE, put timeout back in || timeOut) { // done
+	printf("On target %f times\n",numTimesOnTarget_);
+	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 4) || timeOut){
 		printf("%f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"
 				"%f Angle NavX Error %f\n",
-				robot_->GetTime(), navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(), pivotPID_->GetError());
+				robot_->GetTime(), navXSource_->PIDGet(), robot_->GetNavXYaw(), robot_->GetTime(),
+					pivotPID_->GetError());
 		Reset();
 		isDone_ = true;
 		robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);

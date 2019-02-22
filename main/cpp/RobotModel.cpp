@@ -44,15 +44,17 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   // initialize pid value nets
   dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance P", 0.8).GetEntry();
   dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance I", 0.0).GetEntry();
-  dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance D", 0.02).GetEntry();
+  dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Distance D", 0.2).GetEntry();
 
-  rPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional P", 0.8).GetEntry();
+  rPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional P", 0.02).GetEntry();
   rIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional I", 0.0).GetEntry();
-  rDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional D", 0.2).GetEntry();
+  rDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional D", 0.0).GetEntry();
 
-  pivotPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command P", 0.8).GetEntry();
+  pivotPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command P", 0.07).GetEntry();
   pivotIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command I", 0.0).GetEntry();
-  pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.2).GetEntry();
+  pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.04).GetEntry();
+  pivotPFacNet_.SetDouble(0.07);
+  pivotDFacNet_.SetDouble(0.04);
 
   printf("tabs done for pid\n");
   frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
@@ -176,9 +178,11 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 		rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   }
   rightDriveEncoder_->SetReverseDirection(false);
+  printf("Distance per pulse: %f", (LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 
   SetLowGear();
   StartCompressor();
+  ResetDriveEncoders();
 
   //Shuffleboard prints
   jerkYNet_ = tab_.Add("Jerk Y", navX_->GetWorldLinearAccelY()).GetEntry();
@@ -316,11 +320,11 @@ double RobotModel::GetRightEncoderValue() {
 }
 
 double RobotModel::GetLeftDistance() {
-	return -leftDriveEncoder_->GetDistance(); //correct? TODO
+	return leftDriveEncoder_->GetDistance(); //correct? TODO
 }
 
 double RobotModel::GetRightDistance() {
-	return -rightDriveEncoder_->GetDistance(); //correct? TODO
+	return rightDriveEncoder_->GetDistance(); //correct? TODO
 }
 
 bool RobotModel::GetLeftEncoderStopped() {
@@ -703,7 +707,7 @@ double RobotModel::GetDIFac(){
 
 // distance D
 double RobotModel::GetDDFac(){
-	double dDFac = dDFacNet_.GetDouble(0.02);
+	double dDFac = dDFacNet_.GetDouble(0.2);
 	if(dDFac > 1.0 || dDFac < 0.0){
 		return 0.0;
 	} else {
@@ -713,7 +717,7 @@ double RobotModel::GetDDFac(){
 
 // rotational P
 double RobotModel::GetRPFac(){
-	double rPFac = rPFacNet_.GetDouble(0.8);
+	double rPFac = rPFacNet_.GetDouble(0.02);
 	if(rPFac > 1.0 || rPFac < 0.0){
 		return 0.0;
 	} else {
@@ -733,7 +737,7 @@ double RobotModel::GetRIFac(){
 
 // rotational D
 double RobotModel::GetRDFac(){
-	double rDFac = rDFacNet_.GetDouble(0.2);
+	double rDFac = rDFacNet_.GetDouble(0.0);
 	if(rDFac > 1.0 || rDFac < 0.0){
 		return 0.0;
 	} else {
@@ -743,7 +747,7 @@ double RobotModel::GetRDFac(){
 
 // pivot P
 double RobotModel::GetPivotPFac(){
-	double pivotPFac = pivotPFacNet_.GetDouble(0.8);
+	double pivotPFac = pivotPFacNet_.GetDouble(0.07);
 	if(pivotPFac > 1.0 || pivotPFac < 0.0){
 		return 0.0;
 	} else {
@@ -763,7 +767,7 @@ double RobotModel::GetPivotIFac(){
 
 // pivot D
 double RobotModel::GetPivotDFac(){
-	double pivotDFac = pivotDFacNet_.GetDouble(0.2);
+	double pivotDFac = pivotDFacNet_.GetDouble(0.04);
 	if(pivotDFac > 1.0 || pivotDFac < 0.0){
 		return 0.0;
 	} else {
