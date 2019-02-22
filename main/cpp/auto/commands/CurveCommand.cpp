@@ -148,11 +148,13 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 		//}
   } else {
 
+    /* pid vs robot
     if(turnLeft_){
       curPivDistance_ = robot_->GetRightDistance();//robot_->GetLeftDistance();
     } else {
       curPivDistance_ = robot_->GetLeftDistance();
-    }
+    }*/
+    curPivDistance_ = talonEncoderPIDSource_->PIDGet();
     curDesiredAngle_ = CalcCurDesiredAngle(curPivDistance_);
     curAngleError_ = curDesiredAngle_ - curAngle_;
 
@@ -197,11 +199,16 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
     tOutputNet_.SetDouble(tOutput);
     lOutputNet_.SetDouble(lOutput);
     rOutputNet_.SetDouble(rOutput);
+
+    dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - talonEncoderPIDSource_->PIDGet());
+    /*
+    pid vs robot
     if(turnLeft_){
       dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - robot_->GetRightDistance());
     } else {
       dErrorNet_.SetDouble((2*PI/(360/desiredAngle_) - robot_->GetLeftDistance()));
     }
+    */
     tErrorNet_.SetDouble(curAngleError_);
   }
 }
