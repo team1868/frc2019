@@ -99,7 +99,8 @@ private:
 
 	nt::NetworkTableEntry thrustZNet_, rotateZNet_, gearDesireNet_, quickturnDesireNet_, arcadeDesireNet_,
 		leftDriveNet_, rightDriveNet_, driveDirectionNet_, navXAngleNet_, leftDistanceNet_, rightDistanceNet_,
-		leftEncoderNet_, rightEncoderNet_, thrustDeadbandNet_, rotateDeadbandNet_, reverseReverseNet_;
+		leftEncoderNet_, rightEncoderNet_, thrustDeadbandNet_, rotateDeadbandNet_, reverseReverseNet_,
+		maxOutput_;
 };
 
 //#endif /* SRC_CONTROLLERS_DRIVECONTROLLER_H_ */

@@ -65,6 +65,7 @@ class RobotModel {
 
   void SetHighGear(); //TODO
   void SetLowGear(); //TODO
+  bool IsHighGear();
 
   double GetLeftEncoderValue(); //TODO
   double GetRightEncoderValue(); //TODO

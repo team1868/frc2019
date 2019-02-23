@@ -8,6 +8,9 @@
 #include "../../include/controllers/DriveController.h"
 //#include <frc/WPILib.h>
 
+static const double LOW_GEAR_STATIC_FRICTION_POWER = 0.11;
+static const double HIGH_GEAR_STATIC_FRICTION_POWER = 0.11; //false news TODO
+
 // constructor
 DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) {
 
@@ -49,7 +52,7 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder", robot_->GetRightEncoderValue()).GetEntry();
 	thrustDeadbandNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Thrust Deadband", 0.0).GetEntry();
 	rotateDeadbandNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Rotate Deadband", 0.0).GetEntry();
-
+	maxOutput_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("MAX DRIVE OUTPUT", 1.0).GetEntry();
 }
 
 void DriveController::Reset() {
@@ -128,21 +131,39 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 		rightOutput = thrustValue + rotateValue;
 	}
 
+	double staticFriction;
+	if(robot_->IsHighGear()){
+		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
+	} else {
+		staticFriction = LOW_GEAR_STATIC_FRICTION_POWER;
+	}
+	if(leftOutput > 0.0){
+		leftOutput += staticFriction;
+	} else if(leftOutput < 0.0){
+		leftOutput -= staticFriction;
+	}
+	if(rightOutput > 0.0){
+		rightOutput += staticFriction;
+	} else if(rightOutput < 0.0){
+		rightOutput -= staticFriction;
+	}
+
 	// Make sure, output values are within range
 	//no ratios last year, added, good?
-	if (leftOutput > 1.0) {
+	double maxOutput = maxOutput_.GetDouble(1.0);
+	if (leftOutput > maxOutput) {
 		rightOutput = rightOutput/leftOutput;
-		leftOutput = 1.0;
-	} else if (leftOutput < -1.0) {
+		leftOutput = maxOutput;
+	} else if (leftOutput < -maxOutput) {
 		rightOutput = rightOutput/(-leftOutput);
-		leftOutput = -1.0;
+		leftOutput = -maxOutput;
 	}
-	if (rightOutput > 1.0) {
+	if (rightOutput > maxOutput) {
 		leftOutput = leftOutput/rightOutput;
-		rightOutput = 1.0;
-	} else if (rightOutput < -1.0) {
+		rightOutput = maxOutput;
+	} else if (rightOutput < -maxOutput) {
 		leftOutput = leftOutput/(-rightOutput);
-		rightOutput = -1.0;
+		rightOutput = -maxOutput;
 	}
 
 	robot_->SetDriveValues(RobotModel::kLeftWheels, -leftOutput); //TODO ARTEMIS FIX CHANGE INVERSION

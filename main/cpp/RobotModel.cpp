@@ -309,6 +309,10 @@ void RobotModel::SetLowGear() {
 	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
+bool RobotModel::IsHighGear(){
+	return highGear_;
+}
+
 // ------------------------ get drive values--------------------------------------------
 double RobotModel::GetLeftEncoderValue() {
 	//printf("HELLO BLAH left encoder val???????? %d \n\n\n\n", leftDriveEncoder_->Get());
