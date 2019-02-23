@@ -53,6 +53,7 @@ void Robot::RobotInit()  {
 
 
   ResetTimerVariables();
+  CameraServer::GetInstance()->StartAutomaticCapture();
 
   printf("Main program initialized\n");
 

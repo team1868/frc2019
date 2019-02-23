@@ -275,7 +275,6 @@ bool ControlBoard::GetCargoFlywheelDesiredRocket(){
 }
 
 bool ControlBoard::GetCargoIntakeWristDesired(){
-	printf("cargo intake wrist desired\n");
 	return cargoIntakeWristDesired_;
 }
 

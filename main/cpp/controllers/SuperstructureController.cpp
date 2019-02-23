@@ -88,11 +88,11 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
      * up - floor to stowed position
     */
 
-    hatchWristPID_ = new PIDController(hatchPUpFac_, hatchIUpFac_, hatchDUpFac_, robot_->GetGyro(), robot_->GetHatchWristMotor());
-    hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
-    hatchWristPID_->SetOutputRange(-1.0, 1.0);
-    hatchWristPID_->SetAbsoluteTolerance(0.1); //TODO
-    hatchWristPID_->SetContinuous(true);
+    //hatchWristPID_ = new PIDController(hatchPUpFac_, hatchIUpFac_, hatchDUpFac_, robot_->GetGyro(), robot_->GetHatchWristMotor());
+    //hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
+    //hatchWristPID_->SetOutputRange(-1.0, 1.0);
+    //hatchWristPID_->SetAbsoluteTolerance(0.1); //TODO
+    //hatchWristPID_->SetContinuous(true);
 
     //TODO INIT highgear disengaged whatever whatever (like last year's wrist engage asap)
 }
@@ -103,7 +103,7 @@ void SuperstructureController::Reset() {
 
     cargoFlyPID_->Reset();
     rocketFlyPID_->Reset();
-    hatchWristPID_->Reset();
+    //hatchWristPID_->Reset();
 
     RefreshShuffleboard();
 
@@ -126,7 +126,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             rocketFlyPID_->Reset();
             rocketFlyPID_->Disable();
 
-            hatchWristPID_->Enable();
+            //hatchWristPID_->Enable();
 
             robot_->SetCargoIntakeOutput(0.0); 
             robot_->SetCargoFlywheelOutput(0.0);
@@ -235,7 +235,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 void SuperstructureController::SetOutputs() {
     cargoFlyPID_->SetSetpoint(desiredFlywheelVelocCargo_);
     rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);
-    hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
+    //hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
 }
 
 void SuperstructureController::HatchWristAngleTest() {
