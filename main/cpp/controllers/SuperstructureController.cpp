@@ -138,10 +138,9 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             //HATCH STUFF
 
             //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
-            //TODO ERRORRRRRRR, was switching automatically between being upright and being down
             if (humanControl_->GetHatchWristDownDesired()) { 
 			    printf("hatch intake wrist to floor\n");
-                HatchWristControllerUpdate(0, hatchPDownFac_, hatchIDownFac_, hatchDDownFac_);
+                robot_->SetHatchWristOutput(-0.3);
                 if(humanControl_->GetHatchIntakeWheelDesired()){ //only run wheels if wrist down (otherwise wheels are irrelevant)
                 printf("hatch intaking\n");
                     robot_->SetHatchIntakeWheelOutput(0.8);
@@ -150,14 +149,11 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                     robot_->SetHatchIntakeWheelOutput(-0.8);
                 } else {
                     robot_->SetHatchIntakeWheelOutput(0.0);
-                }
-			    //robot_->SetHatchWristOutput(-0.3); 
+                } 
             } else if (humanControl_->GetHatchWristUpDesired()) { 
-                HatchWristControllerUpdate(95, hatchPUpFac_, hatchIUpFac_, hatchDUpFac_);
-			    //robot_->SetHatchWristOutput(0.3);
+			    robot_->SetHatchWristOutput(0.3);
 		    } else { //otherwise, keep in past 90 degree point
-                HatchWristControllerUpdate(95, hatchPUpFac_, hatchIUpFac_, hatchDUpFac_);
-			    //robot_->SetHatchWristOutput(0.0);
+			    robot_->SetHatchWristOutput(0.0);
             }
             //CARGO STUFF
 
