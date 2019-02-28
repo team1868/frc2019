@@ -75,6 +75,9 @@ private:
 	 */
 	double HandleDeadband(double value, double deadband);
 
+	double GetStaticFriction(double thrustValue); //TODO MAKE THIS A VARIABLE IN ROBOTMODEL TO MAKE CODE FASTER
+	double HandleStaticFriction(double value, double thrustValue);
+
 	/**
 	 * Adjusts sensitivity for turn
 	 */

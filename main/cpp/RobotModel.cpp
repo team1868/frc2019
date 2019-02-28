@@ -12,13 +12,13 @@
 
 #define PI 3.141592
 
-const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
-const double HIGH_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft
-const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50;//15; //ft 762
-const double ENCODER_COUNT_PER_ROTATION = 256.0;
-const int EDGES_PER_ENCODER_COUNT = 4;
+static const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
+static const double HIGH_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft
+static const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50;//15; //ft 762
+static const double ENCODER_COUNT_PER_ROTATION = 256.0;
+static const int EDGES_PER_ENCODER_COUNT = 4;
 
-const double FLYWHEEL_DIAMETER = 1.0 / 12.0; //CHECK (in ft)
+static const double FLYWHEEL_DIAMETER = 1.0 / 12.0; //CHECK (in ft)
 
 static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO INCORRECT< FIX
 static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
@@ -26,7 +26,7 @@ static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
 static const double MIN_RATIO_ALL_CURRENT = 0.2;//0.7; //TODO add to shuffleboard
 static const double MIN_RATIO_DRIVE_CURRENT = 0.7; //TODO add to shuffleboard
 static const double MIN_RATIO_SUPERSTRUCTURE_CURRENT = 0.5; //TODO add to shuffleboard
-static const double MIN_VOLTAGE_BROWNOUT = 7.5; //6.8; //brownout protection state; PWM, CAN, 6V, relay outputs, CAN motors disabled
+static const double MIN_VOLTAGE_BROWNOUT = 7.5;//7.5; //6.8; //brownout protection state; PWM, CAN, 6V, relay outputs, CAN motors disabled
 
 //unused
 static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are 40-50 Amps

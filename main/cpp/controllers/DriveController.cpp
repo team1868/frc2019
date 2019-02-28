@@ -8,8 +8,11 @@
 #include "../../include/controllers/DriveController.h"
 //#include <frc/WPILib.h>
 
+//currently tuned for Mo Practice Bot
 static const double LOW_GEAR_STATIC_FRICTION_POWER = 0.11;
-static const double HIGH_GEAR_STATIC_FRICTION_POWER = 0.11; //false news TODO
+static const double HIGH_GEAR_STATIC_FRICTION_POWER = 0.14;
+static const double LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER =  0.15 - LOW_GEAR_STATIC_FRICTION_POWER;
+static const double HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = 0.2 - HIGH_GEAR_STATIC_FRICTION_POWER;
 
 // constructor
 DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) {
@@ -85,7 +88,7 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 			rotateSensitivity_ = (rightJoyZ + 1.0) / 2.0;
 
 			// Change gear
-			if (humanControl_->GetHighGearDesired()) {
+			if (humanControl_->GetHighGearDesired()) { //TODO POSSIBLY REMOVE WHY IS THIS ALSO HERE
 				robot_->SetHighGear();
 			} else {
 				robot_->SetLowGear();
@@ -131,25 +134,10 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 		rightOutput = thrustValue + rotateValue;
 	}
 
-	double staticFriction;
-	if(robot_->IsHighGear()){
-		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
-	} else {
-		staticFriction = LOW_GEAR_STATIC_FRICTION_POWER;
-	}
-	if(leftOutput > 0.0){
-		leftOutput += staticFriction;
-	} else if(leftOutput < 0.0){
-		leftOutput -= staticFriction;
-	}
-	if(rightOutput > 0.0){
-		rightOutput += staticFriction;
-	} else if(rightOutput < 0.0){
-		rightOutput -= staticFriction;
-	}
+	leftOutput = HandleStaticFriction(leftOutput, thrustValue);
+	rightOutput = HandleStaticFriction(rightOutput, thrustValue);
 
-	// Make sure, output values are within range
-	//no ratios last year, added, good?
+	//TODO (minor) Make sure, output values are within range
 	double maxOutput = maxOutput_.GetDouble(1.0);
 	if (leftOutput > maxOutput) {
 		rightOutput = rightOutput/leftOutput;
@@ -209,6 +197,69 @@ double DriveController::HandleDeadband(double value, double deadband) {
 double DriveController::GetCubicAdjustment(double value, double adjustmentConstant) {
 	return adjustmentConstant * std::pow(value, 3.0) + (1 - adjustmentConstant) * value;
 }
+
+double DriveController::GetStaticFriction(double thrustValue){ //TODODODODODODOD MAKE A VARIABLE DON'T BE AN IDIOT
+	double staticFriction;
+	if(robot_->IsHighGear()){
+		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
+		
+		if(thrustValue <= 0.1 && thrustValue >= -0.1){ //TODO TUNNNNNNNNNNNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEEEEEEEEE NNNNNNNNNNEEEEEEEEEEDDDDDDDDDD
+			//quick turn
+			staticFriction += HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
+		}
+	} else {
+		staticFriction = LOW_GEAR_STATIC_FRICTION_POWER;
+
+		if(thrustValue <= 0.1 && thrustValue >= -0.1){
+			//quick turn
+			staticFriction += LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
+		}
+	}
+	return staticFriction;
+}
+
+double DriveController::HandleStaticFriction(double value, double thrustValue){
+	double staticFriction = GetStaticFriction(thrustValue);
+	if(value > 0.0){
+		value += staticFriction;
+	} else if(leftOutput < 0.0){
+		value -= staticFriction;
+	} //else don't waste power on static friction or might burn motors
+	return value;
+}
+
+/*
+double * DriveController::HandleStaticFriction(double leftOutput, double rightOutput, double thrustValue){
+	double staticFriction;
+	if(robot_->IsHighGear()){
+		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
+		
+		if(thrustValue <= 0.1 && thrustValue >= -0.1){ //TODO TUNNNNNNNNNNNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEEEEEEEEE NNNNNNNNNNEEEEEEEEEEDDDDDDDDDD
+			//quick turn
+			staticFriction += HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
+		}
+	} else {
+		staticFriction = LOW_GEAR_STATIC_FRICTION_POWER;
+
+		if(thrustValue <= 0.1 && thrustValue >= -0.1){
+			//quick turn
+			staticFriction += LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
+		}
+	}
+	if(leftOutput > 0.0){
+		leftOutput += staticFriction;
+	} else if(leftOutput < 0.0){
+		leftOutput -= staticFriction;
+	} //else don't waste power on static friction or might burn motors
+	if(rightOutput > 0.0){
+		rightOutput += staticFriction;
+	} else if(rightOutput < 0.0){
+		rightOutput -= staticFriction;
+	} //else don't waste power on static friction or might burn motors
+	double outputs[] = {leftOutput, rightOutput};
+	return outputs;
+}
+*/
 
 bool DriveController::IsDone() {
 	return isDone_;
