@@ -69,7 +69,7 @@ public:
 		AutoCommand* tempCommand = NULL;
 
 		switch(command) {
-		case '[': {
+		case '[':
 			char charA;
 			iss >> charA;
 			printf("Command %c ", charA);
@@ -91,30 +91,17 @@ public:
 			double rand;
 			iss >> rand;
 			break;
-		}
-		// case 'p': {	// parallel
-		// 	char charA, charB;
-		// 	iss >> charA;
-		// 	printf("CommandA %c ", charA);
-		// 	AutoCommand* commandA = GetStringCommand(charA);
-		// 	iss >> charB;
-		// 	printf("CommandB %c ", charB);
-		// 	AutoCommand* commandB = GetStringCommand(charB);
-
-		// 	tempCommand = new ParallelCommand(commandA, commandB);
-		// 	break;
-		// }
-		// case 't':	// Pivots with absolute position
-		// 	double angle;
-		// 	iss >> angle;
-		// 	if(IsFailed(command)) {
-		// 		tempCommand = NULL;
-		// 	} else {
-		// 		currAngle_ = angle;
-		// 		printf("Angle: %f\n", angle);
-		// 		tempCommand = new PivotCommand(robot_, angle, true, navX_);
-		// 	}
-		// 	break;
+		case 't':	// Pivots with absolute position
+			double angle;
+			iss >> angle;
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				currAngle_ = angle;
+				printf("Angle: %f\n", angle);
+				tempCommand = new PivotCommand(robot_, angle, true, navX_);
+			}
+			break;
 		case 'd':	// Drive straight
 			double distance;
 			iss >> distance;
@@ -125,6 +112,8 @@ public:
 				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, currAngle_);
 			}
 			break;
+		// case 'i':
+		// 	printf("Intake hatch command\n");
 		// case 'i':
 		// 	printf("Inttake Command\n");
 		// 	double intakeOutput;

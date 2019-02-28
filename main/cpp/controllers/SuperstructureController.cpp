@@ -141,20 +141,22 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             if (humanControl_->GetHatchWristDownDesired()) { 
 			    printf("hatch intake wrist to floor\n");
                 robot_->SetHatchWristOutput(-0.3);
-                if(humanControl_->GetHatchIntakeWheelDesired()){ //only run wheels if wrist down (otherwise wheels are irrelevant)
-                printf("hatch intaking\n");
-                    robot_->SetHatchIntakeWheelOutput(0.8);
-                } else if (humanControl_->GetHatchUnintakeWheelDesired()){
-                    printf("hatch intaking\n");
-                    robot_->SetHatchIntakeWheelOutput(-0.8);
-                } else {
-                    robot_->SetHatchIntakeWheelOutput(0.0);
-                } 
             } else if (humanControl_->GetHatchWristUpDesired()) { 
 			    robot_->SetHatchWristOutput(0.3);
 		    } else { //otherwise, keep in past 90 degree point
 			    robot_->SetHatchWristOutput(0.0);
             }
+
+            // TODO FIX BELOW SO THAT WHEELS ONLY RUN IF GYRO IS 90 ISH
+            if(humanControl_->GetHatchIntakeWheelDesired()){ //only run wheels if wrist down (otherwise wheels are irrelevant)
+                    printf("hatch intaking\n");
+                    robot_->SetHatchIntakeWheelOutput(0.8);
+            } else if (humanControl_->GetHatchUnintakeWheelDesired()){
+                printf("hatch unintaking\n");
+                robot_->SetHatchIntakeWheelOutput(-0.8);
+            } else {
+                robot_->SetHatchIntakeWheelOutput(0.0);
+            } 
             //CARGO STUFF
 
             //note: combined wrist and intake/unintake (so if wrist down and not unintaking, auto intake + no two controllers on same motor)
