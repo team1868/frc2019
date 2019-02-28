@@ -135,72 +135,6 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             nextState_ = kIdle;
         case kIdle:
             nextState_ = kIdle;
-            //HATCH STUFF
-
-            //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
-            if (humanControl_->GetHatchWristDownDesired()) { 
-			    printf("hatch intake wrist to floor\n");
-                robot_->SetHatchWristOutput(-0.3);
-            } else if (humanControl_->GetHatchWristUpDesired()) { 
-			    robot_->SetHatchWristOutput(0.3);
-		    } else { //otherwise, keep in past 90 degree point
-			    robot_->SetHatchWristOutput(0.0);
-            }
-
-            // TODO FIX BELOW SO THAT WHEELS ONLY RUN IF GYRO IS 90 ISH
-            if(humanControl_->GetHatchIntakeWheelDesired()){ //only run wheels if wrist down (otherwise wheels are irrelevant)
-                    printf("hatch intaking\n");
-                    robot_->SetHatchIntakeWheelOutput(0.8);
-            } else if (humanControl_->GetHatchUnintakeWheelDesired()){
-                printf("hatch unintaking\n");
-                robot_->SetHatchIntakeWheelOutput(-0.8);
-            } else {
-                robot_->SetHatchIntakeWheelOutput(0.0);
-            } 
-            //CARGO STUFF
-
-            //note: combined wrist and intake/unintake (so if wrist down and not unintaking, auto intake + no two controllers on same motor)
-            if(humanControl_->GetCargoIntakeWristDesired()){
-                robot_->SetCargoIntakeWrist(true);
-                if(!humanControl_->GetCargoUnintakeDesired()){
-                    robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
-                } else {
-                    robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
-                }
-            } else {
-                robot_->SetCargoIntakeWrist(false);
-                if(humanControl_->GetCargoIntakeDesired()){
-                    robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
-                } else if (humanControl_->GetCargoUnintakeDesired()){
-                    robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
-                } else {
-                    robot_->SetCargoIntakeOutput(0.0);
-                }
-            }        
-
-            if (humanControl_->GetCargoFlywheelDesiredRocket()){ //Note: check if less power first, don't want accident more power
-               robot_->SetHatchBeak(true);
-               robot_->SetCargoFlywheelOutput(desiredFlywheelVelocRocket_);
-            } else if(humanControl_->GetCargoFlywheelDesired()){ //flywheel for cargo ship
-                printf("cargo shooting into cargo ship\n");
-                robot_->SetHatchBeak(false);
-                robot_->SetCargoFlywheelOutput(desiredFlywheelVelocCargo_);
-            } else {
-                robot_->SetCargoFlywheelOutput(0.0);
-
-                //so beak not messed up if multiple activated at a time
-                if(humanControl_->GetHatchOuttakeDesired()){ //TODO different state: time delay
-                    robot_->SetHatchBeak(true);
-                    robot_->SetHatchOuttake(true);
-                } else if(humanControl_->GetHatchBeakDesired()){
-                    robot_->SetHatchBeak(true);
-                    //robot_->SetHatchOuttake(false); //TODO prob not needed bc not immediete switch between buttons, but otherwise needed
-                } else {
-                    robot_->SetHatchBeak(false);
-                    robot_->SetHatchOuttake(false);
-                }
-
-            }
             
 
             if(humanControl_->GetHighGearDesired()){
@@ -227,6 +161,80 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                robot_->SetHabMotorOutput(0.0);
            }*/
 
+            break;
+        case kHatch:
+        //HATCH STUFF
+
+            //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
+            if (humanControl_->GetHatchWristDownDesired()) { 
+			    printf("hatch intake wrist to floor\n");
+                robot_->SetHatchWristOutput(-0.3);
+            } else if (humanControl_->GetHatchWristUpDesired()) { 
+			    robot_->SetHatchWristOutput(0.3);
+		    } else { //otherwise, keep in past 90 degree point
+			    robot_->SetHatchWristOutput(0.0);
+                nextState_ = kIdle;
+            }
+
+            // TODO FIX BELOW SO THAT WHEELS ONLY RUN IF GYRO IS 90 ISH
+            if(humanControl_->GetHatchIntakeWheelDesired()){ //only run wheels if wrist down (otherwise wheels are irrelevant)
+                    printf("hatch intaking\n");
+                    robot_->SetHatchIntakeWheelOutput(0.8);
+            } else if (humanControl_->GetHatchUnintakeWheelDesired()){
+                printf("hatch unintaking\n");
+                robot_->SetHatchIntakeWheelOutput(-0.8);
+            } else {
+                robot_->SetHatchIntakeWheelOutput(0.0);
+                nextState_ = kIdle;
+            } 
+            break;
+        case kCargo:
+        //CARGO STUFF
+
+            //note: combined wrist and intake/unintake (so if wrist down and not unintaking, auto intake + no two controllers on same motor)
+            if(humanControl_->GetCargoIntakeWristDesired()){
+                robot_->SetCargoIntakeWrist(true);
+                if(!humanControl_->GetCargoUnintakeDesired()){
+                    robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
+                } else {
+                    robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
+                }
+            } else {
+                robot_->SetCargoIntakeWrist(false);
+                if(humanControl_->GetCargoIntakeDesired()){
+                    robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
+                } else if (humanControl_->GetCargoUnintakeDesired()){
+                    robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
+                } else {
+                    robot_->SetCargoIntakeOutput(0.0);
+                    nextState_ = kIdle;
+                }
+            }        
+
+            if (humanControl_->GetCargoFlywheelDesiredRocket()){ //Note: check if less power first, don't want accident more power
+               robot_->SetHatchBeak(true);
+               robot_->SetCargoFlywheelOutput(desiredFlywheelVelocRocket_);
+            } else if(humanControl_->GetCargoFlywheelDesired()){ //flywheel for cargo ship
+                printf("cargo shooting into cargo ship\n");
+                robot_->SetHatchBeak(false);
+                robot_->SetCargoFlywheelOutput(desiredFlywheelVelocCargo_);
+            } else {
+                robot_->SetCargoFlywheelOutput(0.0);
+                nextState_ = kIdle;
+
+                //so beak not messed up if multiple activated at a time
+                if(humanControl_->GetHatchOuttakeDesired()){ //TODO different state: time delay
+                    robot_->SetHatchBeak(true);
+                    robot_->SetHatchOuttake(true);
+                } else if(humanControl_->GetHatchBeakDesired()){
+                    robot_->SetHatchBeak(true);
+                    //robot_->SetHatchOuttake(false); //TODO prob not needed bc not immediete switch between buttons, but otherwise needed
+                } else {
+                    robot_->SetHatchBeak(false);
+                    robot_->SetHatchOuttake(false);
+                }
+
+            }
             break;
         default:
             printf("WARNING: State not found in SuperstructureController::Update()\n");
