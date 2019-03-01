@@ -180,8 +180,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 //		double maxOutput = fmax(fabs(rightMotorOutput_), fabs(leftMotorOutput_));
 	}
 	// drive motors
-	robot_->SetDriveValues(RobotModel::kLeftWheels, -leftMotorOutput_); //TODO: THIS IS FOR ARTEMIS< CHANGE INVERSION
-	robot_->SetDriveValues(RobotModel::kRightWheels, rightMotorOutput_); 
+	robot_->SetDriveValues(-leftMotorOutput_, rightMotorOutput_);
 	printf("times on target at %f \n\n", numTimesOnTarget_);
 }
 
@@ -193,8 +192,7 @@ bool DriveStraightCommand::IsDone() {
 // reset robot to standby
 void DriveStraightCommand::Reset() {
 	// turn off mototrs
-	robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
-	robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
+	robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
 
 	// destroy angle PID
 	if (anglePID_ != NULL) {

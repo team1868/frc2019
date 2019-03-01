@@ -31,6 +31,11 @@ static const double MIN_VOLTAGE_BROWNOUT = 7.5;//7.5; //6.8; //brownout protecti
 //unused
 static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are 40-50 Amps
 
+//currently tuned for Mo Practice Bot
+static const double LOW_GEAR_STATIC_FRICTION_POWER = 0.11;
+static const double HIGH_GEAR_STATIC_FRICTION_POWER = 0.14;
+static const double LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER =  0.15 - LOW_GEAR_STATIC_FRICTION_POWER;
+static const double HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = 0.2 - HIGH_GEAR_STATIC_FRICTION_POWER;
 
 RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
@@ -55,6 +60,9 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.04).GetEntry();
   pivotPFacNet_.SetDouble(0.07);
   pivotDFacNet_.SetDouble(0.04);
+
+  
+  maxOutputNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("MAX DRIVE OUTPUT", 1.0).GetEntry();
 
   printf("tabs done for pid\n");
   frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
@@ -242,9 +250,9 @@ double RobotModel::GetWheelSpeed(RobotModel::Wheels wheel){
 }
 
 // drive specific motor
+//WARNING: no static friction accounting, PID values would differ
 void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
-
-  leftDriveOutput_ = rightDriveOutput_ = value;
+  leftDriveOutput_ = rightDriveOutput_ = value;  //SKETCH TODO INCORRECT, last year's code but makes no sense if setting one wheel at a time
   value = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, value); //drive channels do the same as params
 	switch (wheel) {
 	  case (kLeftWheels): // set left
@@ -260,6 +268,66 @@ void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
 	  default:
 		printf("WARNING: Drive value not set in RobotModel::SetDriveValues()");
 	}
+}
+
+// drive motors
+void RobotModel::SetDriveValues(double leftValue, double rightValue) {
+  double thrust = leftValue + rightValue / 2.0; //find average to find y movement
+  leftValue = HandleStaticFriction(leftValue, thrust);
+  rightValue = HandleStaticFriction(rightValue, thrust);
+
+  leftValue = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, leftValue);
+  rightValue = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, rightValue);
+
+  //TODO (minor) Make sure, output values are within range
+  double maxOutput = maxOutputNet_.GetDouble(1.0);
+  if (leftValue > maxOutput) {
+	rightValue = rightValue/leftValue;
+	leftValue = maxOutput;
+  } else if (leftValue < -maxOutput) {
+	rightValue = rightValue/(-leftValue);
+	leftValue = -maxOutput;
+  }
+  if (rightValue > maxOutput) {
+	leftValue = leftValue/rightValue;
+	rightValue = maxOutput;
+  } else if (rightValue < -maxOutput) {
+	leftValue = leftValue/(-rightValue);
+	rightValue = -maxOutput;
+  }
+
+  leftMaster_->Set(-leftValue);
+  rightMaster_->Set(-rightValue);
+}
+
+double RobotModel::GetStaticFriction(double thrustValue){ //TODODODODODODOD MAKE A VARIABLE DON'T BE AN IDIOT
+	double staticFriction;
+	if(IsHighGear()){
+		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
+		
+		if(thrustValue <= 0.1 && thrustValue >= -0.1){ //TODO TUNNNNNNNNNNNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEEEEEEEEE NNNNNNNNNNEEEEEEEEEEDDDDDDDDDD
+			//quick turn
+			staticFriction += HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
+		}
+	} else {
+		staticFriction = LOW_GEAR_STATIC_FRICTION_POWER;
+
+		if(thrustValue <= 0.1 && thrustValue >= -0.1){
+			//quick turn
+			staticFriction += LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
+		}
+	}
+	return staticFriction;
+}
+
+double RobotModel::HandleStaticFriction(double value, double thrustValue){
+	double staticFriction = GetStaticFriction(thrustValue);
+	if(value > 0.0){
+		value += staticFriction;
+	} else if(value < 0.0){
+		value -= staticFriction;
+	} //else don't waste power on static friction or might burn motors
+	return value;
 }
 
 // set motor brake mode

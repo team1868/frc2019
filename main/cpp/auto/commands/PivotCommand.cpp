@@ -92,8 +92,7 @@ void PivotCommand::Init() {
 // theoretical change class back to orginal state
 void PivotCommand::Reset() {
 	// turn off motors
-	robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
-	robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
+	robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
 
 	// reset shuffleboard values
 	leftDriveNet_.SetDouble(0.0);
@@ -135,8 +134,7 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 					pivotPID_->GetError());
 		Reset();
 		isDone_ = true;
-		robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
-		robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
+		robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
 		printf("%f PIVOT IS DONE \n", robot_->GetTime());
 		if (timeOut) {
 			printf("%f FROM PIVOT TIME OUT GO GET CHICKEN TENDERS @ %f\n", robot_->GetTime(), timeDiff);
@@ -146,8 +144,7 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		double output = talonOutput_->GetOutput();
 //		double output = 0.0;
 		// adjust motor values according to PID
-		robot_->SetDriveValues(RobotModel::kLeftWheels, -output); //left inverted, right back and left foward if output positive
-		robot_->SetDriveValues(RobotModel::kRightWheels, -output);
+		robot_->SetDriveValues(-output, -output);
 
 		// update shuffleboard
 		rightDriveNet_.SetDouble(-output);

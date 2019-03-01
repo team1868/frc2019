@@ -75,9 +75,6 @@ private:
 	 */
 	double HandleDeadband(double value, double deadband);
 
-	double GetStaticFriction(double thrustValue); //TODO MAKE THIS A VARIABLE IN ROBOTMODEL TO MAKE CODE FASTER
-	double HandleStaticFriction(double value, double thrustValue);
-
 	/**
 	 * Adjusts sensitivity for turn
 	 */
@@ -102,8 +99,7 @@ private:
 
 	nt::NetworkTableEntry thrustZNet_, rotateZNet_, gearDesireNet_, quickturnDesireNet_, arcadeDesireNet_,
 		leftDriveNet_, rightDriveNet_, driveDirectionNet_, navXAngleNet_, leftDistanceNet_, rightDistanceNet_,
-		leftEncoderNet_, rightEncoderNet_, thrustDeadbandNet_, rotateDeadbandNet_, reverseReverseNet_,
-		maxOutput_;
+		leftEncoderNet_, rightEncoderNet_, thrustDeadbandNet_, rotateDeadbandNet_, reverseReverseNet_;
 };
 
 //#endif /* SRC_CONTROLLERS_DRIVECONTROLLER_H_ */

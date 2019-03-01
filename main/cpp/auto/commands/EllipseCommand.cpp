@@ -86,8 +86,7 @@ void EllipseCommand::Init(){
 }
 
 void EllipseCommand::Reset(){
-  robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
-  robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
+  robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
   
 	// destroy angle PID
 	if (tPID_ != NULL) {
@@ -130,8 +129,7 @@ void EllipseCommand::Update(double currTimeSec, double deltaTimeSec){
     }
         //Reset();
         isDone_ = true;
-        robot_->SetDriveValues(RobotModel::kLeftWheels, 0.0);
-        robot_->SetDriveValues(RobotModel::kRightWheels, 0.0);
+        robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
         printf("%f Ellipse Command IS DONE \n", robot_->GetTime());
         //if (timeOut) {
         //	printf("%f FROM CURVE TIME OUT GO LEAVEEEEEE %f\n", robot_->GetTime(), timeDiff);
@@ -179,8 +177,7 @@ void EllipseCommand::Update(double currTimeSec, double deltaTimeSec){
         rOutput = -1.0;
     }
 
-    robot_->SetDriveValues(RobotModel::kLeftWheels, -lOutput);
-    robot_->SetDriveValues(RobotModel::kRightWheels, rOutput);
+    robot_->SetDriveValues(-lOutput, rOutput);
 
     dOutputNet_.SetDouble(dOutput);
     tOutputNet_.SetDouble(tOutput);
