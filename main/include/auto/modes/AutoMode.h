@@ -9,6 +9,7 @@
 class AutoMode {
 public:
     enum AutoPositions {kBlank, kLeft, kMiddle, kRight};
+	enum HabLevel {k1, k2};
 
     AutoMode(RobotModel *robot) {
         printf("constructing automode\n");
@@ -28,7 +29,7 @@ public:
 
     virtual ~AutoMode() {};
 
-    virtual void CreateQueue(AutoMode::AutoPositions pos) {};
+    virtual void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) {};
 
     void QueueFromString(string autoSequence) {
         firstCommand_ = NULL;
@@ -112,46 +113,6 @@ public:
 				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, currAngle_);
 			}
 			break;
-		// case 'i':
-		// 	printf("Intake hatch command\n");
-		// case 'i':
-		// 	printf("Inttake Command\n");
-		// 	double intakeOutput;
-		// 	iss >> intakeOutput;
-		// 	if(IsFailed(command)) {
-		// 		tempCommand = NULL;
-		// 	} else {
-		// 		tempCommand = new IntakeCommand(robot_, intakeOutput);
-		// 	}
-		// 	break;
-		// case 'o':   // Outtake
-		// 	printf("Outtake Command\n");
-		// 	tempCommand = new OuttakeCommand(robot_);
-		// 	break;
-		// case 'e':
-		// 	printf("Elevator Command\n");
-		// 	double height;
-		// 	iss >> height;
-		// 	if (IsFailed(command)) {
-		// 		tempCommand = NULL;
-		// 	} else {
-		// 		tempCommand = new ElevatorHeightCommand(robot_, height);
-		// 	}
-		// 	break;
-		// case 'w':
-		// 	printf("Wrist Command\n");
-		// 	int wUp; // wrist up
-		// 	iss >> wUp;
-		// 	if (IsFailed(command)) {
-		// 		tempCommand = NULL;
-		// 	} else {
-		// 		if (wUp == 1) {
-		// 			tempCommand = new WristCommand(robot_, true);
-		// 		} else {
-		// 			tempCommand = new WristCommand(robot_, false);
-		// 		}
-		// 	}
-		// 	break;
 		case 's':
 			printf("Wait Command\n");
 			double waitTime;
@@ -162,30 +123,6 @@ public:
 				tempCommand = new WaitingCommand(waitTime);
 			}
 			break;
-		// case 'z':
-		// {
-		// 	printf("Drive to Cube Command\n");
-		// 	double num;
-		// 	iss >> num;	// Can be any arbitrary value. Apparently without this it'll run the command twice. Might want to fix this someday
-		// 	if (IsFailed(command)) {
-		// 		tempCommand = NULL;
-		// 	} else {
-		// 		tempCommand = new DriveToCubeCommand(robot_, navX_, talonEncoder_, angleOutput_, distanceOutput_);
-		// 	}
-		// 	break;
-		// }
-		// case 'b':
-		// {
-		// 	printf("Intake Drive to Cube Command\n");
-		// 	double num = 0;
-		// 	iss >> num;	// Can be any arbitrary value. Apparently without this it'll run the command twice. Might want to fix this someday
-		// 	if (IsFailed(command)) {
-		// 		tempCommand = NULL;
-		// 	} else {
-		// 		tempCommand = new DriveIntakeCubeCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_);
-		// 	}
-		// 	break;
-		// }
 		default:	// When it's not listed, don't do anything :)
 			printf("Unexpected character %c detected. Terminating queue", command);
 			firstCommand_ = NULL;
@@ -256,7 +193,7 @@ public:
 		printf("Successfully disabled\n");
 	}
 
-private:
+protected:
     AutoCommand *firstCommand_;
 	AutoCommand *currentCommand_;
 	RobotModel* robot_;
