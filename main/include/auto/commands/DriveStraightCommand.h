@@ -91,6 +91,8 @@ public:
 	void Disable();
 	void Enable();
 
+	double GetPIDDistance();
+
 private:
 	void Initializations(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 			AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,

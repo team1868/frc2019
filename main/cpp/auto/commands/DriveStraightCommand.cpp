@@ -315,6 +315,10 @@ void DriveStraightCommand::SetDesiredDistance(double distance){
 	distancePID_->SetSetpoint(distance);
 }
 
+double DriveStraightCommand::GetPIDDistance(){
+	return talonEncoderSource_->PIDGet();
+}
+
 void DriveStraightCommand::Disable(){
 	distancePID_->Disable();
 	anglePID_->Disable();

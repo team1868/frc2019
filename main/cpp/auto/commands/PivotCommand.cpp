@@ -125,7 +125,7 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	} else {
 		numTimesOnTarget_ = 0;
 	}
-	printf("On target %f times\n",numTimesOnTarget_);
+	printf("On target %d times\n",numTimesOnTarget_);
 	if ((pivotPID_->OnTarget() && numTimesOnTarget_ > 4) || timeOut){
 		printf("%f Final NavX Angle from PID Source: %f\n"
 				"Final NavX Angle from robot: %f \n"

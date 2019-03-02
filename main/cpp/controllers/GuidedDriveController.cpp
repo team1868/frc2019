@@ -145,8 +145,8 @@ void GuidedDriveController::ArcadeDrive(double myX, double myY, double thrustSen
 	}
 
 	//printf("Left Output: %f and Right Output: %f", -leftOutput, rightOutput);
-	driveStraight_->SetDesiredAngle(robot_->GetNavXYaw() + rotateValue *5); //TODO CHANGE
-	driveStraight_->SetDesiredDistance( (robot_->GetRightDistance() + robot_->GetLeftDistance())/2 + thrustValue*3); //TODO CHANGE AND WRONG
+	driveStraight_->SetDesiredAngle(robot_->GetNavXYaw() + rotateValue); //TODO CHANGE
+	driveStraight_->SetDesiredDistance( driveStraight_->GetPIDDistance() + thrustValue); //TODO CHANGE AND sketch
 	driveStraight_->Update(0.0, 0.0); //time does not matter in teleop
 }
 
