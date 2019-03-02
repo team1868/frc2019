@@ -35,7 +35,7 @@ public:
 	virtual ~SuperstructureController();
 
 	enum SuperstructureState {
-		kInit, kIdle, kHatch, kCargo//, kHabDeploy
+		kInit, kIdle, //kHatch, kCargo, kHabDeploy
 	};
 
 private:

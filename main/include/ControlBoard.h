@@ -63,6 +63,7 @@ public:
 	bool GetHatchWristUpDesired();
 	bool GetHatchWristDownDesired();
 	bool GetHabDeployDesired();
+	bool GetHabPrepDesired(); //hab break
 
 	virtual ~ControlBoard();
 private:
@@ -93,13 +94,12 @@ private:
 	//Buttons for superstructure
 	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoIntakeButton_, *cargoUnintakeButton_,
 		*cargoIntakeWristButton_, *hatchOuttakeButton_, *hatchBeakButton_, *hatchIntakeWheelButton_, *hatchUnintakeWheelButton_,
-		*hatchWristUpButton_, *hatchWristDownButton_, *habDeployButton_, *testButton_, *testButton2, *testButton3;
+		*hatchWristUpButton_, *hatchWristDownButton_, *habDeployButton_, *habPrepButton_ , *testButton_, *testButton2, *testButton3;
 
 	//Variables for superstructure
 	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoIntakeWristDesired_,
 		hatchBeakDesired_, hatchOuttakeDesired_, hatchIntakeWheelDesired_, hatchUnintakeWheelDesired_, hatchWristUpDesired_, 
-		hatchWristDownDesired_, habDeployDesired_;
-	bool cargoIntakeWristEngaged_, hatchOuttakeEngaged_;
+		hatchWristDownDesired_, habDeployDesired_, habPrepDesired_;
 
   	//TODO delete BELOW ALL GO AWAY DELETE DELETE DANG IT
    	//ButtonReader *testButton_;

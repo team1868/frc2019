@@ -164,6 +164,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
   cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
   cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
+	habSparkMotor_->GetEncoder().GetPosition(); //move later
+
 
   //TODO MESS, also TODO check before matches
   cargoWristEngaged_ = false;
