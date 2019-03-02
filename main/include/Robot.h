@@ -14,6 +14,7 @@
 #include "RobotModel.h"
 #include "ControlBoard.h"
 #include "../include/controllers/DriveController.h"
+#include "../include/controllers/GuidedDriveController.h"
 #include "../include/controllers/SuperstructureController.h"
 #include "../include/auto/PIDSource/PIDInputSource.h"
 #include "../include/auto/commands/DriveStraightCommand.h"
@@ -59,12 +60,12 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   const std::string kAutoNameCustom = "My Auto"; //TODO: Delete?? idk whatevs
   std::string m_autoSelected;
 
-
+  GuidedDriveController *guidedDriveController_;
   DriveStraightCommand *driveStraight_;//TODO delete
   PivotCommand *pivot_; //testing TODO delte
   CurveCommand *curve_; //TODO DELETE
   //double autoStartTime;
 
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
-    testerPowerNet_;
+    testerPowerNet_, guidedDriveNet_;
 };

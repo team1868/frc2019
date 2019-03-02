@@ -32,6 +32,10 @@ public:
 			AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 			double desiredDistance);
 
+	DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+			AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
+			double desiredDistance, bool isTeleop);
+
 	/**
 		 * Constructor that generates the DriveStraight Command
 		 * @param navXSource angle input for the PID Loop
@@ -80,6 +84,13 @@ public:
 	 */
 	void GetIniValues();
 
+	//-------------------------TELEOP ONLY-----------------------
+	void SetDesiredAngle(double absAngle);
+	void SetDesiredDistance(double distance);
+
+	void Disable();
+	void Enable();
+
 private:
 	void Initializations(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 			AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
@@ -110,6 +121,8 @@ private:
 	double lastDistance_;
 
 	int numTimesStopped_;
+
+	bool isTeleop_;
 
 	nt::NetworkTableEntry leftStraightNet_, rightStraightNet_, angleErrorNet_, angleErrorGraphNet_, desiredAngleNet_,
 		encoderErrorNet_, encoderErrorGraphNet_, desiredTotalFeetNet_, dPIDOutputNet_, aPIDOutputNet_;

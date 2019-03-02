@@ -5,16 +5,24 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "../../include/controllers/DriveController.h"
+#include "../../include/controllers/GuidedDriveController.h"
 //#include <frc/WPILib.h>
 // constructor
-DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) {
+GuidedDriveController::GuidedDriveController(RobotModel *robot, ControlBoard *humanControl,
+	NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) {
 
 	robot_ = robot;
 	humanControl_ = humanControl;
 
+	//TODO sketch
 	navXSource_ = new NavXPIDSource(robot_);
 	talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+	anglePIDOutput_ = anglePIDOutput;
+	distancePIDOutput_ = distancePIDOutput;
+	driveStraight_ = new DriveStraightCommand(navXSource_, talonEncoderSource_,
+		anglePIDOutput_, distancePIDOutput_, robot_, 0.0, true);
+	driveStraight_->Init(); //TODO BAD PRACTICE BAD BAD
 
 	// driver preferences
     // Set sensitivity to 0
@@ -32,6 +40,7 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	rightOutput  = 0.0;
 
 	// shuffleboard initializations
+	//TODO coordinate with drivecontroller somehow MEMORY LEAK
 	thrustZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Thrust Z", 0.0).GetEntry();
 	rotateZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Rotate Z", 0.0).GetEntry();
 	gearDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("High Gear", humanControl_->GetHighGearDesired()).GetEntry();
@@ -50,7 +59,7 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	rotateDeadbandNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Rotate Deadband", 0.0).GetEntry();
 }
 
-void DriveController::Reset() {
+void GuidedDriveController::Reset() {
 //	robot_->SetPercentVBusDriveMode(); check robotmodel
 
 //	thrustSensitivity_ = robot_->pini_->getf("TELEOP DRIVING", "thrustSensitivity", 0.3);
@@ -59,8 +68,16 @@ void DriveController::Reset() {
 //	check ini
 }
 
+void GuidedDriveController::Disable(){
+	driveStraight_->Disable();
+}
+
+void GuidedDriveController::Enable(){
+	driveStraight_->Enable();
+}
+
 // update drive
-void DriveController::Update(double currTimeSec, double deltaTimeSec) {
+void GuidedDriveController::Update(double currTimeSec, double deltaTimeSec) {
 	PrintDriveValues();
 
 	switch (robot_->GetGameMode()) {
@@ -100,14 +117,14 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 			}
 			break;
 		case (RobotModel::SANDSTORM):
-			printf("WARNING: DriveController initialized in sandstorm????");
+			printf("WARNING: GuidedDriveController initialized in sandstorm????");
 		default:
-			printf("ERROR: Game mode not reconized as either sandstorm or normal teleop.  In DriveController::Update()\n");
+			printf("ERROR: Game mode not reconized as either sandstorm or normal teleop.  In GuidedDriveController::Update()\n");
 	}
 }
 
 // arcade drive
-void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity) {
+void GuidedDriveController::ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity) {
 	double thrustValue = myY;
 	double rotateValue = myX;
 
@@ -119,34 +136,36 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 	thrustValue = GetCubicAdjustment(thrustValue, thrustSensitivity);
 
 	if(reverseReverseNet_.GetBoolean(true) || (!reverseReverseNet_.GetBoolean(true) && thrustValue >= 0.0)){// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ //lili mode
-		leftOutput = thrustValue + rotateValue;			// CHECK FOR COMP BOT
-		rightOutput = thrustValue - rotateValue;
+		//leftOutput = thrustValue + rotateValue;			// CHECK FOR COMP BOT
+		//rightOutput = thrustValue - rotateValue;
 	} else {
-		leftOutput = thrustValue - rotateValue;
-		rightOutput = thrustValue + rotateValue;
+		rotateValue = -rotateValue;
+		//leftOutput = thrustValue - rotateValue;
+		//rightOutput = thrustValue + rotateValue;
 	}
 
 	//printf("Left Output: %f and Right Output: %f", -leftOutput, rightOutput);
-	robot_->SetDriveValues(-leftOutput, rightOutput);
-
+	driveStraight_->SetDesiredAngle(robot_->GetNavXYaw() + rotateValue *5); //TODO CHANGE
+	driveStraight_->SetDesiredDistance( (robot_->GetRightDistance() + robot_->GetLeftDistance())/2 + thrustValue*3); //TODO CHANGE AND WRONG
+	driveStraight_->Update(0.0, 0.0); //time does not matter in teleop
 }
 
 // tank drive
-void DriveController::TankDrive(double myLeft, double myRight) {
+void GuidedDriveController::TankDrive(double myLeft, double myRight) {
 	leftOutput = myLeft * GetDriveDirection();
 	rightOutput = myRight * GetDriveDirection();
 
-	robot_->SetDriveValues(-leftOutput, rightOutput);
+	robot_->SetDriveValues(-leftOutput, rightOutput); //going to leave the same, so no possible bugs
 }
 
-void DriveController::QuickTurn(double myRight, double turnConstant) {
+void GuidedDriveController::QuickTurn(double myRight, double turnConstant) {
 
 	double rotateValue = GetCubicAdjustment(myRight, turnConstant);
 
-	robot_->SetDriveValues(rotateValue, -rotateValue);
+	robot_->SetDriveValues(rotateValue, -rotateValue); //TODO make guided? maybe idk necessary
 }
 
-int DriveController::GetDriveDirection() {
+int GuidedDriveController::GetDriveDirection() {
 	if (humanControl_->GetReverseDriveDesired()) {
 		return -1;
 	} else {
@@ -155,7 +174,7 @@ int DriveController::GetDriveDirection() {
 }
 
 // depends on joystick sensitivity
-double DriveController::HandleDeadband(double value, double deadband) {
+double GuidedDriveController::HandleDeadband(double value, double deadband) {
 	if (fabs(value) < deadband) {
 		return 0.0;
 	} else {
@@ -164,50 +183,16 @@ double DriveController::HandleDeadband(double value, double deadband) {
 }
 
 // Rotation sensitivity: when z == 0 same output; when z==1, output^3
-double DriveController::GetCubicAdjustment(double value, double adjustmentConstant) {
+double GuidedDriveController::GetCubicAdjustment(double value, double adjustmentConstant) {
 	return adjustmentConstant * std::pow(value, 3.0) + (1 - adjustmentConstant) * value;
 }
 
-
-/*
-double * DriveController::HandleStaticFriction(double leftOutput, double rightOutput, double thrustValue){
-	double staticFriction;
-	if(robot_->IsHighGear()){
-		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
-		
-		if(thrustValue <= 0.1 && thrustValue >= -0.1){ //TODO TUNNNNNNNNNNNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEEEEEEEEE NNNNNNNNNNEEEEEEEEEEDDDDDDDDDD
-			//quick turn
-			staticFriction += HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
-		}
-	} else {
-		staticFriction = LOW_GEAR_STATIC_FRICTION_POWER;
-
-		if(thrustValue <= 0.1 && thrustValue >= -0.1){
-			//quick turn
-			staticFriction += LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
-		}
-	}
-	if(leftOutput > 0.0){
-		leftOutput += staticFriction;
-	} else if(leftOutput < 0.0){
-		leftOutput -= staticFriction;
-	} //else don't waste power on static friction or might burn motors
-	if(rightOutput > 0.0){
-		rightOutput += staticFriction;
-	} else if(rightOutput < 0.0){
-		rightOutput -= staticFriction;
-	} //else don't waste power on static friction or might burn motors
-	double outputs[] = {leftOutput, rightOutput};
-	return outputs;
-}
-*/
-
-bool DriveController::IsDone() {
+bool GuidedDriveController::IsDone() {
 	return isDone_;
 }
 
 // update shuffleboard values
-void DriveController::PrintDriveValues(){
+void GuidedDriveController::PrintDriveValues(){
 	thrustZNet_.SetDouble(thrustSensitivity_);
 	rotateZNet_.SetDouble(rotateSensitivity_);
 	gearDesireNet_.SetBoolean(humanControl_->GetHighGearDesired());
@@ -223,5 +208,8 @@ void DriveController::PrintDriveValues(){
 	rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
 }
 
-DriveController::~DriveController() {
+GuidedDriveController::~GuidedDriveController() {
+	//TODO recheck all objects
+	//shuffleboard remove
+	driveStraight_->~DriveStraightCommand();
 }

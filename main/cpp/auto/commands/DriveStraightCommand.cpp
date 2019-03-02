@@ -12,6 +12,33 @@
 DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance) : AutoCommand(){
+	isTeleop_ = false;
+	isAbsoluteAngle_ = false;
+
+	// initialize dependencies
+	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
+
+	//NOTE: adding repetative title, this may be an issue later
+
+	//TODO: this may seem as though error, bc all values start at 0 and shouldn't
+	leftStraightNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Output (drivestraight)", 0.0).GetEntry();
+	rightStraightNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Output (drivestraight)", 0.0).GetEntry();
+	angleErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle Error (drivestraight)", 0.0).GetEntry();
+	angleErrorGraphNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle Error Graph (drivestraight)", 0.0).GetEntry();
+	desiredAngleNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Desired Angle (drivestraight)", 0.0).GetEntry();
+	encoderErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Encoder Error (drivestraight)", 0.0).GetEntry();
+	encoderErrorGraphNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Encoder Error Graph (drivestraight)", 0.0).GetEntry();
+	desiredTotalFeetNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Desired Total Feet", 0.0).GetEntry();
+	dPIDOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Distance PID Output", 0.0).GetEntry();
+	aPIDOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle PID Output", 0.0).GetEntry();
+	
+}
+
+// constructing
+DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
+		double desiredDistance, bool isTeleop) : AutoCommand(){
+	isTeleop_ = isTeleop;
 	isAbsoluteAngle_ = false;
 
 	// initialize dependencies
@@ -37,6 +64,7 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 		AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput, RobotModel* robot,
 		double desiredDistance, double absoluteAngle) {
+	isTeleop_ = false;
 	isAbsoluteAngle_ = true;
 	Initializations(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot, desiredDistance);
 	desiredAngle_ = absoluteAngle;
@@ -143,7 +171,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	}
 
 	lastDistance_ = talonEncoderSource_->PIDGet();
-	if((numTimesOnTarget_ > 1) || (diffDriveTime_ > driveTimeoutSec_) || (numTimesStopped_ > 0)) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
+	if(!isTeleop_ && ((numTimesOnTarget_ > 1) || (diffDriveTime_ > driveTimeoutSec_) || (numTimesStopped_ > 0))) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
 		if (diffDriveTime_ > driveTimeoutSec_) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
 			printf(" %f DRIVESTRAIGHT TIMED OUT!! :) go get chicken tenders %f\n", robot_->GetTime(), diffDriveTime_);
 		}
@@ -181,7 +209,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 	}
 	// drive motors
 	robot_->SetDriveValues(-leftMotorOutput_, rightMotorOutput_);
-	printf("times on target at %f \n\n", numTimesOnTarget_);
+	//printf("times on target at %f \n\n", numTimesOnTarget_);
 }
 
 // repeatedly on target
@@ -277,6 +305,24 @@ void DriveStraightCommand::Initializations(NavXPIDSource* navXSource, TalonEncod
 
 	lastDistance_ = talonEncoderSource_->PIDGet();
 	lastDOutput_ = 0.0;
+}
+
+void DriveStraightCommand::SetDesiredAngle(double absAngle){
+	anglePID_->SetSetpoint(absAngle);
+}
+
+void DriveStraightCommand::SetDesiredDistance(double distance){
+	distancePID_->SetSetpoint(distance);
+}
+
+void DriveStraightCommand::Disable(){
+	distancePID_->Disable();
+	anglePID_->Disable();
+}
+
+void DriveStraightCommand::Enable(){
+	distancePID_->Enable();
+	anglePID_->Enable();
 }
 
 DriveStraightCommand::~DriveStraightCommand() {

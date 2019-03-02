@@ -13,6 +13,7 @@
 
 #include "Ports2019.h"
 #include "../include/controllers/DriveController.h"
+#include "../include/controllers/GuidedDriveController.h"
 #include "../include/controllers/SuperstructureController.h"
 #include "ControlBoard.h"
 #include "RobotModel.h"
@@ -35,10 +36,16 @@ void Robot::RobotInit()  {
   robot_->ZeroNavXYaw();
   robot_->CalibrateGyro();
   robot_->ResetGyro();
+
+  NavXPIDSource *navXSource = new NavXPIDSource(robot_);
+  TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
+  AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
+  DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
   
   //initialize controllers
   humanControl_ = new ControlBoard();
   driveController_ = new DriveController(robot_, humanControl_);
+  guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
 
   superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
   talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -68,6 +75,7 @@ void Robot::RobotInit()  {
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.1).GetEntry();
+  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).withWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
 }
 
 /**
@@ -104,11 +112,13 @@ void Robot::AutonomousInit() {
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
 
-  ResetTimerVariables();
+  //TODO BAD FORM but whatev
   NavXPIDSource *navXSource = new NavXPIDSource(robot_);
   TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
+
+  ResetTimerVariables();
   //driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
   //autoStartTime = currTimeSec_;
   //driveStraight_->Init();
@@ -161,7 +171,6 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
-
 }
 
 // read controls and get current time from controllers
@@ -200,7 +209,13 @@ void Robot::TeleopPeriodic() {
 		  robot_->PrintState();
       robot_->UpdateCurrent();
 		  humanControl_->ReadControls();
-		  driveController_->Update(currTimeSec_, deltaTimeSec_);
+      if(!guidedDriveNet_.GetBoolean(false)){
+        guidedDriveController_->Disable(); //TODO will prob break code
+		    driveController_->Update(currTimeSec_, deltaTimeSec_);
+      } else {
+        guidedDriveController_->Enable(); //TODO will prob break code
+        guidedDriveController_->Update(0.0, 0.0); //time doesn't matter
+      }
 		  superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used, comment out
 		  Logger::LogState(robot_, humanControl_);
       break;

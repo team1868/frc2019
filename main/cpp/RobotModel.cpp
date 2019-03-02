@@ -282,20 +282,21 @@ void RobotModel::SetDriveValues(double leftValue, double rightValue) {
   //TODO (minor) Make sure, output values are within range
   double maxOutput = maxOutputNet_.GetDouble(1.0);
   if (leftValue > maxOutput) {
-	rightValue = rightValue/leftValue;
-	leftValue = maxOutput;
+	  rightValue = rightValue/leftValue;
+	  leftValue = maxOutput;
   } else if (leftValue < -maxOutput) {
-	rightValue = rightValue/(-leftValue);
-	leftValue = -maxOutput;
+	  rightValue = rightValue/(-leftValue);
+	  leftValue = -maxOutput;
   }
   if (rightValue > maxOutput) {
-	leftValue = leftValue/rightValue;
-	rightValue = maxOutput;
+	  leftValue = leftValue/rightValue;
+	  rightValue = maxOutput;
   } else if (rightValue < -maxOutput) {
-	leftValue = leftValue/(-rightValue);
-	rightValue = -maxOutput;
+	  leftValue = leftValue/(-rightValue);
+	  rightValue = -maxOutput;
   }
 
+  //printf("      RM left output: %f and right output: %f\n", -leftValue, rightValue);
   leftMaster_->Set(-leftValue);
   rightMaster_->Set(-rightValue);
 }
