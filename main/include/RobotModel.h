@@ -82,13 +82,14 @@ class RobotModel {
   double GetNavXYaw(); //TODO
   double GetNavXPitch(); //TODO
   double GetNavXRoll(); //TODO
-
+  
   void ZeroNavXYaw(); //TODO
   
   //---------------SUPERSTRUCTURE------------------
   void ResetGyro();
   void CalibrateGyro();
   double GetGyroAngle();
+  int GetHabEncoderValue();
   
   void SetCargoIntakeOutput(double output);
   void SetCargoUnintakeOutput(double output);
@@ -149,7 +150,7 @@ class RobotModel {
   double ratioAll_, ratioDrive_, ratioSuperstructure_;
   bool compressorOff_;
 
-  int habRailsEncoderVal_; //move later
+  int habRailsEncoderVal_;
   
   //bool cutSlaves_; //remove one slave from drive
 

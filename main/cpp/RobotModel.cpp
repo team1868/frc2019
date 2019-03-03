@@ -164,7 +164,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
   cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
   cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
-	habSparkMotor_->GetEncoder().GetPosition(); //move later
+	
+	//habRailsEncoderVal_ = habSparkMotor_->GetEncoder().GetPosition();
 
 
   //TODO MESS, also TODO check before matches
@@ -449,6 +450,12 @@ double RobotModel::GetGyroAngle(){
 void RobotModel::CalibrateGyro(){
 	gyro_->InitGyro();
 	gyro_->Calibrate();
+}
+
+int RobotModel::GetHabEncoderValue() {
+	habRailsEncoderVal_ = habSparkMotor_->GetEncoder().GetPosition();
+	return habRailsEncoderVal_;
+	//todo: convert from encoder ticks to feet
 }
 
 // ****************************REMINDER:::::::: USE POWER CONTROLLER DON'T DO RANDOM MOTOR ON DANG IT

@@ -26,6 +26,8 @@ public:
 
 	void HatchWristAngleTest();
 
+	void HabEncoderTest();
+
 	void HatchWristControllerUpdate(double newAngle_, double pFac_, double iFac_, double dFac_);
 
 	void RefreshShuffleboard();
@@ -52,6 +54,8 @@ private:
 	double desiredFlywheelVelocCargo_, desiredFlywheelVelocRocket_, cargoIntakeOutput_, flywheelStartTime_;
 	double desiredHatchWristAngle_, currHatchWristAngle_;
 	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_, hatchWristNewAngle_;
+	double currHabEncoderVal_;
+	int habRailsEncoderVal_;
 
 	uint32_t currState_;
 	uint32_t nextState_;
