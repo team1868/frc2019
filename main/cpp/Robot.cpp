@@ -74,7 +74,8 @@ void Robot::RobotInit()  {
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
-  testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.1).GetEntry();
+  testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
+  habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.2).GetEntry();
   guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).withWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
 }
 
@@ -184,9 +185,9 @@ void Robot::TeleopPeriodic() {
 
   if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
-    robot_->SetHabMotorOutput(testerPowerNet_.GetBoolean(0.4));
+    robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.4));
   } else if (humanControl_->GetTest3Desired()){
-    robot_->SetHabMotorOutput(-0.1);
+    robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.2));
   } else {
     robot_->SetHabMotorOutput(0.0);
   }

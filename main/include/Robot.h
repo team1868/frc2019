@@ -67,5 +67,5 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   //double autoStartTime;
 
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
-    testerPowerNet_, guidedDriveNet_;
+    testerPowerNet_, guidedDriveNet_, habRisePowerNet_;
 };
