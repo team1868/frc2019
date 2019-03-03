@@ -3,6 +3,9 @@
 #include "../commands/DriveStraightCommand.h"
 #include "../commands/PivotCommand.h"
 #include "../commands/WaitingCommand.h"
+#include "../commands/HatchBeakCommand.h"
+#include "../commands/AlignWithTapeCommand.h"
+#include "../commands/OuttakeHatchCommand.h"
 #include "../PIDSource/PIDInputSource.h"
 #include "../PIDSource/PIDOutputSource.h"
 
@@ -68,13 +71,14 @@ public:
 
     AutoCommand* GetStringCommand(char command) {
 		AutoCommand* tempCommand = NULL;
+		AutoCommand* commandA = NULL;
 
 		switch(command) {
 		case '[':
 			char charA;
 			iss >> charA;
 			printf("Command %c ", charA);
-			AutoCommand* commandA = GetStringCommand(charA);
+			commandA = GetStringCommand(charA);
 			tempCommand = commandA;
 
 			charA = NULL;
@@ -111,6 +115,45 @@ public:
 			} else {
 				printf("Distance: %f\n", distance);
 				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, currAngle_);
+			}
+			break;
+		case 'b':	// hatch beak command
+			int beakOpenDesired;	// 1 = true = open, 0 = false = closed
+			iss >> beakOpenDesired;
+			if (IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				if (beakOpenDesired == 1) {
+					tempCommand = new HatchBeakCommand(robot_, true);
+				} else {
+					tempCommand = new HatchBeakCommand(robot_, false);
+				}
+			}
+			break;
+		case 'h':	// hatch outtake popper command
+			int hatchOutDesired;	// 1 = true = out, 0 = false = in
+			iss >> hatchOutDesired;
+			if (IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				if (hatchOutDesired == 1) {
+					tempCommand = new OuttakeHatchCommand(robot_, true);
+				} else {
+					tempCommand = new OuttakeHatchCommand(robot_, false);
+				}
+			}
+			break;
+		case 'a':	// align with tape command
+			int driveStraightDesired;	// 1 = true = drive, 0 = false = just pivot
+			iss >> driveStraightDesired;
+			if (IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				if (driveStraightDesired == 1) {
+					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, true);
+				} else {
+					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, false);
+				}
 			}
 			break;
 		case 's':

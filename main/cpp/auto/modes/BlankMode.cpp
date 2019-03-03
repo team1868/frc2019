@@ -1,16 +1,16 @@
-// #include "../../../include/auto/modes/BlankMode.h"
+#include "../../../include/auto/modes/BlankMode.h"
 
-// BlankMode::BlankMode(RobotModel *robot) : AutoMode(robot) {
-// 	printf("In Blank Mode\n");
-// }
+BlankMode::BlankMode(RobotModel *robot) : AutoMode(robot) {
+	printf("In Blank Mode\n");
+}
 
-// void BlankMode::CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) {
-// 	printf("In Blank Mode Queue\n");
-// }
+void BlankMode::CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) {
+	printf("In Blank Mode Queue\n");
+}
 
-// void BlankMode::Init() {
-// 	printf("In Blank Mode Init\n");
-// }
+void BlankMode::Init() {
+	printf("In Blank Mode Init\n");
+}
 
-// BlankMode::~BlankMode() {
-// }
+BlankMode::~BlankMode() {
+}

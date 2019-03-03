@@ -10,13 +10,11 @@
 #define SRC_AUTO_COMMANDS_OUTTAKEHATCHCOMMAND_H_
 #define SRC_AUTO_COMMANDS_OUTTAKEHATCHCOMMAND_H_
 
-#include <frc/WPILib.h> // needed?
 #include "../AutoCommand.h"
-#include "RobotModel.h" //maybe?
 
 class OuttakeHatchCommand : public AutoCommand {
 public:
-	OuttakeHatchCommand(RobotModel *robot, bool hatchOUt);
+	OuttakeHatchCommand(RobotModel *robot, bool hatchOut);
 	void Init();
 	void Update(double currTimeSec, double deltaTimeSec);
 	bool IsDone();
