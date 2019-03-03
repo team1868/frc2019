@@ -28,6 +28,8 @@ public:
 
 	void HabEncoderTest();
 
+	void LightSensorTest();
+
 	void HatchWristControllerUpdate(double newAngle_, double pFac_, double iFac_, double dFac_);
 
 	void RefreshShuffleboard();
@@ -56,6 +58,7 @@ private:
 	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_, hatchWristNewAngle_;
 	double currHabEncoderVal_;
 	int habRailsEncoderVal_;
+	bool currLightSensorStatus_;
 
 	uint32_t currState_;
 	uint32_t nextState_;

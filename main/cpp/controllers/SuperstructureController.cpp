@@ -236,6 +236,11 @@ void SuperstructureController::HabEncoderTest() {
     printf("Hab Encoder Value is the follwoing %f/n", currHabEncoderVal_);
 }
 
+void SuperstructureController::LightSensorTest(){
+    currLightSensorStatus_ = robot_->GetLightSensorStatus();
+    printf("Light Sensor Value is the following &f/n", currLightSensorStatus_);
+}
+
 void SuperstructureController::RefreshShuffleboard() {
     desiredFlywheelVelocCargo_ = cargoVelocNet_.GetDouble(0.7);
     desiredFlywheelVelocRocket_ = cargoRocketVelocNet_.GetDouble(0.25);

@@ -140,7 +140,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_A_ID);
   gearShiftSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, GEAR_SHIFT_FORWARD_SOLENOID_PORT);
 
-	//TODODODODODOD TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE EEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!
+	//TODODODODODOD TUNEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!
   highGear_ = false; //NOTE: make match with ControlBoard
 
   //Superstructure
@@ -149,6 +149,10 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 	gyro_ = new frc::AnalogGyro(GYRO_PORT);
 	gyro_->InitGyro();
 	gyro_->Calibrate();
+
+	//Initializing Light Sensor
+	lightSensor_ = new frc::DigitalInput(LIGHT_SENSOR_PORT);
+	//lightSensor_->GetLightSensorStatus(); //doesn't work, not needed?
 
   cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
   hatchBeakSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
@@ -450,6 +454,10 @@ double RobotModel::GetGyroAngle(){
 void RobotModel::CalibrateGyro(){
 	gyro_->InitGyro();
 	gyro_->Calibrate();
+}
+
+bool RobotModel::GetLightSensorStatus(){
+	lightSensor_->Get();
 }
 
 int RobotModel::GetHabEncoderValue() {

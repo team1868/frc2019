@@ -90,6 +90,7 @@ class RobotModel {
   void CalibrateGyro();
   double GetGyroAngle();
   int GetHabEncoderValue();
+  bool GetLightSensorStatus();
   
   void SetCargoIntakeOutput(double output);
   void SetCargoUnintakeOutput(double output);
@@ -109,6 +110,7 @@ class RobotModel {
   Victor* GetCargoFlywheelMotor();
 
   AnalogGyro* GetGyro();
+
   Victor* GetHatchWristMotor();
 
   enum GameMode{SANDSTORM, NORMAL_TELEOP};
@@ -170,6 +172,7 @@ class RobotModel {
   frc::Timer *timer_;
   AHRS *navX_; 
   AnalogGyro *gyro_; //gyro for hatch wrist
+  DigitalInput *lightSensor_; //limit switch for cargo
   int navXSpeed_; //in Hz
 
   frc::Compressor *compressor_; //TODO
