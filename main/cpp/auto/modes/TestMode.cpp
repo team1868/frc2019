@@ -6,7 +6,8 @@ TestMode::TestMode(RobotModel *robot) : AutoMode(robot) {
 }
 
 void TestMode::CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) {
-    // string testSequence = robot_->testSequence
+    string testSequence = robot_->GetTestSequence();
+    QueueFromString(testSequence);
 }
 
 void TestMode::Init() {

@@ -214,6 +214,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   ratioDriveNet_ = tab_.Add("Ratio Drive", ratioDrive_).GetEntry();
   ratioSuperNet_ = tab_.Add("Ratio Superstructure", ratioSuperstructure_).GetEntry();
 
+	testSequence_ = "";
 }
 
 // reset timer
@@ -900,6 +901,14 @@ void RobotModel::PrintState(){
 	rollNet_.SetDouble(GetNavXRoll());
 	pressureNet_.SetDouble(GetPressureSensorVal());
 
+}
+
+std::string RobotModel::GetTestSequence() {
+	return testSequence_;
+}
+
+void RobotModel::SetTestSequence(std::string testSequence) {
+	testSequence_ = testSequence;
 }
 
 // deconstructor
