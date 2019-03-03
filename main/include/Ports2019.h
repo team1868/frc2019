@@ -1,3 +1,9 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
 
 //NOTE: Ports changed, look into Phoenix tuner to update
 
@@ -44,10 +50,11 @@ static const int DRIVE_DIRECTION_BUTTON_PORT  = 7;
 
 //---------------superstructure twoJoyMode ports-----------------
 //operatorJoy_
-static const int CARGO_INTAKE_BUTTON_PORT     = 2;
-static const int CARGO_UNINTAKE_BUTTON_PORT   = 3;
-static const int CARGO_FLYWHEEL_BUTTON_PORT   = 7; //unused
+static const int CARGO_INTAKE_BUTTON_PORT          = 2;
+static const int CARGO_UNINTAKE_BUTTON_PORT        = 3;
+static const int CARGO_FLYWHEEL_BUTTON_PORT        = 7; //unused
 static const int CARGO_FLYWHEEL_ROCKET_BUTTON_PORT = 8; //TODO CHANGE THIS
+static const int HAB_PREP_BUTTON_PORT              = 9;
 //operatorJoyB_
 static const int CARGO_INTAKE_WRIST_BUTTON_PORT    = 5;
 static const int HATCH_WRIST_UP_BUTTON_PORT        = 1; //to 90º
@@ -70,7 +77,7 @@ static const int HATCH_INTAKE_WHEEL_BUTTON_PORT_G    = 4;
 static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT_G  = 1;
 static const int HATCH_OUTTAKE_BUTTON_PORT_G         = 6;
 static const int HATCH_BEAK_JOY_PORT_G               = 3; //TODO TUNE
-
+static const int HAB_PREP_BUTTON_PORT_G              = 2;
 //----------------------Superstructure-----------------------
 static const int CARGO_INTAKE_MOTOR_PORT                    = 0;
 static const int CARGO_FLYWHEEL_MOTOR_PORT                  = 1;

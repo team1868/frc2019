@@ -26,7 +26,7 @@ ControlBoard::ControlBoard() {
 	rightJoyY_ = 0.0;
 	rightJoyZ_ = 0.0;
 
-  leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
+    leftJoy_ = new frc::Joystick(LEFT_JOY_USB_PORT);
 	rightJoy_ = new frc::Joystick(RIGHT_JOY_USB_PORT); //if gamepad mode, just initialized and not used
 
 	/*switch(curJoyMode){
@@ -68,9 +68,7 @@ ControlBoard::ControlBoard() {
 	hatchIntakeWheelDesired_ = false;
 	hatchUnintakeWheelDesired_ = false;
 	habDeployDesired_ = false;
-	
-	cargoIntakeWristEngaged_ = false;
-	hatchOuttakeEngaged_ = false;
+	habPrepDesired_ = false;
 
 	switch(curOpJoyMode_){
 		case twoJoy:
@@ -86,6 +84,7 @@ ControlBoard::ControlBoard() {
 			hatchIntakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_INTAKE_WHEEL_BUTTON_PORT);
 			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT);
 			habDeployButton_ = new ButtonReader(operatorJoyB_, HAB_DEPLOY_BUTTON_PORT);
+			habPrepButton_ = new ButtonReader(operatorJoyB_, HAB_PREP_BUTTON_PORT);
 			break;
 		case gamePad:
 			cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT_G);
@@ -97,7 +96,9 @@ ControlBoard::ControlBoard() {
 			//hatch wrist 1:LY
 			hatchIntakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_INTAKE_WHEEL_BUTTON_PORT_G);
 			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT_G);
-			//hab deploy TODOD
+			//hab deploy TODO
+			habPrepButton_ = new ButtonReader(operatorJoy_, HAB_PREP_BUTTON_PORT_G);
+
 			break;
 		default:
 			printf("ERROR: operator Joystick Mode not set in ControlBoard()\n");
@@ -175,6 +176,7 @@ void ControlBoard::ReadControls() {
 			hatchUnintakeWheelDesired_ = hatchUnintakeWheelButton_->IsDown();
 
 			habDeployDesired_ = habDeployButton_->IsDown();
+			habPrepDesired_ = habPrepButton_->IsDown();
 
 			break;
 		case gamePad: //TODODODODODODODODODOSLDKJFALSDKJAFOIEWHGNLKDGAILEDFJOILEJAOIEJOIJ             TUNE DEADBANDS!
@@ -190,6 +192,7 @@ void ControlBoard::ReadControls() {
 			hatchIntakeWheelDesired_ = hatchIntakeWheelButton_->IsDown();
 			hatchUnintakeWheelDesired_ = hatchUnintakeWheelButton_->IsDown();
 			//TODO HAB DEPLOY BUTTON
+			habPrepDesired_ = habPrepButton_->IsDown();
 			break;
 		default:
 			printf("ERROR op joystick mode not correct\n");
@@ -306,6 +309,11 @@ bool ControlBoard::GetHabDeployDesired(){
 	return habDeployDesired_;
 }
 
+bool ControlBoard::GetHabPrepDesired(){
+	return habPrepDesired_;
+}
+
+
 void ControlBoard::ReadAllButtons() {
 	driveDirectionButton_->ReadValue();
 	gearHighShiftButton_->ReadValue();
@@ -328,12 +336,14 @@ void ControlBoard::ReadAllButtons() {
 			hatchWristUpButton_->ReadValue();
 			hatchWristDownButton_->ReadValue();
 			habDeployButton_->ReadValue();
+			habPrepButton_->ReadValue();
 			break;
 		case gamePad:
 			cargoIntakeButton_->ReadValue();
 			hatchOuttakeButton_->ReadValue();
 			hatchIntakeWheelButton_->ReadValue();
 			hatchUnintakeWheelButton_->ReadValue();
+			habPrepButton_->ReadValue();
 			break;
 		default:
 			printf("ERROR op joystick mode incorrect\n");

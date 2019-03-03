@@ -148,6 +148,8 @@ class RobotModel {
   bool lastOver_;
   double ratioAll_, ratioDrive_, ratioSuperstructure_;
   bool compressorOff_;
+
+  int habRailsEncoderVal_; //move later
   
   //bool cutSlaves_; //remove one slave from drive
 
@@ -159,6 +161,7 @@ class RobotModel {
 
   Victor *cargoIntakeMotor_, *cargoFlywheelMotor_, *hatchIntakeWheelMotor_, *hatchWristMotor_;
   rev::CANSparkMax *habSparkMotor_;
+  //rev::CANEncoder *habSparkMotor_;
   Encoder *cargoFlywheelEncoder_;
   DoubleSolenoid *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_;
   Solenoid *hatchOuttakeSolenoid_;
