@@ -66,6 +66,8 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   CurveCommand *curve_; //TODO DELETE
   //double autoStartTime;
 
+  int curvesDone;// delete plz
+
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
-    testerPowerNet_, guidedDriveNet_, habRisePowerNet_;
+    testerPowerNet_, guidedDriveNet_, habRisePowerNet_, leftDistanceNet_, rightDistanceNet_;
 };

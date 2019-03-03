@@ -16,8 +16,8 @@ GuidedDriveController::GuidedDriveController(RobotModel *robot, ControlBoard *hu
 	humanControl_ = humanControl;
 
 	//TODO sketch
-	navXSource_ = new NavXPIDSource(robot_);
-	talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+	navXSource_ = navXSource;//new NavXPIDSource(robot_);
+	talonEncoderSource_ = talonEncoderSource;//new TalonEncoderPIDSource(robot_);
 	anglePIDOutput_ = anglePIDOutput;
 	distancePIDOutput_ = distancePIDOutput;
 	driveStraight_ = new DriveStraightCommand(navXSource_, talonEncoderSource_,

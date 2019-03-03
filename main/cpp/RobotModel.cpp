@@ -14,7 +14,7 @@
 
 static const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
 static const double HIGH_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft
-static const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50;//15; //ft 762
+static const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50;//50;//15; //ft 762
 static const double ENCODER_COUNT_PER_ROTATION = 256.0;
 static const int EDGES_PER_ENCODER_COUNT = 4;
 
@@ -140,7 +140,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_A_ID);
   gearShiftSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, GEAR_SHIFT_FORWARD_SOLENOID_PORT);
 
-	//TODODODODODOD TUNEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!
+	//TODODODODODOD TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE EEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!
   highGear_ = false; //NOTE: make match with ControlBoard
 
   //Superstructure
@@ -153,6 +153,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 	//Initializing Light Sensor
 	lightSensor_ = new frc::DigitalInput(LIGHT_SENSOR_PORT);
 	//lightSensor_->GetLightSensorStatus(); //doesn't work, not needed?
+
 
   cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
   hatchBeakSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
@@ -168,8 +169,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
   cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
   cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
-	
-	//habRailsEncoderVal_ = habSparkMotor_->GetEncoder().GetPosition();
+	//habSparkMotor_->GetEncoder().GetPosition(); //move later
 
 
   //TODO MESS, also TODO check before matches
@@ -365,8 +365,8 @@ void RobotModel::SetHighGear() {
 	//gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
 	gearShiftSolenoid_->Set(false);
 	highGear_ = true;
-  leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
-  rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+  //leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
+  //rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
@@ -379,9 +379,9 @@ void RobotModel::SetLowGear() {
 
 	highGear_ = false;
 
-	leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
+	//leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
 
-    rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+    //rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
@@ -400,11 +400,35 @@ double RobotModel::GetRightEncoderValue() {
 }
 
 double RobotModel::GetLeftDistance() {
-	return leftDriveEncoder_->GetDistance(); //correct? TODO
+	if(IsHighGear()){
+		return leftDriveEncoder_->Get()*(HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION;//GetDistance(); //correct? TODO
+	} else {
+		return leftDriveEncoder_->Get()*(LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION;
+	}
 }
 
 double RobotModel::GetRightDistance() {
-	return rightDriveEncoder_->GetDistance(); //correct? TODO
+	if(IsHighGear()){
+		return rightDriveEncoder_->Get()*(HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION;//GetDistance(); //correct? TODO
+	} else {
+		return rightDriveEncoder_->Get()*(LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION;
+	}
+}
+
+double RobotModel::GetLeftDistancePerPulse(){
+	return leftDriveEncoder_->GetDistancePerPulse();
+}
+
+double RobotModel::GetRightDistancePerPulse(){
+	return rightDriveEncoder_->GetDistancePerPulse();
+}
+
+double RobotModel::GetLeftEncodingScale(){
+	return leftDriveEncoder_->GetEncodingScale();
+}
+
+double RobotModel::GetRightEncodingScale(){
+	return rightDriveEncoder_->GetEncodingScale();
 }
 
 bool RobotModel::GetLeftEncoderStopped() {

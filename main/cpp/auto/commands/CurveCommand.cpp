@@ -7,6 +7,7 @@
 
 #include "../../../include/auto/commands/CurveCommand.h"
 #include <math.h>
+#include <cmath>
 
 #define PI 3.141592653589 //TODO CHANGE, this is a mess
 
@@ -18,6 +19,39 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   desiredRadius_ = desiredRadius;
   desiredAngle_ = desiredAngle;
   turnLeft_ = turnLeft;
+
+  navXPIDSource_ = navXSource;
+  talonEncoderPIDSource_ = talonEncoderSource;
+  anglePIDOutput_ = anglePIDOutput;
+  distancePIDOutput_ = distancePIDOutput;
+
+  dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dP", 0.8).GetEntry();
+  dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dI", 0.0).GetEntry();
+  dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve dD", 0.2).GetEntry();
+
+  tPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tP", 0.07).GetEntry();
+  tIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tI", 0.0).GetEntry();
+  tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tD", 0.0).GetEntry();
+
+  
+  dOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve dO", 0.0).GetEntry(); 
+  tOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve tO", 0.0).GetEntry(); 
+  lOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve lO", 0.0).GetEntry();
+  rOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve rO", 0.0).GetEntry();
+  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve dErr", 0.0).GetEntry(); 
+  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve tErr", 0.0).GetEntry(); 
+
+  pidSourceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve PID Get", 0.0).GetEntry(); 
+}
+
+CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
+  NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+	AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput) : AutoCommand() { //using absolute angle, radius is inside wheel
+  
+  robot_ = robot;
+  desiredRadius_ = desiredRadius;
+  desiredAngle_ = abs(desiredAngle);
+  turnLeft_ = desiredAngle_<0;
 
   navXPIDSource_ = navXSource;
   talonEncoderPIDSource_ = talonEncoderSource;
@@ -213,9 +247,9 @@ void CurveCommand::Update(double currTimeSec, double deltaTimeSec){ //TODO add t
 double CurveCommand::CalcCurDesiredAngle(double curPivDistance){
   double rawAngle = (curPivDistance/desiredRadius_ *180/PI) + initAngle_; //TODO POSSIBLE ERROR WITH INIT ANGLE
   if(turnLeft_){ //CHECK LOGIC??? why is right negative makes no sense
-    return rawAngle;
-  } else {
     return -rawAngle;
+  } else {
+    return rawAngle;
   }
 }
 

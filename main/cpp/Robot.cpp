@@ -37,18 +37,19 @@ void Robot::RobotInit()  {
   robot_->CalibrateGyro();
   robot_->ResetGyro();
 
-  NavXPIDSource *navXSource = new NavXPIDSource(robot_);
+  /*NavXPIDSource *navXSource = new NavXPIDSource(robot_);
   TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
+  */
   
   //initialize controllers
   humanControl_ = new ControlBoard();
   driveController_ = new DriveController(robot_, humanControl_);
-  guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  //guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
 
   superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
-  talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+  //talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
   habLimitSwitch_ = new DigitalInput(4);
 
@@ -72,6 +73,8 @@ void Robot::RobotInit()  {
   //TODODODOD MOVE TO ROBOT MODEL
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
+  leftDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Distance (RM)", robot_->GetLeftEncoderValue()).GetEntry();
+	rightDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Distance (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
@@ -92,6 +95,13 @@ void Robot::RobotPeriodic() {
   rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
   leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
   rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
+  leftDistanceNet_.SetDouble(robot_->GetLeftDistance());
+  rightDistanceNet_.SetDouble(robot_->GetRightDistance());
+  SmartDashboard::PutNumber("left distance per pulse", robot_->GetLeftDistancePerPulse());
+  SmartDashboard::PutNumber("right distance per pulse", robot_->GetRightDistancePerPulse());
+  SmartDashboard::PutNumber("left encoder scale", robot_->GetLeftEncodingScale());
+  SmartDashboard::PutNumber("right encoder scale", robot_->GetRightEncodingScale());
+  SmartDashboard::PutBoolean("is high gear?", robot_->IsHighGear());
   robot_->PrintState();
 }
 
@@ -126,7 +136,7 @@ void Robot::AutonomousInit() {
   //printf("\n\n AUTO BEGINS AT %f\n\n", autoStartTime);
   //pivot_ = new PivotCommand(robot_, -90.0, true, navXSource);
   //pivot_->Init();
-  curve_ = new CurveCommand(robot_, 2, 90, false, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  curve_ = new CurveCommand(robot_, 2, 90, true, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
   curve_->Init();
 
 
@@ -152,8 +162,7 @@ void Robot::AutonomousPeriodic() {
   /*if(!pivot_->IsDone()){
     pivot_->Update(currTimeSec_, deltaTimeSec_);
   }*/
-  if (!curve_->IsDone())
-    curve_->Update(currTimeSec_, deltaTimeSec_);
+  if (!curve_->IsDone()) curve_->Update(currTimeSec_, deltaTimeSec_);
 
   if (m_autoSelected == kAutoNameCustom) {
     // Custom Auto goes here
@@ -211,11 +220,11 @@ void Robot::TeleopPeriodic() {
       robot_->UpdateCurrent();
 		  humanControl_->ReadControls();
       if(!guidedDriveNet_.GetBoolean(false)){
-        guidedDriveController_->Disable(); //TODO will prob break code
+        //guidedDriveController_->Disable(); //TODO will prob break code
 		    driveController_->Update(currTimeSec_, deltaTimeSec_);
       } else {
-        guidedDriveController_->Enable(); //TODO will prob break code
-        guidedDriveController_->Update(0.0, 0.0); //time doesn't matter
+        //guidedDriveController_->Enable(); //TODO will prob break code
+        //guidedDriveController_->Update(0.0, 0.0); //time doesn't matter
       }
 		  superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used, comment out
 		  Logger::LogState(robot_, humanControl_);

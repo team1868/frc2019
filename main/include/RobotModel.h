@@ -74,6 +74,12 @@ class RobotModel {
   double GetLeftDistance(); //TODO
   double GetRightDistance(); //TODO
 
+  double GetLeftDistancePerPulse();
+  double GetRightDistancePerPulse();
+
+  double GetLeftEncodingScale();
+  double GetRightEncodingScale();
+
   bool GetLeftEncoderStopped(); //TODO
   bool GetRightEncoderStopped(); //TODO
 

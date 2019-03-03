@@ -175,7 +175,7 @@ void DriveStraightCommand::Update(double currTimeSec, double deltaTimeSec) {
 		if (diffDriveTime_ > driveTimeoutSec_) { //LEAVING AS 10.0 FOR NOW BC WE DON'T KNOW ACTUAL VALUES
 			printf(" %f DRIVESTRAIGHT TIMED OUT!! :) go get chicken tenders %f\n", robot_->GetTime(), diffDriveTime_);
 		}
-		printf("%f Final Left Distance: %f\n"
+		printf("%f Final Left Distance: %f\n" //encoder values not distances
 				"Final Right Distance: %f\n"
 				"Final Average Distance: %f\n"
 				"Final Drivestraight error: %f\n",

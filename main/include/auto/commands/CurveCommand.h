@@ -17,6 +17,9 @@ class CurveCommand : public AutoCommand {
   CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft,
     NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
 	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
+  CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
+    NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,
+	  AnglePIDOutput* anglePIDOutput, DistancePIDOutput* distancePIDOutput);
   void Init();
   void Update(double currTimeSec, double deltaTimeSec);
   bool IsDone();
