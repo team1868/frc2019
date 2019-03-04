@@ -117,16 +117,34 @@ public:
 				tempCommand = new DriveStraightCommand(navX_, talonEncoder_, angleOutput_, distanceOutput_, robot_, distance, currAngle_);
 			}
 			break;
+		case 'c':	// curve command
+			double curveRadius;
+			double curveAngle;
+			int turnLeft;
+			iss >> curveRadius;
+			iss >> curveAngle;
+			iss >> turnLeft;
+			if (IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				printf("radius: %f\n, angle: %f\n, turnleft: %d\n", curveRadius, curveAngle, turnLeft);
+				if (turnLeft == 0) {
+					tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, false, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+				} else {
+					tempCommand = new CurveCommand(robot_, curveRadius, curveAngle, true, navX_, talonEncoder_, angleOutput_, distanceOutput_);
+				}
+			}
+			break;
 		case 'b':	// hatch beak command
 			int beakOpenDesired;	// 1 = true = open, 0 = false = closed
 			iss >> beakOpenDesired;
 			if (IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				if (beakOpenDesired == 1) {
-					tempCommand = new HatchBeakCommand(robot_, true);
-				} else {
+				if (beakOpenDesired == 0) {
 					tempCommand = new HatchBeakCommand(robot_, false);
+				} else {
+					tempCommand = new HatchBeakCommand(robot_, true);
 				}
 			}
 			break;
@@ -136,10 +154,10 @@ public:
 			if (IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				if (hatchOutDesired == 1) {
-					tempCommand = new OuttakeHatchCommand(robot_, true);
-				} else {
+				if (hatchOutDesired == 0) {
 					tempCommand = new OuttakeHatchCommand(robot_, false);
+				} else {
+					tempCommand = new OuttakeHatchCommand(robot_, true);
 				}
 			}
 			break;
@@ -149,10 +167,10 @@ public:
 			if (IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				if (driveStraightDesired == 1) {
-					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, true);
-				} else {
+				if (driveStraightDesired == 0) {
 					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, false);
+				} else {
+					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, true);
 				}
 			}
 			break;
