@@ -168,40 +168,6 @@ double DriveController::GetCubicAdjustment(double value, double adjustmentConsta
 	return adjustmentConstant * std::pow(value, 3.0) + (1 - adjustmentConstant) * value;
 }
 
-
-/*
-double * DriveController::HandleStaticFriction(double leftOutput, double rightOutput, double thrustValue){
-	double staticFriction;
-	if(robot_->IsHighGear()){
-		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
-		
-		if(thrustValue <= 0.1 && thrustValue >= -0.1){ //TODO TUNNNNNNNNNNNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEEEEEEEEE NNNNNNNNNNEEEEEEEEEEDDDDDDDDDD
-			//quick turn
-			staticFriction += HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
-		}
-	} else {
-		staticFriction = LOW_GEAR_STATIC_FRICTION_POWER;
-
-		if(thrustValue <= 0.1 && thrustValue >= -0.1){
-			//quick turn
-			staticFriction += LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
-		}
-	}
-	if(leftOutput > 0.0){
-		leftOutput += staticFriction;
-	} else if(leftOutput < 0.0){
-		leftOutput -= staticFriction;
-	} //else don't waste power on static friction or might burn motors
-	if(rightOutput > 0.0){
-		rightOutput += staticFriction;
-	} else if(rightOutput < 0.0){
-		rightOutput -= staticFriction;
-	} //else don't waste power on static friction or might burn motors
-	double outputs[] = {leftOutput, rightOutput};
-	return outputs;
-}
-*/
-
 bool DriveController::IsDone() {
 	return isDone_;
 }

@@ -49,7 +49,7 @@ public:
 	 */
 	void PrintDriveValues();
 
-private:
+protected:
 	/**
 	 * Drives robot in Arcade
 	 */
