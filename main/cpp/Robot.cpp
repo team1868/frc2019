@@ -37,16 +37,17 @@ void Robot::RobotInit()  {
   robot_->CalibrateGyro();
   robot_->ResetGyro();
 
-  /*NavXPIDSource *navXSource = new NavXPIDSource(robot_);
-  TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
+  //NOTE: POSSIBLE ERROR bc making multiple sources teleop vs auto
+  NavXPIDSource *navXSource = new NavXPIDSource(robot_);
+  //TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
-  DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
-  */
+  //DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
+  
   
   //initialize controllers
   humanControl_ = new ControlBoard();
   driveController_ = new DriveController(robot_, humanControl_);
-  //guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navXSource, anglePIDOutput);
 
   superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
   //talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -79,7 +80,7 @@ void Robot::RobotInit()  {
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
   habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.2).GetEntry();
-  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).withWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", true).withWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
 }
 
 /**
@@ -172,6 +173,7 @@ void Robot::AutonomousPeriodic() {
 }
 // reset timer and controller
 void Robot::TeleopInit() {
+  guidedDrive_ = false;
   frc::Shuffleboard::StartRecording();
   printf("Start teleop\n");
   robot_->ResetTimer();
@@ -222,10 +224,18 @@ void Robot::TeleopPeriodic() {
       if(!guidedDriveNet_.GetBoolean(false)){
         //guidedDriveController_->Disable(); //TODO will prob break code
 		    driveController_->Update(currTimeSec_, deltaTimeSec_);
+        if(guidedDrive_){
+          guidedDriveController_->Disable();
+        }
       } else {
+        if(!guidedDrive_){
+          guidedDriveController_->Enable();
+        }
+        guidedDriveController_->Update(currTimeSec_, deltaTimeSec_);
         //guidedDriveController_->Enable(); //TODO will prob break code
         //guidedDriveController_->Update(0.0, 0.0); //time doesn't matter
       }
+      guidedDrive_ = guidedDriveNet_.GetBoolean(false); //TODO change and make better
 		  superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used, comment out
 		  Logger::LogState(robot_, humanControl_);
       break;

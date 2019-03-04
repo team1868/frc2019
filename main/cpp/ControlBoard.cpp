@@ -11,8 +11,9 @@
 ControlBoard::ControlBoard() {
 	printf("in control board\n");
 
-	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Left Joy Z (thrust sensitivity)", 0.0).GetEntry();
-	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Right Joy Z (rotate sensitivity)", 0.0).GetEntry();
+	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("thrust sensitivity", 0.0).GetEntry();
+	smallTurnSensitivityNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rotate sensitivity smallTurn", 0.0).GetEntry();
+	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rotate sensitivity", 0.0).GetEntry();
 	joyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad", true).GetEntry(); //hm, consider for ooperator
 	opJoyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad op", false).GetEntry();
 
@@ -45,14 +46,16 @@ ControlBoard::ControlBoard() {
 	
 	//Drive Buttons
 	highGearDesired_ = false;
+	smallTurnDesired_ = false;
 	arcadeDriveDesired_ = true;
 	quickTurnDesired_ = true;
 	reverseDriveDesired_ = false;
 
 	gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
 	gearLowShiftButton_ = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
-	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); // TODO change this, delete actually
-	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //TODO FIX, aka add to shuffleboard
+	smallTurnButton_ = new ButtonReader(leftJoy_, SMALL_TURN_BUTTON_PORT);
+	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); //unused
+	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //USED
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
 	
 	//Superstructure Buttons
@@ -129,7 +132,12 @@ void ControlBoard::ReadControls() {
 	leftJoyLTrigger_ = leftJoy_->GetRawAxis(2); //TODO FIX, gamepad or not (error prob for not)
 
 	leftJoyZ_ = leftZNet_.GetDouble(0.0);
-	rightJoyZ_ = rightZNet_.GetDouble(0.0);
+	if(!smallTurnDesired_){
+		rightJoyZ_ = rightZNet_.GetDouble(0.0);
+	} else {
+		rightJoyZ_ = smallTurnSensitivityNet_.GetDouble(2*rightZNet_.GetDouble(0.0));
+	}
+
 	switch(curJoyMode) {
 		case(twoJoy):
 			rightJoyX_ = rightJoy_->GetX();
@@ -153,6 +161,7 @@ void ControlBoard::ReadControls() {
 	//gearHighShiftButton_->IsDown();
 	arcadeDriveDesired_ = arcadeDriveButton_->IsDown(); //TODO DEAD CODE
 	quickTurnDesired_ = quickTurnButton_->IsDown();
+	smallTurnDesired_ = smallTurnButton_->IsDown();
 
 
 	//-----------SUPERSTRUCTURE-------------------
@@ -237,6 +246,10 @@ bool ControlBoard::GetHighGearDesired() {
 	return highGearDesired_;
 }
 
+bool ControlBoard::GetSmallTurnDesired(){
+	return smallTurnDesired_;
+}
+
 bool ControlBoard::GetArcadeDriveDesired() {
 	return arcadeDriveDesired_;
 }
@@ -318,6 +331,7 @@ void ControlBoard::ReadAllButtons() {
 	driveDirectionButton_->ReadValue();
 	gearHighShiftButton_->ReadValue();
 	gearLowShiftButton_->ReadValue();
+	smallTurnButton_->ReadValue();
 	arcadeDriveButton_->ReadValue();
 	quickTurnButton_->ReadValue();
 

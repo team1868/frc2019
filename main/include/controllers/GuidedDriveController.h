@@ -33,18 +33,16 @@ public:
 	/**
 	 * Destructor
 	 */
-	~GuidedDriveController();
+	virtual ~GuidedDriveController();
 
-	void Disable();
-	void Enable();
-
-	void Update(double currTimeSec, double deltaTimeSec);
+	virtual void Disable();
+	virtual void Enable();
 
 private:
 	/**
 	 * Drives robot in Arcade
 	 */
-	void ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity);
+	virtual void ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity);
 
 	uint32_t currState_;
 	uint32_t nextState_;

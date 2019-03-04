@@ -62,6 +62,7 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
 
   GuidedDriveController *guidedDriveController_;
   DriveStraightCommand *driveStraight_;//TODO delete
+  bool guidedDrive_;
   PivotCommand *pivot_; //testing TODO delte
   CurveCommand *curve_; //TODO DELETE
   //double autoStartTime;

@@ -191,3 +191,6 @@ void DriveController::PrintDriveValues(){
 
 DriveController::~DriveController() {
 }
+
+void DriveController::Enable(){}
+void DriveController::Disable(){}

@@ -40,6 +40,7 @@ public:
 	double GetJoystickValue(Joysticks j, Axes a);
 	bool GetReverseDriveDesired();
 	bool GetHighGearDesired();
+	bool GetSmallTurnDesired();
 	bool GetArcadeDriveDesired();
 	bool GetQuickTurnDesired();
 
@@ -78,7 +79,7 @@ private:
 	double leftJoyLTrigger_;
 
 	// Drive Modes
-	bool reverseDriveDesired_, highGearDesired_, arcadeDriveDesired_, quickTurnDesired_;
+	bool reverseDriveDesired_, highGearDesired_, smallTurnDesired_, arcadeDriveDesired_, quickTurnDesired_;
 
 	// Joysticks for drive
 	frc::Joystick *leftJoy_, *rightJoy_;
@@ -87,9 +88,9 @@ private:
 	frc::Joystick *operatorJoy_, *operatorJoyB_; //TODO implement
 
 	// Buttons for drive
-	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *arcadeDriveButton_, *quickTurnButton_;
+	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *smallTurnButton_, *arcadeDriveButton_, *quickTurnButton_;
 
-	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_, opJoyModeNet_;
+	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_, opJoyModeNet_, smallTurnSensitivityNet_;
 	
 	//Buttons for superstructure
 	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoIntakeButton_, *cargoUnintakeButton_,

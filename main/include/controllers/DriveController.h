@@ -30,7 +30,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	~DriveController();
+	virtual ~DriveController();
 
 	void DriveStraightInit();
 
@@ -49,11 +49,14 @@ public:
 	 */
 	void PrintDriveValues();
 
+	virtual void Enable();
+	virtual void Disable();
+
 protected:
 	/**
 	 * Drives robot in Arcade
 	 */
-	void ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity);
+	virtual void ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity);
 
 	/**
 	 * Drives robot in Tank
