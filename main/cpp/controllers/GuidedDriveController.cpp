@@ -15,9 +15,9 @@ GuidedDriveController::GuidedDriveController(RobotModel *robot, ControlBoard *hu
 	//robot_ = robot;
 	//humanControl_ = humanControl;
 	
-	pFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided P", 0.07).GetEntry(); //TODO MOVE TO SEPERAT
+	pFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided P", 0.085).GetEntry(); //TODO MOVE TO SEPERAT
 	iFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided I", 0.0).GetEntry();
-	dFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided D", 0.02).GetEntry();
+	dFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided D", 0.025).GetEntry();
 	
 	errorNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided error", 0.0).GetEntry();
 
@@ -34,7 +34,7 @@ GuidedDriveController::GuidedDriveController(RobotModel *robot, ControlBoard *hu
 	anglePID_->SetAbsoluteTolerance(0.5); //HM TUNE TODODODODODOD
 	anglePID_->SetContinuous(true);
 	anglePID_->SetInputRange(-180, 180);
-	anglePID_->SetOutputRange(-0.4, 0.4); //TODO TUNEEEEEEEEEEEE
+	anglePID_->SetOutputRange(-0.8, 0.8); //TODO TUNEEEEEEEEEEEE
 	anglePID_->Enable();
 
 	// motor outputs, done in super() but done again anyways

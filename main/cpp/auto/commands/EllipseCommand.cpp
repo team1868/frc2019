@@ -27,13 +27,13 @@ EllipseCommand::EllipseCommand(RobotModel *robot, double a, double b, double des
     anglePIDOutput_ = anglePIDOutput;
     distancePIDOutput_ = distancePIDOutput;
 
-    dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse dP", 0.8).GetEntry();
+    dPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse dP", 0.08).GetEntry();
     dIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse dI", 0.0).GetEntry();
-    dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse dD", 0.2).GetEntry();
+    dDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse dD", 0.02).GetEntry();
 
-    tPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse tP", 0.8).GetEntry();
+    tPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse tP", 0.08).GetEntry();
     tIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse tI", 0.0).GetEntry();
-    tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse tD", 0.2).GetEntry();
+    tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Ellipse tD", 0.02).GetEntry();
 }
 
 void EllipseCommand::Init(){
@@ -119,14 +119,10 @@ void EllipseCommand::Update(double currTimeSec, double deltaTimeSec){
     if(dPID_->OnTarget() && tPID_->OnTarget()){ //TODO add timeout here, also TODO possible source of error if one done and one not?
     printf("%f Final NavX Angle from PID Source: %f\n"
             "Final NavX Angle from robot: %f \n"
-            "Final Distance from PID Source: %f\n",
+            "Final Distance from PID Source: %f\n"
+            "Final Distance from robot (right): %f\n",
             robot_->GetTime(), navXPIDSource_->PIDGet(), robot_->GetNavXYaw(),
-            talonEncoderPIDSource_->PIDGet());
-    if(turnLeft_){
-        printf("Final Distance from robot: %f\n", robot_->GetRightDistance());//robot_->GetLeftDistance()); /fixed inversion
-    } else {
-        printf("Final Distance from robot: %f\n", robot_->GetLeftDistance());
-    }
+            talonEncoderPIDSource_->PIDGet(), robot_->GetRightDistance());
         //Reset();
         isDone_ = true;
         robot_->SetDriveValues(RobotModel::kAllWheels, 0.0);
@@ -136,11 +132,12 @@ void EllipseCommand::Update(double currTimeSec, double deltaTimeSec){
         //}
     } else {
 
-    if(turnLeft_){
+    /*if(turnLeft_){
         curDistance_ = robot_->GetRightDistance();//robot_->GetLeftDistance();
     } else {
         curDistance_ = robot_->GetLeftDistance();
-    }
+    }*/
+    curDistance_ = talonEncoderPIDSource_->PIDGet();
     curDesiredAngle_ = CalcCurDesiredAngle(curDistance_);
     curAngleError_ = curDesiredAngle_ - curAngle_;
 
@@ -183,11 +180,12 @@ void EllipseCommand::Update(double currTimeSec, double deltaTimeSec){
     tOutputNet_.SetDouble(tOutput);
     lOutputNet_.SetDouble(lOutput);
     rOutputNet_.SetDouble(rOutput);
-    if(turnLeft_){
+    dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - talonEncoderPIDSource_->PIDGet());
+    /*if(turnLeft_){
         dErrorNet_.SetDouble(2*PI/(360/desiredAngle_) - robot_->GetRightDistance());
     } else {
         dErrorNet_.SetDouble((2*PI/(360/desiredAngle_) - robot_->GetLeftDistance()));
-    }
+    }*/
     tErrorNet_.SetDouble(curAngleError_);
     }
 }
@@ -200,9 +198,12 @@ double EllipseCommand::CalcCurDesiredAngle(double curDistance){
     double t = acos((2.0*pow(3.0*curDistance+b_*b_*b_, 2.0/3.0) - b_*b_ + a_*a_) / (b_*b_-a_*a_))/2.0;
     double angle = 90 - (atan((b_*cos(t)) / (-a_*sin(t))) * 180/PI);
     if(turnLeft_){
-        angle = -angle;
+        printf("curdesiredangle: %f\n", -angle);
+        return -angle;
+    } else {
+        printf("curdesiredangle: %f\n", angle);
+        return angle;
     }
-    return angle;
 }
 
 void EllipseCommand::LoadPIDValues(){

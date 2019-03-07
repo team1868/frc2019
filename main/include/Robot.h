@@ -18,6 +18,7 @@
 #include "../include/controllers/SuperstructureController.h"
 #include "../include/auto/PIDSource/PIDInputSource.h"
 #include "../include/auto/commands/DriveStraightCommand.h"
+#include "../include/auto/commands/EllipseCommand.h"
 #include "../include/auto/commands/PivotCommand.h"
 #include "../include/auto/commands/CurveCommand.h"
 
@@ -62,6 +63,7 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
 
   GuidedDriveController *guidedDriveController_;
   DriveStraightCommand *driveStraight_;//TODO delete
+  EllipseCommand *ellipse_;
   bool guidedDrive_;
   PivotCommand *pivot_; //testing TODO delte
   CurveCommand *curve_; //TODO DELETE

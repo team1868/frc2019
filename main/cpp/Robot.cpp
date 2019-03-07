@@ -137,9 +137,10 @@ void Robot::AutonomousInit() {
   //printf("\n\n AUTO BEGINS AT %f\n\n", autoStartTime);
   //pivot_ = new PivotCommand(robot_, -90.0, true, navXSource);
   //pivot_->Init();
-  curve_ = new CurveCommand(robot_, 2, 90, true, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
-  curve_->Init();
-
+  //curve_ = new CurveCommand(robot_, 2, 90, true, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  //curve_->Init();
+  ellipse_ = new EllipseCommand(robot_, 1, 3, 90, false, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  ellipse_->Init();
 
   m_autoSelected = m_chooser.GetSelected();
   // m_autoSelected = SmartDashboard::GetString(
@@ -163,7 +164,8 @@ void Robot::AutonomousPeriodic() {
   /*if(!pivot_->IsDone()){
     pivot_->Update(currTimeSec_, deltaTimeSec_);
   }*/
-  if (!curve_->IsDone()) curve_->Update(currTimeSec_, deltaTimeSec_);
+  //if (!curve_->IsDone()) curve_->Update(currTimeSec_, deltaTimeSec_);
+  if(!ellipse_->IsDone()) ellipse_->Update(currTimeSec_, deltaTimeSec_);
 
   if (m_autoSelected == kAutoNameCustom) {
     // Custom Auto goes here
@@ -221,21 +223,28 @@ void Robot::TeleopPeriodic() {
 		  robot_->PrintState();
       robot_->UpdateCurrent();
 		  humanControl_->ReadControls();
-      if(!guidedDriveNet_.GetBoolean(false)){
-        //guidedDriveController_->Disable(); //TODO will prob break code
-		    driveController_->Update(currTimeSec_, deltaTimeSec_);
-        if(guidedDrive_){
+
+      if(!guidedDriveNet_.GetBoolean(false)){ //regular drive
+        
+        if(guidedDrive_){ //switching modes
+          guidedDrive_ = false;
           guidedDriveController_->Disable();
+        } else {
+		      driveController_->Update(currTimeSec_, deltaTimeSec_);
         }
-      } else {
-        if(!guidedDrive_){
+      
+      } else { //guided drive
+        
+        if(!guidedDrive_){ //switching modes
           guidedDriveController_->Enable();
+          guidedDrive_ = true;
+        } else {
+          guidedDriveController_->Update(currTimeSec_, deltaTimeSec_);
         }
-        guidedDriveController_->Update(currTimeSec_, deltaTimeSec_);
-        //guidedDriveController_->Enable(); //TODO will prob break code
-        //guidedDriveController_->Update(0.0, 0.0); //time doesn't matter
+      
       }
-      guidedDrive_ = guidedDriveNet_.GetBoolean(false); //TODO change and make better
+
+      //guidedDrive_ = guidedDriveNet_.GetBoolean(false); //TODO change and make better
 		  superstructureController_->Update(currTimeSec_, deltaTimeSec_); //TODO timer variables not being used, comment out
 		  Logger::LogState(robot_, humanControl_);
       break;
