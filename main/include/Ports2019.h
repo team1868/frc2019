@@ -42,7 +42,7 @@ static const int RIGHT_JOY_USB_PORT           = 1;
 static const int OPERATOR_JOY_USB_PORT        = 2;
 static const int OPERATOR_JOY_B_USB_PORT      = 3;
 //top 4 actually correct :)
-static const int HIGH_GEAR_BUTTON_PORT        = 4;
+static const int HIGH_GEAR_BUTTON_PORT        = 3; // 4 FOR GAME PAD NEED TO FIX
 static const int LOW_GEAR_BUTTON_PORT         = 1;
 static const int SMALL_TURN_BUTTON_PORT       = 5;
 static const int ARCADE_DRIVE_BUTTON_PORT     = 5; //unused

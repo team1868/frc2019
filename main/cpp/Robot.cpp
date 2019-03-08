@@ -62,7 +62,8 @@ void Robot::RobotInit()  {
 
 
   ResetTimerVariables();
-  CameraServer::GetInstance()->StartAutomaticCapture();
+  Wait(7.0);
+  CameraServer::GetInstance()->StartAutomaticCapture(0);
   //Wait(1.0);
 
   printf("Main program initialized\n");
@@ -199,8 +200,8 @@ void Robot::TeleopPeriodic() {
   if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
     robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.4));
-  } else if (humanControl_->GetTest3Desired()){
-    robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.2));
+  // } else if (humanControl_->GetTest3Desired()){
+  //   robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.2));
   } else {
     robot_->SetHabMotorOutput(0.0);
   }

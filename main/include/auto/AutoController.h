@@ -1,7 +1,8 @@
 #ifndef SRC_AUTO_AUTOCONTROLLER_H_
 #define SRC_AUTO_AUTOCONTROLLER_H_
 
-#include "modes/AutoMode.h"
+// #include "modes/AutoMode.h"
+#include "modes/TestMode.h"
 
 class AutoController {
 public:

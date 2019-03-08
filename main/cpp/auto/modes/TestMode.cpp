@@ -2,7 +2,6 @@
 
 TestMode::TestMode(RobotModel *robot) : AutoMode(robot) {
     printf("in test mode constructor \n");
-
 }
 
 void TestMode::CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) {

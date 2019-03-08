@@ -6,12 +6,10 @@
 class TestMode : public AutoMode {
 public:
     TestMode(RobotModel *robot);
-    void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) override;
+    void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl);
     void Init();
 
     virtual ~TestMode();
-private:
-
 };
 
 #endif /* SRC_AUTO_MODES_TESTMODE_H_ */

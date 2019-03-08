@@ -11,9 +11,9 @@
 ControlBoard::ControlBoard() {
 	printf("in control board\n");
 
-	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("thrust sensitivity", 0.0).GetEntry();
+	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("thrust sensitivity", 0.2).GetEntry();
 	smallTurnSensitivityNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rotate sensitivity smallTurn", 0.0).GetEntry();
-	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rotate sensitivity", 0.0).GetEntry();
+	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rotate sensitivity", 0.7).GetEntry();
 	joyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad", true).GetEntry(); //hm, consider for ooperator
 	opJoyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad op", false).GetEntry();
 
@@ -110,7 +110,7 @@ ControlBoard::ControlBoard() {
 	//TODO DELETE
 	testButton_ = new ButtonReader(leftJoy_, 2);
 	testButton2 = new ButtonReader(leftJoy_, 7);
-	testButton3 = new ButtonReader(leftJoy_, 3); 
+	// testButton3 = new ButtonReader(leftJoy_, 3); 
 
   ReadControls();
 }
@@ -269,10 +269,10 @@ bool ControlBoard::GetTest2Desired(){
 	return testButton2->IsDown();
 }
 
-bool ControlBoard::GetTest3Desired(){
-	testButton3->ReadValue();
-	return testButton3->IsDown();
-}
+// bool ControlBoard::GetTest3Desired(){
+// 	testButton3->ReadValue();
+// 	return testButton3->IsDown();
+// }
 
 bool ControlBoard::GetCargoIntakeDesired(){
 	return cargoIntakeDesired_;
