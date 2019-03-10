@@ -107,7 +107,7 @@ static const int FLYWHEEL_ENCODER_A_PWM_PORT = 0; //INCORRECT, TODO
 static const int FLYWHEEL_ENCODER_B_PWM_PORT = 1; //INCORRECT, TODO
 
 static const int GYRO_PORT                                  = 1; //Analog IO
-static const int LIGHT_SENSOR_PORT                          = 2; //DIO 3
+static const int LIGHT_SENSOR_PORT                          = 5; //DIO 3
 //limit switch is dio port 4
 
 static const int HATCH_INTAKE_WRIST_PDP_CHAN                = 7;

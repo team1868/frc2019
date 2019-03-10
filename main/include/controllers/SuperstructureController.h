@@ -28,6 +28,8 @@ public:
 
 	void HabEncoderTest();
 
+	bool CargoInIntake();
+
 	void LightSensorTest();
 
 	void HatchWristControllerUpdate(double newAngle_, double pFac_, double iFac_, double dFac_);

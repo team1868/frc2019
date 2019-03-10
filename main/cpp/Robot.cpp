@@ -62,8 +62,8 @@ void Robot::RobotInit()  {
 
 
   ResetTimerVariables();
-  Wait(7.0);
-  CameraServer::GetInstance()->StartAutomaticCapture(0);
+  //Wait(7.0);
+  //CameraServer::GetInstance()->StartAutomaticCapture(0);
   //Wait(1.0);
 
   printf("Main program initialized\n");
@@ -81,7 +81,7 @@ void Robot::RobotInit()  {
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
   habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.2).GetEntry();
-  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", true).withWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
 }
 
 /**
