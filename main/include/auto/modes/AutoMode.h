@@ -162,16 +162,16 @@ public:
 			}
 			break;
 		case 'a':	// align with tape command
-			int driveStraightDesired;	// 1 = true = drive, 0 = false = just pivot
-			iss >> driveStraightDesired;
+			// int driveStraightDesired;	// 1 = true = drive, 0 = false = just pivot
+			// iss >> driveStraightDesired;
 			if (IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				if (driveStraightDesired == 0) {
-					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, false);
-				} else {
-					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, true);
-				}
+				// if (driveStraightDesired == 0) {
+					tempCommand = new AlignWithTapeCommand(robot_, navX_/*, talonEncoder_*/); //, false
+				// } else {
+					// tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, true);
+				// }
 			}
 			break;
 		case 's':

@@ -26,7 +26,7 @@ using namespace std;
 
 class AlignWithTapeCommand : public AutoCommand {
 public:
-    AlignWithTapeCommand(RobotModel* robot, NavXPIDSource* navXSource, TalonEncoderPIDSource* talonSource, bool driveStraightDesired);
+    AlignWithTapeCommand(RobotModel* robot, NavXPIDSource* navXSource/*, TalonEncoderPIDSource* talonSource, bool driveStraightDesired*/);
     virtual ~AlignWithTapeCommand();
 
     void Init();
@@ -43,24 +43,24 @@ private:
 
     RobotModel* robot_;
     NavXPIDSource* navXSource_;
-    TalonEncoderPIDSource* talonSource_;
+    // TalonEncoderPIDSource* talonSource_;
     AnglePIDOutput* anglePIDOutput_;
-    DistancePIDOutput* distancePIDOutput_;
+    // DistancePIDOutput* distancePIDOutput_;
 
     PivotCommand* pivotCommand_;
-    DriveStraightCommand* driveStraightCommand_;
+    // DriveStraightCommand* driveStraightCommand_;
 
     // TODO the below is for after a pretty good dead reckon, and would work for curve command
     double desiredDeltaAngle_;
-    double desiredDistance_;
+    // double desiredDistance_;
 
-    enum AlignState{ kPivotInit, kPivotUpdate, kDriveInit, kDriveUpdate };
+    enum AlignState{ kPivotInit, kPivotUpdate/*, kDriveInit, kDriveUpdate */};
     uint32_t currState_;
     uint32_t nextState_;
 
     double initTimeVision_, initTimeAlign_;
 
-    bool driveStraightDesired_;
+    // bool driveStraightDesired_;
 
     bool isDone_;
 };

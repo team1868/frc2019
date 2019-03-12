@@ -75,7 +75,7 @@ ControlBoard::ControlBoard() {
 
 	switch(curOpJoyMode_){
 		case twoJoy:
-			cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
+			/*cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
 			cargoUnintakeButton_ = new ButtonReader(operatorJoy_, CARGO_UNINTAKE_BUTTON_PORT); //TODO make op
 			cargoFlywheelButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
 			cargoFlywheelRocketButton_ = new ButtonReader(operatorJoy_, CARGO_FLYWHEEL_ROCKET_BUTTON_PORT);
@@ -86,6 +86,20 @@ ControlBoard::ControlBoard() {
 			hatchWristDownButton_ = new ButtonReader(operatorJoyB_, HATCH_WRIST_DOWN_BUTTON_PORT);
 			hatchIntakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_INTAKE_WHEEL_BUTTON_PORT);
 			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoyB_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT);
+			habDeployButton_ = new ButtonReader(operatorJoyB_, HAB_DEPLOY_BUTTON_PORT);
+			habPrepButton_ = new ButtonReader(operatorJoyB_, HAB_PREP_BUTTON_PORT); */
+			cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT); //TODO make op
+			cargoUnintakeButton_ = new ButtonReader(operatorJoy_, CARGO_UNINTAKE_BUTTON_PORT); //TODO make op
+			hatchWristUpButton_ = new ButtonReader(operatorJoy_, HATCH_WRIST_UP_BUTTON_PORT);
+			hatchWristDownButton_ = new ButtonReader(operatorJoy_, HATCH_WRIST_DOWN_BUTTON_PORT);
+			hatchIntakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_INTAKE_WHEEL_BUTTON_PORT);
+			hatchUnintakeWheelButton_ = new ButtonReader(operatorJoy_, HATCH_UNINTAKE_WHEEL_BUTTON_PORT);
+			cargoIntakeWristButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_WRIST_BUTTON_PORT);
+			
+			cargoFlywheelButton_ = new ButtonReader(operatorJoyB_, CARGO_FLYWHEEL_BUTTON_PORT); //TODO make op
+			cargoFlywheelRocketButton_ = new ButtonReader(operatorJoyB_, CARGO_FLYWHEEL_ROCKET_BUTTON_PORT);
+			hatchOuttakeButton_ = new ButtonReader(operatorJoyB_, HATCH_OUTTAKE_BUTTON_PORT);
+			hatchBeakButton_ = new ButtonReader(operatorJoyB_, HATCH_BEAK_BUTTON_PORT);
 			habDeployButton_ = new ButtonReader(operatorJoyB_, HAB_DEPLOY_BUTTON_PORT);
 			habPrepButton_ = new ButtonReader(operatorJoyB_, HAB_PREP_BUTTON_PORT);
 			break;
@@ -110,7 +124,7 @@ ControlBoard::ControlBoard() {
 	//TODO DELETE
 	testButton_ = new ButtonReader(leftJoy_, 2);
 	testButton2 = new ButtonReader(leftJoy_, 7);
-	// testButton3 = new ButtonReader(leftJoy_, 3); 
+	testButton3 = new ButtonReader(leftJoy_, 3); 
 
   ReadControls();
 }
@@ -269,10 +283,10 @@ bool ControlBoard::GetTest2Desired(){
 	return testButton2->IsDown();
 }
 
-// bool ControlBoard::GetTest3Desired(){
-// 	testButton3->ReadValue();
-// 	return testButton3->IsDown();
-// }
+bool ControlBoard::GetTest3Desired(){
+	testButton3->ReadValue();
+	return testButton3->IsDown();
+}
 
 bool ControlBoard::GetCargoIntakeDesired(){
 	return cargoIntakeDesired_;

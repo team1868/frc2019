@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 #include "../../include/controllers/SuperstructureController.h"
 
 SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlBoard *myHumanControl) {
@@ -23,7 +16,7 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     cargoVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo veloc", 0.7).GetEntry(); //0.7
     cargoRocketVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket veloc", 0.25).GetEntry(); //0.25
     
-    cargoIntakeOutput_ = 1.0; 
+    cargoIntakeOutput_ = 0.8; 
 
     flywheelStartTime_ = 0.0;
     flywheelStarted_ = false;
@@ -78,7 +71,7 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
         robot_->GetCargoFlywheelMotor());
     rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);  
     rocketFlyPID_->SetOutputRange(-1.0, 1.0); 
-    rocketFlyPID_->SetAbsoluteTolerance(0.05); //TODO n
+    rocketFlyPID_->SetAbsoluteTolerance(0.05); //TODO
     rocketFlyPID_->SetContinuous(false);
 
 
@@ -118,6 +111,8 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
     //TODO TAKE THIS OUT
     HatchWristAngleTest();
+    printf("current flywheel veloc cargo ship %f\n", desiredFlywheelVelocCargo_);
+    printf("curr flywheel veloc rocket ship %f\n", desiredFlywheelVelocRocket_);
 
 	switch(currState_) {
         case kInit:
@@ -127,6 +122,8 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             rocketFlyPID_->Reset();
             rocketFlyPID_->Disable();
 
+            //hatchWristPID_->Enable();
+
             robot_->SetCargoIntakeOutput(0.0); 
             robot_->SetCargoFlywheelOutput(0.0);
             robot_->SetHatchIntakeWheelOutput(0.0);
@@ -134,9 +131,8 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             nextState_ = kIdle;
         case kIdle:
             nextState_ = kIdle;
-            //HATCH STUFF
-
             RefreshShuffleboard();
+            //HATCH STUFF
 
             //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
             if (humanControl_->GetHatchWristDownDesired()) { 
@@ -162,26 +158,25 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
             //note: combined wrist and intake/unintake (so if wrist down and not unintaking, auto intake + no two controllers on same motor)
             if(humanControl_->GetCargoIntakeWristDesired()){
-                printf("cargo wrist down desired\n");
+                printf("wrist down\n");
                 robot_->SetCargoIntakeWrist(true);
-                if(!humanControl_->GetCargoUnintakeDesired() && !CargoInIntake()){
-                    printf("please do something\n");
-                    robot_->SetCargoIntakeOutput(cargoIntakeOutput_); //switch to cargoIntakeFac_
-                } else if (humanControl_->GetCargoUnintakeDesired()){ 
-                    printf("i want this to come down\n");
-                    robot_->SetCargoUnintakeOutput(cargoIntakeOutput_); //switch to cargoIntakeFac_
+                if(!humanControl_->GetCargoUnintakeDesired()){  //!humanControl_->GetCargoUnintakeDesired()){ 
+                    if (!CargoInIntake()) {
+                       printf("hello friendz\n");
+                       robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
+                    } else {
+                        robot_->SetCargoIntakeOutput(0.0);
+                    }
                 } else {
-                    robot_->SetCargoIntakeOutput(0.0);
+                    printf("?????\n");
+                    robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
                 }
             } else {
                 robot_->SetCargoIntakeWrist(false);
-                printf("false\n");
-                if(humanControl_->GetCargoIntakeDesired()&& !CargoInIntake()){ 
-                    printf("hi\n");
-                    robot_->SetCargoIntakeOutput(cargoIntakeOutput_); //switch to cargoIntakeFac_
-                } else if (humanControl_->GetCargoUnintakeDesired()){ 
-                    printf("bye\n");
-                    robot_->SetCargoUnintakeOutput(cargoIntakeOutput_); //switch to cargoIntakeFac_
+                if(humanControl_->GetCargoIntakeDesired()){ //if(humanControl_->GetCargoIntakeDesired()){ 
+                    robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
+                } else if (humanControl_->GetCargoUnintakeDesired()){
+                    robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
                 } else {
                     robot_->SetCargoIntakeOutput(0.0);
                 }
@@ -241,13 +236,12 @@ void SuperstructureController::HatchWristAngleTest() {
 
 void SuperstructureController::HabEncoderTest() {
     currHabEncoderVal_ = robot_->GetHabEncoderValue();
-    printf("Hab Encoder Value is the follwoing %f\n", currHabEncoderVal_);
+    printf("Hab Encoder Value is the follwoing %f/n", currHabEncoderVal_);
 }
 
-bool SuperstructureController::CargoInIntake(){
+void SuperstructureController::LightSensorTest(){
     currLightSensorStatus_ = robot_->GetLightSensorStatus();
-    printf("Light Sensor Value is the following %d\n", currLightSensorStatus_);
-    return currLightSensorStatus_;
+    printf("Light Sensor Value is the following &f/n", currLightSensorStatus_);
 }
 
 void SuperstructureController::RefreshShuffleboard() {
@@ -276,10 +270,15 @@ void SuperstructureController::HatchWristControllerUpdate(double newAngle_, doub
     hatchWristPID_->SetSetpoint(newAngle_);
 }
 
+bool SuperstructureController::CargoInIntake(){
+    currLightSensorStatus_ = robot_->GetLightSensorStatus();
+    printf("Light Sensor Value is the following %d\n", currLightSensorStatus_);
+    return currLightSensorStatus_;
+}
+
 void SuperstructureController::RefreshIni() { //TODO remove
 
 }
 
 SuperstructureController::~SuperstructureController() {
 }
-

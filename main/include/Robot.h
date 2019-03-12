@@ -21,6 +21,8 @@
 #include "../include/auto/commands/EllipseCommand.h"
 #include "../include/auto/commands/PivotCommand.h"
 #include "../include/auto/commands/CurveCommand.h"
+#include "auto/AutoController.h"
+#include "auto/modes/TestMode.h"
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardTab.h>
@@ -69,7 +71,14 @@ class Robot : public frc::TimedRobot { //TODO CHANGE
   CurveCommand *curve_; //TODO DELETE
   //double autoStartTime;
 
+  bool sandstormOverride_;
+  double autoJoyVal_;
+
+  AutoController *autoController_;
+  AutoMode *autoMode_;
+
   int curvesDone;// delete plz
+  bool sandstormAuto_;
 
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
     testerPowerNet_, guidedDriveNet_, habRisePowerNet_, leftDistanceNet_, rightDistanceNet_;

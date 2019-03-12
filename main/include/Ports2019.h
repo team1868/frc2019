@@ -42,7 +42,7 @@ static const int RIGHT_JOY_USB_PORT           = 1;
 static const int OPERATOR_JOY_USB_PORT        = 2;
 static const int OPERATOR_JOY_B_USB_PORT      = 3;
 //top 4 actually correct :)
-static const int HIGH_GEAR_BUTTON_PORT        = 3; // 4 FOR GAME PAD NEED TO FIX
+static const int HIGH_GEAR_BUTTON_PORT        = 4; // 4 FOR GAME PAD NEED TO FIX
 static const int LOW_GEAR_BUTTON_PORT         = 1;
 static const int SMALL_TURN_BUTTON_PORT       = 5;
 static const int ARCADE_DRIVE_BUTTON_PORT     = 5; //unused
@@ -50,7 +50,7 @@ static const int QUICK_TURN_BUTTON_PORT       = 6; //used but unimportant
 static const int DRIVE_DIRECTION_BUTTON_PORT  = 7; //used for tank
 
 //---------------superstructure twoJoyMode ports-----------------
-//operatorJoy_
+/*//operatorJoy_
 static const int CARGO_INTAKE_BUTTON_PORT          = 2;
 static const int CARGO_UNINTAKE_BUTTON_PORT        = 3;
 static const int CARGO_FLYWHEEL_BUTTON_PORT        = 7; //unused
@@ -64,7 +64,24 @@ static const int HATCH_INTAKE_WHEEL_BUTTON_PORT    = 7;
 static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT  = 8;
 static const int HATCH_OUTTAKE_BUTTON_PORT         = 3;
 static const int HATCH_BEAK_BUTTON_PORT            = 4;
-static const int HAB_DEPLOY_BUTTON_PORT            = 6;
+static const int HAB_DEPLOY_BUTTON_PORT            = 6;*/
+
+//operatorJoy_
+static const int CARGO_INTAKE_BUTTON_PORT          = 5;
+static const int CARGO_UNINTAKE_BUTTON_PORT        = 4;
+static const int CARGO_INTAKE_WRIST_BUTTON_PORT    = 3;
+static const int HATCH_WRIST_UP_BUTTON_PORT        = 6; //to 90º
+static const int HATCH_WRIST_DOWN_BUTTON_PORT      = 7;
+static const int HATCH_INTAKE_WHEEL_BUTTON_PORT    = 11;
+static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT  = 8;
+
+//operatorJoyB_
+static const int HAB_PREP_BUTTON_PORT              = 1;
+static const int HAB_DEPLOY_BUTTON_PORT            = 11; //??
+static const int CARGO_FLYWHEEL_BUTTON_PORT        = 5; //unused
+static const int CARGO_FLYWHEEL_ROCKET_BUTTON_PORT = 4; //TODO CHANGE THIS
+static const int HATCH_OUTTAKE_BUTTON_PORT         = 6;
+static const int HATCH_BEAK_BUTTON_PORT            = 7;
 
 //------------------superstruture gamePad ports------------------------
 static const int CARGO_INTAKE_BUTTON_PORT_G     = 5;
@@ -115,11 +132,3 @@ static const int HATCH_INTAKE_WHEELS_PDP_CHAN               = 6;
 static const int CARGO_INTAKE_PDP_CHAN                      = 11;
 //static const int CARGO_FLYWHEEL_PDP_CHAN                    = 10; //unused
 static const int HAB_PDP_CHAN                               = 3;
-
-//other notes:
-/* PCM:
-hab is 1A
-hab break engage is 2A 
-hab brak raise? (ask medha) 5A
-
-*/

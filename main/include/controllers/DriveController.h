@@ -44,6 +44,15 @@ public:
 	 */
 	bool IsDone();
 
+
+	/**
+	 * Adjusts joystick value if too small
+	 */
+	double HandleDeadband(double value, double deadband);
+	double GetThrustDeadband();
+	double GetRotateDeadband();
+
+
 	/**
 	 * Prints direction, state, angle, etc.
 	 */
@@ -72,11 +81,6 @@ protected:
 	 * Returns -1 for reverse drive, 1 otherwise
 	 */
 	int GetDriveDirection();
-
-	/**
-	 * Adjusts joystick value if too small
-	 */
-	double HandleDeadband(double value, double deadband);
 
 	/**
 	 * Adjusts sensitivity for turn

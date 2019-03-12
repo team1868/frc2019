@@ -51,20 +51,26 @@ void Robot::RobotInit()  {
 
   superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
   //talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+  autoController_ = new AutoController();
+  autoMode_ = NULL;
 
   habLimitSwitch_ = new DigitalInput(4);
 
   testHabPiston = new DoubleSolenoid(0, 7, 1);
   testHabPiston->Set(DoubleSolenoid::kReverse);
 
+  sandstormOverride_ = false;
+  autoJoyVal_ = 0.0;
+
   robot_->SetLowGear();
   robot_->ResetDriveEncoders(); //needed?
 
 
   ResetTimerVariables();
-  //Wait(7.0);
-  //CameraServer::GetInstance()->StartAutomaticCapture(0);
+  Wait(7.0);
+  CameraServer::GetInstance()->StartAutomaticCapture(0);
   //Wait(1.0);
+
 
   printf("Main program initialized\n");
 
@@ -80,7 +86,7 @@ void Robot::RobotInit()  {
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
-  habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.2).GetEntry();
+  habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.4).GetEntry();
   guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
 }
 
@@ -140,8 +146,13 @@ void Robot::AutonomousInit() {
   //pivot_->Init();
   //curve_ = new CurveCommand(robot_, 2, 90, true, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
   //curve_->Init();
-  ellipse_ = new EllipseCommand(robot_, 1, 3, 90, false, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
-  ellipse_->Init();
+  // ellipse_ = new EllipseCommand(robot_, 1, 3, 90, false, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
+  // ellipse_->Init();
+  //robot_->SetTestSequence("d 11.0 b 0 h 1");  // straight forward hatch deploy
+  robot_->SetTestSequence("h 0 d 11.0 b 1 s 0.6 h 1");
+  autoMode_ = new TestMode(robot_);
+  autoController_->SetAutonomousMode(autoMode_);
+  autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1);
 
   m_autoSelected = m_chooser.GetSelected();
   // m_autoSelected = SmartDashboard::GetString(
@@ -153,6 +164,7 @@ void Robot::AutonomousInit() {
   } else {
     // Default Auto goes here
   }
+  sandstormAuto_ = true;
 }
 
 void Robot::AutonomousPeriodic() {
@@ -166,13 +178,28 @@ void Robot::AutonomousPeriodic() {
     pivot_->Update(currTimeSec_, deltaTimeSec_);
   }*/
   //if (!curve_->IsDone()) curve_->Update(currTimeSec_, deltaTimeSec_);
-  if(!ellipse_->IsDone()) ellipse_->Update(currTimeSec_, deltaTimeSec_);
+  // if(!ellipse_->IsDone()) ellipse_->Update(currTimeSec_, deltaTimeSec_);
 
-  if (m_autoSelected == kAutoNameCustom) {
-    // Custom Auto goes here
+  if(sandstormAuto_){
+    humanControl_->ReadControls();
+    autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
+    autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
+    if(autoJoyVal_ != 0.0){ //TODO mild sketch, check deadbands more
+      printf("WARNING: EXITED SANDSTORM.  autoJoyVal_ is %f after deadband, not == 0\n\n",autoJoyVal_);
+      autoController_->~AutoController(); //TODO check that these are being destructed
+      sandstormAuto_ = false;
+      TeleopInit();
+    } else if (!autoController_->IsDone()) {
+      autoController_->Update(currTimeSec_, deltaTimeSec_);
+    }
   } else {
-    // Default Auto goes here
+    TeleopPeriodic();
   }
+  //if (m_autoSelected == kAutoNameCustom) {
+    // Custom Auto goes here
+  //} else {
+    // Default Auto goes here
+  //}
 }
 // reset timer and controller
 void Robot::TeleopInit() {
@@ -200,8 +227,8 @@ void Robot::TeleopPeriodic() {
   if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
     robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.4));
-  // } else if (humanControl_->GetTest3Desired()){
-  //   robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.2));
+  } else if (humanControl_->GetTest3Desired()){
+    robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.2));
   } else {
     robot_->SetHabMotorOutput(0.0);
   }

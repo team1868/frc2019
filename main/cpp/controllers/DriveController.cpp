@@ -163,6 +163,15 @@ double DriveController::HandleDeadband(double value, double deadband) {
 	}
 }
 
+double DriveController::GetThrustDeadband(){
+	return thrustDeadbandNet_.GetDouble(0.1);
+}
+
+double DriveController::GetRotateDeadband(){
+	return rotateDeadbandNet_.GetDouble(0.1);
+}
+
+
 // Rotation sensitivity: when z == 0 same output; when z==1, output^3
 double DriveController::GetCubicAdjustment(double value, double adjustmentConstant) {
 	return adjustmentConstant * std::pow(value, 3.0) + (1 - adjustmentConstant) * value;
