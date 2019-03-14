@@ -14,10 +14,10 @@ ControlBoard::ControlBoard() {
 	leftZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("thrust sensitivity", 0.2).GetEntry();
 	smallTurnSensitivityNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rotate sensitivity smallTurn", 0.0).GetEntry();
 	rightZNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("rotate sensitivity", 0.7).GetEntry();
-	joyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad", true).GetEntry(); //hm, consider for ooperator
+	joyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad", false).GetEntry(); //hm, consider for ooperator
 	opJoyModeNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("GamePad op", false).GetEntry();
 
-	curJoyMode = gamePad; 
+	curJoyMode = twoJoy; //TODO CHANGE WHEN CHANGING DEFAULT JOY MODE
 	curOpJoyMode_ = twoJoy;//gamePad;
 
   leftJoyX_ = 0.0;
@@ -51,8 +51,6 @@ ControlBoard::ControlBoard() {
 	quickTurnDesired_ = true;
 	reverseDriveDesired_ = false;
 
-	gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
-	gearLowShiftButton_ = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT);
 	smallTurnButton_ = new ButtonReader(leftJoy_, SMALL_TURN_BUTTON_PORT);
 	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); //unused
 	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //USED
@@ -72,6 +70,7 @@ ControlBoard::ControlBoard() {
 	hatchUnintakeWheelDesired_ = false;
 	habDeployDesired_ = false;
 	habPrepDesired_ = false;
+	habBrakeDesired_ = false;
 
 	switch(curOpJoyMode_){
 		case twoJoy:
@@ -100,8 +99,15 @@ ControlBoard::ControlBoard() {
 			cargoFlywheelRocketButton_ = new ButtonReader(operatorJoyB_, CARGO_FLYWHEEL_ROCKET_BUTTON_PORT);
 			hatchOuttakeButton_ = new ButtonReader(operatorJoyB_, HATCH_OUTTAKE_BUTTON_PORT);
 			hatchBeakButton_ = new ButtonReader(operatorJoyB_, HATCH_BEAK_BUTTON_PORT);
-			habDeployButton_ = new ButtonReader(operatorJoyB_, HAB_DEPLOY_BUTTON_PORT);
-			habPrepButton_ = new ButtonReader(operatorJoyB_, HAB_PREP_BUTTON_PORT);
+			habDeployButton_ = new ButtonReader(operatorJoyB_, HAB_DEPLOY_BUTTON_PORT); //CHANGE THIS TO DRIVER JOY
+			habRetractButton_ = new ButtonReader(operatorJoyB_, HAB_RETRACT_BUTTON_PORT); //CHANGE THIS TO DRIVER JOY
+			habPrepButton_ = new ButtonReader(operatorJoyB_, HAB_PREP_BUTTON_PORT); //unused
+			habBrakeButton_ = new ButtonReader(operatorJoyB_, HAB_BREAK_BUTTON_PORT);
+
+			testButton_ = new ButtonReader(leftJoy_, 2);
+			testButton2 = new ButtonReader(leftJoy_, 7); //unused
+			testButton3 = new ButtonReader(rightJoy_, 2); 
+
 			break;
 		case gamePad:
 			cargoIntakeButton_ = new ButtonReader(operatorJoy_, CARGO_INTAKE_BUTTON_PORT_G);
@@ -116,15 +122,28 @@ ControlBoard::ControlBoard() {
 			//hab deploy TODO
 			habPrepButton_ = new ButtonReader(operatorJoy_, HAB_PREP_BUTTON_PORT_G);
 
+			testButton_ = new ButtonReader(leftJoy_, 2);
+			testButton2 = new ButtonReader(leftJoy_, 7);
+			testButton3 = new ButtonReader(leftJoy_, 3); 
+
 			break;
 		default:
 			printf("ERROR: operator Joystick Mode not set in ControlBoard()\n");
 	}
-	
-	//TODO DELETE
-	testButton_ = new ButtonReader(leftJoy_, 2);
-	testButton2 = new ButtonReader(leftJoy_, 7);
-	testButton3 = new ButtonReader(leftJoy_, 3); 
+
+	switch(curJoyMode){
+		case(twoJoy):
+			gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
+			gearLowShiftButton_ = new ButtonReader(leftJoy_, 0); //no low gear button
+			printf("CORRECT\n");
+			break;
+		case(gamePad):
+			gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT_G);
+			gearLowShiftButton_ = new ButtonReader(leftJoy_, LOW_GEAR_BUTTON_PORT_G);
+			break;
+		default:
+			printf("WARNING: curJoyMode not defined in ControlBoard/ControlBoard()\n");
+	}
 
   ReadControls();
 }
@@ -167,11 +186,26 @@ void ControlBoard::ReadControls() {
 
 	//no switch, so using buttons
 	reverseDriveDesired_ = driveDirectionButton_->IsDown();
-	if(gearLowShiftButton_->IsDown()){
-		highGearDesired_ = false;
-	} else if (gearHighShiftButton_->IsDown()){
-		highGearDesired_ = true;
-	} //else remain as is
+	switch(curJoyMode) {
+		case(gamePad):
+			if(gearLowShiftButton_->IsDown()){
+				highGearDesired_ = false;
+			} else if (gearHighShiftButton_->IsDown()){
+				highGearDesired_ = true;
+			} //else remain as is
+			break;
+		case(twoJoy):
+			printf("hi again\n");
+			if(gearHighShiftButton_->IsDown()){
+				printf("hello\n");
+				highGearDesired_ = true;
+			} else {
+				highGearDesired_ = false;
+			}
+			break;
+		default:
+			printf("WARNING: curJoyMode not valid in ControlBoard.cpp/ReadControls()\n");
+	}
 	//gearHighShiftButton_->IsDown();
 	arcadeDriveDesired_ = arcadeDriveButton_->IsDown(); //TODO DEAD CODE
 	quickTurnDesired_ = quickTurnButton_->IsDown();
@@ -191,15 +225,18 @@ void ControlBoard::ReadControls() {
 
 			hatchBeakDesired_ = hatchBeakButton_->IsDown();
 			hatchOuttakeDesired_ = hatchOuttakeButton_->IsDown();
-			//TODODO bug! is normal wrist state in the middle then?  It will constantly draw current and do we want that
+			
 			hatchWristUpDesired_ = hatchWristUpButton_->IsDown();
 			hatchWristDownDesired_ = hatchWristDownButton_->IsDown();
 
 			hatchIntakeWheelDesired_ = hatchIntakeWheelButton_->IsDown();
 			hatchUnintakeWheelDesired_ = hatchUnintakeWheelButton_->IsDown();
 
+			habBrakeDesired_ = habBrakeButton_->IsDown();
 			habDeployDesired_ = habDeployButton_->IsDown();
-			habPrepDesired_ = habPrepButton_->IsDown();
+			habRetractDesired_ = habRetractButton_->IsDown();
+			//habPrepDesired_ = habPrepButton_->IsDown();
+
 
 			break;
 		case gamePad: //TODODODODODODODODODOSLDKJFALSDKJAFOIEWHGNLKDGAILEDFJOILEJAOIEJOIJ             TUNE DEADBANDS!
@@ -340,6 +377,13 @@ bool ControlBoard::GetHabPrepDesired(){
 	return habPrepDesired_;
 }
 
+bool ControlBoard::GetHabBrakeDesired(){
+	return habBrakeDesired_;
+}
+
+bool ControlBoard::GetHabRetractDesired(){
+	return habRetractDesired_;
+}
 
 void ControlBoard::ReadAllButtons() {
 	driveDirectionButton_->ReadValue();
@@ -364,7 +408,9 @@ void ControlBoard::ReadAllButtons() {
 			hatchWristUpButton_->ReadValue();
 			hatchWristDownButton_->ReadValue();
 			habDeployButton_->ReadValue();
+			habRetractButton_->ReadValue();
 			habPrepButton_->ReadValue();
+			habBrakeButton_->ReadValue();
 			break;
 		case gamePad:
 			cargoIntakeButton_->ReadValue();

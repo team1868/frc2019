@@ -42,8 +42,9 @@ static const int RIGHT_JOY_USB_PORT           = 1;
 static const int OPERATOR_JOY_USB_PORT        = 2;
 static const int OPERATOR_JOY_B_USB_PORT      = 3;
 //top 4 actually correct :)
-static const int HIGH_GEAR_BUTTON_PORT        = 4; // 4 FOR GAME PAD NEED TO FIX
-static const int LOW_GEAR_BUTTON_PORT         = 1;
+static const int HIGH_GEAR_BUTTON_PORT_G      = 4; // 4 FOR GAME PAD NEED TO FIX
+static const int LOW_GEAR_BUTTON_PORT_G       = 1;
+static const int HIGH_GEAR_BUTTON_PORT        = 3;
 static const int SMALL_TURN_BUTTON_PORT       = 5;
 static const int ARCADE_DRIVE_BUTTON_PORT     = 5; //unused
 static const int QUICK_TURN_BUTTON_PORT       = 6; //used but unimportant
@@ -77,11 +78,13 @@ static const int HATCH_UNINTAKE_WHEEL_BUTTON_PORT  = 8;
 
 //operatorJoyB_
 static const int HAB_PREP_BUTTON_PORT              = 1;
-static const int HAB_DEPLOY_BUTTON_PORT            = 11; //??
+static const int HAB_DEPLOY_BUTTON_PORT            = 11; //CHANGE TO DRIVER JOY
+static const int HAB_RETRACT_BUTTON_PORT           = 12; //CHANGE TO DRIVER JOY
 static const int CARGO_FLYWHEEL_BUTTON_PORT        = 5; //unused
 static const int CARGO_FLYWHEEL_ROCKET_BUTTON_PORT = 4; //TODO CHANGE THIS
 static const int HATCH_OUTTAKE_BUTTON_PORT         = 6;
 static const int HATCH_BEAK_BUTTON_PORT            = 7;
+static const int HAB_BREAK_BUTTON_PORT             = 1; 
 
 //------------------superstruture gamePad ports------------------------
 static const int CARGO_INTAKE_BUTTON_PORT_G     = 5;
@@ -119,6 +122,9 @@ static const int HATCH_OUTTAKE_IN_DOUBLE_SOLENOID_CHAN     = 0;
 
 static const int HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN     = 0; //A
 static const int HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN       = 1; //A
+
+static const int HAB_BRAKE_ENGAGE_DOUBLE_SOLENOID_CHAN      = 2; //A
+static const int HAB_BRAKE_RELEASE_DOUBLE_SOLENOID_CHAN     = 5; //A
 
 static const int FLYWHEEL_ENCODER_A_PWM_PORT = 0; //INCORRECT, TODO
 static const int FLYWHEEL_ENCODER_B_PWM_PORT = 1; //INCORRECT, TODO

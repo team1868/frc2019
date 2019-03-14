@@ -213,19 +213,22 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
+  robot_->SetHabBrake(true);
+  testHabPiston->Set(DoubleSolenoid::kReverse);
 }
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
 
-  if(humanControl_->GetTest2Desired()){
+  if(humanControl_->GetHabBrakeDesired()){ //hab arms, change this name or put in superstructure
     testHabPiston->Set(DoubleSolenoid::kForward);
   } /*else {
     testHabPiston->Set(DoubleSolenoid::kReverse);
   }*/
 
-  if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards
+  if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards //habdeploy
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
+    robot_->SetHabBrake(false);
     robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.4));
     printf("Hab downing at %f power.\n", testerPowerNet_.GetDouble(0.4));
   } else if (humanControl_->GetTest3Desired()){
@@ -235,12 +238,10 @@ void Robot::TeleopPeriodic() {
     robot_->SetHabMotorOutput(0.0);
   }
 
-
   leftEncoderNet_.SetDouble(robot_->GetLeftEncoderValue());
   rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
   leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
   rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
-
 
 
   switch(robot_->GetGameMode()){ //TODO MAKE INTO SEMIAUTO OR REG

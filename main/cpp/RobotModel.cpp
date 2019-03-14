@@ -154,13 +154,12 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
 	//Initializing Light Sensor
 	lightSensor_ = new frc::DigitalInput(LIGHT_SENSOR_PORT);
-	//lightSensor_->GetLightSensorStatus(); //doesn't work, not needed?
-
 
   cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
   hatchBeakSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
   hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN); //TODO possible error?
-	
+	habBrakeSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HAB_BRAKE_ENGAGE_DOUBLE_SOLENOID_CHAN, HAB_BRAKE_RELEASE_DOUBLE_SOLENOID_CHAN);
+
 	cargoIntakeMotor_ = new Victor(CARGO_INTAKE_MOTOR_PORT);
 	cargoFlywheelMotor_ = new Victor(CARGO_FLYWHEEL_MOTOR_PORT);
 	hatchIntakeWheelMotor_ = new Victor(HATCH_INTAKE_WHEEL_MOTOR_PORT);
@@ -519,6 +518,14 @@ void RobotModel::SetHabMotorOutput(double output){
 
 void RobotModel::SetHatchWristOutput(double output){
 	hatchWristMotor_->Set(-output);
+}
+
+void RobotModel::SetHabBrake(bool change){
+	if(!change) {
+		habBrakeSolenoid_->Set(DoubleSolenoid::kReverse);
+	} else {
+		habBrakeSolenoid_->Set(DoubleSolenoid::kForward);
+	}
 }
 
 void RobotModel::SetCargoIntakeWrist(bool change){ //TODO RENAME

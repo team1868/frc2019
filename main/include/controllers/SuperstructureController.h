@@ -27,6 +27,8 @@ public:
 
 	void HatchWristControllerUpdate(double newAngle_, double pFac_, double iFac_, double dFac_);
 
+	double RatioFlywheel(double value);
+
 	void RefreshShuffleboard();
 
 	void RefreshIni();
@@ -34,7 +36,7 @@ public:
 	virtual ~SuperstructureController();
 
 	enum SuperstructureState {
-		kInit, kIdle, //kHatch, kCargo, kHabDeploy
+		kInit, kIdle//, kHabDeploy 
 	};
 
 private:
@@ -49,7 +51,7 @@ private:
 	PIDController *hatchWristPID_;
 
 	double desiredFlywheelVelocCargo_, desiredFlywheelVelocRocket_, cargoIntakeOutput_, flywheelStartTime_;
-	double desiredHatchWristAngle_, currHatchWristAngle_;
+	double desiredHatchWristAngle_, currHatchWristAngle_, ratioFlywheelOutput_;
 	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_, hatchWristNewAngle_;
 	double currHabEncoderVal_;
 	int habRailsEncoderVal_;
