@@ -73,6 +73,7 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 			leftJoyZ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kZ);
 			rightJoyY = -humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY);	// was neg
 			rightJoyX = humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX);
+			//printf("RIGHT JOY X AT ---------------- %f", rightJoyX);
 			rightJoyZ = humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kZ);
 
 			// so leftJoyZ and rightJoyZ are from -1 to 1
@@ -127,7 +128,10 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 	}
 
 	//printf("Left Output: %f and Right Output: %f", -leftOutput, rightOutput);
+	rightDriveNet_.SetDouble(rightOutput);
+	leftDriveNet_.SetDouble(leftOutput);
 	robot_->SetDriveValues(-leftOutput, rightOutput);
+	//printf("ROTATE VALUE              --------------------- %f", rotateValue);
 
 }
 
@@ -188,8 +192,8 @@ void DriveController::PrintDriveValues(){
 	gearDesireNet_.SetBoolean(humanControl_->GetHighGearDesired());
 	quickturnDesireNet_.SetBoolean(humanControl_->GetQuickTurnDesired());
 	//arcadeDesireNet_.SetBoolean(humanControl_->GetArcadeDriveDesired());
-	leftDriveNet_.SetDouble(leftOutput); //TODO MOVE INTO METHOD + line after
-	rightDriveNet_.SetDouble(rightOutput);
+	//leftDriveNet_.SetDouble(leftOutput); //TODO MOVE INTO METHOD + line after
+	//rightDriveNet_.SetDouble(rightOutput);
 	driveDirectionNet_.SetDouble(GetDriveDirection());
 	navXAngleNet_.SetDouble(robot_->GetNavXYaw());
 	leftDistanceNet_.SetDouble(robot_->GetLeftDistance());

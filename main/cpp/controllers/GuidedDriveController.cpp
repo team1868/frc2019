@@ -66,16 +66,22 @@ void GuidedDriveController::ArcadeDrive(double myX, double myY, double thrustSen
 	if(reverseReverseNet_.GetBoolean(true) || (!reverseReverseNet_.GetBoolean(true) && thrustValue >= 0.0)){// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ //lili mode
 		leftOutput = thrustValue;// + rotateValue;			// CHECK FOR COMP BOT
 		rightOutput = thrustValue;// - rotateValue;
-		anglePID_->SetSetpoint(robot_->GetNavXYaw()+rotateValue);
+		anglePID_->SetSetpoint(robot_->GetNavXYaw()+rotateValue*10);
+		printf("ANGLE SETPOINT --------- %f\n\n", robot_->GetNavXYaw()+rotateValue*10);
 	} else {
 		leftOutput = thrustValue;// - rotateValue;
 		rightOutput = thrustValue;// + rotateValue;
-		anglePID_->SetSetpoint(robot_->GetNavXYaw()-rotateValue);
+		anglePID_->SetSetpoint(robot_->GetNavXYaw()-rotateValue*10);
+		printf("ANGLE SETPOINT --------- %f\n\n", robot_->GetNavXYaw()-rotateValue*10);
 	}
 	
+    double tOutput = anglePIDOutput_->GetPIDOutput(); //strange way to do it, lili drive working?
+	leftOutput -= tOutput;
+	rightOutput += tOutput;
 	
     errorNet_.SetDouble(navXSource_->PIDGet());
-
+	rightDriveNet_.SetDouble(rightOutput);
+	leftDriveNet_.SetDouble(leftOutput);
 	robot_->SetDriveValues(-leftOutput, rightOutput);
 
 }
