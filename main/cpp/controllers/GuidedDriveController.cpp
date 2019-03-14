@@ -64,12 +64,12 @@ void GuidedDriveController::ArcadeDrive(double myX, double myY, double thrustSen
 	thrustValue = GetCubicAdjustment(thrustValue, thrustSensitivity);
 
 	if(reverseReverseNet_.GetBoolean(true) || (!reverseReverseNet_.GetBoolean(true) && thrustValue >= 0.0)){// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ //lili mode
-		leftOutput = thrustValue + rotateValue;			// CHECK FOR COMP BOT
-		rightOutput = thrustValue - rotateValue;
+		leftOutput = thrustValue;// + rotateValue;			// CHECK FOR COMP BOT
+		rightOutput = thrustValue;// - rotateValue;
 		anglePID_->SetSetpoint(robot_->GetNavXYaw()+rotateValue);
 	} else {
-		leftOutput = thrustValue - rotateValue;
-		rightOutput = thrustValue + rotateValue;
+		leftOutput = thrustValue;// - rotateValue;
+		rightOutput = thrustValue;// + rotateValue;
 		anglePID_->SetSetpoint(robot_->GetNavXYaw()-rotateValue);
 	}
 	
@@ -86,5 +86,11 @@ void GuidedDriveController::ArcadeDrive(double myX, double myY, double thrustSen
 //unimportanish note: cubic adjustment not overloaded
 
 GuidedDriveController::~GuidedDriveController() { //POSSIBLE ERROR: destroy super but not small class
-	//TODO needed?
+	anglePID_->Disable();
+	anglePID_->~PIDController();
+
+	pFacNet_.Delete();
+	iFacNet_.Delete();
+	dFacNet_.Delete();
+	errorNet_.Delete();
 }

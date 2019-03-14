@@ -24,7 +24,7 @@ static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO INCORRECT< FIX
 static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
 //ratios work in 5 or 10% increments (accumulative)
 static const double MIN_RATIO_ALL_CURRENT = 0.2;//0.7; //TODO add to shuffleboard
-static const double MIN_RATIO_DRIVE_CURRENT = 0.7; //TODO add to shuffleboard
+static const double MIN_RATIO_DRIVE_CURRENT = 0.7; //TODO add to shuffleboard //NOTE: UNUSED
 static const double MIN_RATIO_SUPERSTRUCTURE_CURRENT = 0.5; //TODO add to shuffleboard
 static const double MIN_VOLTAGE_BROWNOUT = 7.5;//7.5; //6.8; //brownout protection state; PWM, CAN, 6V, relay outputs, CAN motors disabled
 
@@ -63,6 +63,8 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   
   maxOutputNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("MAX DRIVE OUTPUT", 1.0).GetEntry();
+  minVoltNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Min Volt", MIN_VOLTAGE_BROWNOUT).GetEntry();
+  maxCurrentNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Max Current", MAX_CURRENT_OUTPUT).GetEntry();
 
   printf("tabs done for pid\n");
   frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
@@ -648,7 +650,7 @@ void RobotModel::UpdateCurrent() {
 	roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
 
 	//TODO fix and check logic
-	if((GetTotalCurrent() > MAX_CURRENT_OUTPUT || GetVoltage() <= MIN_VOLTAGE_BROWNOUT) && !lastOver_){
+	if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentNet_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltNet_.GetDouble(MIN_VOLTAGE_BROWNOUT)) && !lastOver_){
 		printf("\nSTOPPING\n\n");
 		//StopCompressor();
 		compressorOff_ = true;
@@ -662,7 +664,7 @@ void RobotModel::UpdateCurrent() {
 		//	cutSlaves_ = true;
 		//}
 		lastOver_ = true;
-	} else if((GetTotalCurrent() > MAX_CURRENT_OUTPUT || GetVoltage() <= MIN_VOLTAGE_BROWNOUT) && lastOver_){
+	} else if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentNet_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltNet_.GetDouble(MIN_VOLTAGE_BROWNOUT) && lastOver_)){
 		//know compressor is off, because lastOver_ is true
 		//TODO WARNING THIS MIN IS NOT A MIN
 		if(ratioAll_ > MIN_RATIO_ALL_CURRENT){ //sketch, sketch, check this
