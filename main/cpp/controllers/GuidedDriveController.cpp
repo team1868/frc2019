@@ -31,7 +31,7 @@ GuidedDriveController::GuidedDriveController(RobotModel *robot, ControlBoard *hu
 
 	anglePID_->SetPID(pFac_, iFac_, dFac_);
 	anglePID_->SetSetpoint(robot_->GetNavXYaw());
-	anglePID_->SetAbsoluteTolerance(0.5); //HM TUNE TODODODODODOD
+	anglePID_->SetAbsoluteTolerance(3.0); //HM TUNE TODODODODODOD
 	anglePID_->SetContinuous(true);
 	anglePID_->SetInputRange(-180, 180);
 	anglePID_->SetOutputRange(-0.8, 0.8); //TODO TUNEEEEEEEEEEEE
@@ -75,9 +75,11 @@ void GuidedDriveController::ArcadeDrive(double myX, double myY, double thrustSen
 		printf("ANGLE SETPOINT --------- %f\n\n", robot_->GetNavXYaw()-rotateValue*10);
 	}
 	
-    double tOutput = anglePIDOutput_->GetPIDOutput(); //strange way to do it, lili drive working?
-	leftOutput -= tOutput;
-	rightOutput += tOutput;
+	if(!anglePID_->OnTarget()){
+		double tOutput = anglePIDOutput_->GetPIDOutput(); //strange way to do it, lili drive working?
+		leftOutput -= tOutput;
+		rightOutput += tOutput;
+	}
 	
     errorNet_.SetDouble(navXSource_->PIDGet());
 	rightDriveNet_.SetDouble(rightOutput);

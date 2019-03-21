@@ -56,6 +56,7 @@ public:
 	bool GetCargoUnintakeDesired();
 	bool GetCargoFlywheelDesired();
 	bool GetCargoFlywheelDesiredRocket();
+	bool GetCargoFlywheelUnintakeDesired();
 	bool GetCargoIntakeWristDesired();
 	bool GetHatchOuttakeDesired();
 	bool GetHatchBeakDesired();
@@ -64,7 +65,9 @@ public:
 	bool GetHatchWristUpDesired();
 	bool GetHatchWristDownDesired();
 	bool GetHabDeployDesired();
+	bool GetHabRetractDesired();
 	bool GetHabPrepDesired(); //hab break
+	bool GetHabBrakeDesired();
 
 	virtual ~ControlBoard();
 private:
@@ -85,7 +88,7 @@ private:
 	frc::Joystick *leftJoy_, *rightJoy_;
 
 	// Joysticks for operator
-	frc::Joystick *operatorJoy_, *operatorJoyB_; //TODO implement
+	frc::Joystick *operatorJoy_, *operatorJoyB_; 
 
 	// Buttons for drive
 	ButtonReader *driveDirectionButton_, *gearHighShiftButton_, *gearLowShiftButton_, *smallTurnButton_, *arcadeDriveButton_, *quickTurnButton_;
@@ -93,17 +96,16 @@ private:
 	nt::NetworkTableEntry leftZNet_, rightZNet_, joyModeNet_, opJoyModeNet_, smallTurnSensitivityNet_;
 	
 	//Buttons for superstructure
-	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoIntakeButton_, *cargoUnintakeButton_,
+	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoFlywheelUnintakeButton_, *cargoIntakeButton_, *cargoUnintakeButton_,
 		*cargoIntakeWristButton_, *hatchOuttakeButton_, *hatchBeakButton_, *hatchIntakeWheelButton_, *hatchUnintakeWheelButton_,
-		*hatchWristUpButton_, *hatchWristDownButton_, *habDeployButton_, *habPrepButton_ , *testButton_, *testButton2, *testButton3;
+		*hatchWristUpButton_, *hatchWristDownButton_, *habDeployButton_, *habRetractButton_, *habPrepButton_ , *habBrakeButton_, 
+		*testButton_, *testButton2, *testButton3;
 
 	//Variables for superstructure
-	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoIntakeWristDesired_,
-		hatchBeakDesired_, hatchOuttakeDesired_, hatchIntakeWheelDesired_, hatchUnintakeWheelDesired_, hatchWristUpDesired_, 
-		hatchWristDownDesired_, habDeployDesired_, habPrepDesired_;
+	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoFlywheelUnintakeDesired_, cargoIntakeWristDesired_,
+		hatchBeakDesired_, hatchOuttakeDesired_, hatchIntakeWheelDesired_, hatchUnintakeWheelDesired_, hatchWristUpDesired_,  
+		hatchWristDownDesired_, habDeployDesired_, habRetractDesired_, habPrepDesired_,  habBrakeDesired_;
 
-  	//TODO delete BELOW ALL GO AWAY DELETE DELETE DANG IT
-   	//ButtonReader *testButton_;
 
 };
 

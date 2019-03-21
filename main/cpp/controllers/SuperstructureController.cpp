@@ -7,8 +7,8 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
 	currState_ = kInit;
 	nextState_ = kIdle;
 
-    desiredFlywheelVelocCargo_ = 0.7; //TODO this is /1 not actual velocity
-    desiredFlywheelVelocRocket_ = 0.25; //TODO this is /1 not actual velocity
+    desiredFlywheelVelocCargo_ = 0.7; 
+    desiredFlywheelVelocRocket_ = 0.25; 
 
     desiredHatchWristAngle_ = 90;
     hatchWristNewAngle_ = true;
@@ -74,7 +74,6 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     rocketFlyPID_->SetAbsoluteTolerance(0.05); //TODO
     rocketFlyPID_->SetContinuous(false);
 
-
     /**
      * for hatch PID: currently 2 positions
      * 
@@ -97,7 +96,6 @@ void SuperstructureController::Reset() {
 
     cargoFlyPID_->Reset();
     rocketFlyPID_->Reset();
-    //hatchWristPID_->Reset();
 
     RefreshShuffleboard();
 
@@ -111,8 +109,8 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
     //TODO TAKE THIS OUT
     HatchWristAngleTest();
-    printf("current flywheel veloc cargo ship %f\n", desiredFlywheelVelocCargo_);
-    printf("curr flywheel veloc rocket ship %f\n", desiredFlywheelVelocRocket_);
+    // printf("current flywheel veloc cargo ship %f\n", desiredFlywheelVelocCargo_);
+    // printf("curr flywheel veloc rocket ship %f\n", desiredFlywheelVelocRocket_);
 
 	switch(currState_) {
         case kInit:
@@ -121,8 +119,6 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             
             rocketFlyPID_->Reset();
             rocketFlyPID_->Disable();
-
-            //hatchWristPID_->Enable();
 
             robot_->SetCargoIntakeOutput(0.0); 
             robot_->SetCargoFlywheelOutput(0.0);
@@ -162,13 +158,11 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 robot_->SetCargoIntakeWrist(true);
                 if(!humanControl_->GetCargoUnintakeDesired()){  //!humanControl_->GetCargoUnintakeDesired()){ 
                     if (!CargoInIntake()) {
-                       printf("hello friendz\n");
                        robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
                     } else {
                         robot_->SetCargoIntakeOutput(0.0);
                     }
                 } else {
-                    printf("?????\n");
                     robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
                 }
             } else {
@@ -184,11 +178,17 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
             if (humanControl_->GetCargoFlywheelDesiredRocket()){ //Note: check if less power first, don't want accident more power
                robot_->SetHatchBeak(true);
-               robot_->SetCargoFlywheelOutput(desiredFlywheelVelocRocket_);
+               robot_->SetCargoFlywheelOutput(RatioFlywheel(desiredFlywheelVelocRocket_)); 
+               printf("flywheel speed is following %f\n", RatioFlywheel(desiredFlywheelVelocRocket_));
             } else if(humanControl_->GetCargoFlywheelDesired()){ //flywheel for cargo ship
                 printf("cargo shooting into cargo ship\n");
                 robot_->SetHatchBeak(false);
-                robot_->SetCargoFlywheelOutput(desiredFlywheelVelocCargo_);
+                robot_->SetCargoFlywheelOutput(RatioFlywheel(desiredFlywheelVelocCargo_)); 
+                printf("flywheel speed is following %f\n", RatioFlywheel(desiredFlywheelVelocRocket_));
+            } else if (humanControl_->GetCargoFlywheelUnintakeDesired()) {
+                printf("unintaking the flywheel\n");
+                robot_->SetHatchBeak(true);
+                robot_->SetCargoFlywheelOutput(-desiredFlywheelVelocRocket_);
             } else {
                 robot_->SetCargoFlywheelOutput(0.0);
 
@@ -203,18 +203,25 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                     robot_->SetHatchBeak(false);
                     robot_->SetHatchOuttake(false);
                 }
+            }
 
+            if(humanControl_->GetHabBrakeDesired()){ //&& !humanControl_->GetTestDesired() && !humanControl_->GetTest3Desired()
+                robot_->SetHabBrake(false);
+                printf("hab brake not on\n");
+            } else {
+                robot_->SetHabBrake(true);
+                // printf("hab brake activate\n");
             }
             
+            //TODO SUPER SKETCH 2 messages random everywhere see robot
 
             if(humanControl_->GetHighGearDesired()){
                 robot_->SetHighGear();
+                printf("High Gear \n");
             } else {
                 robot_->SetLowGear();
+                printf("Low Gear \n");
             }
-
-            
-
 
             break;
         default:
@@ -236,12 +243,12 @@ void SuperstructureController::HatchWristAngleTest() {
 
 void SuperstructureController::HabEncoderTest() {
     currHabEncoderVal_ = robot_->GetHabEncoderValue();
-    printf("Hab Encoder Value is the follwoing %f/n", currHabEncoderVal_);
+    printf("Hab Encoder Value is the follwoing %f\n", currHabEncoderVal_);
 }
 
 void SuperstructureController::LightSensorTest(){
     currLightSensorStatus_ = robot_->GetLightSensorStatus();
-    printf("Light Sensor Value is the following &f/n", currLightSensorStatus_);
+    printf("Light Sensor Value is the following %d\n", currLightSensorStatus_);
 }
 
 void SuperstructureController::RefreshShuffleboard() {
@@ -274,6 +281,16 @@ bool SuperstructureController::CargoInIntake(){
     currLightSensorStatus_ = robot_->GetLightSensorStatus();
     printf("Light Sensor Value is the following %d\n", currLightSensorStatus_);
     return currLightSensorStatus_;
+}
+
+double SuperstructureController::RatioFlywheel(double value){
+    double ratioFlywheelOutput = 12.5/robot_->GetVoltage()*value;
+    if(ratioFlywheelOutput > 1){
+        ratioFlywheelOutput = 1;
+    } else if(ratioFlywheelOutput < -1){
+        ratioFlywheelOutput = -1;
+    }
+    return ratioFlywheelOutput;
 }
 
 void SuperstructureController::RefreshIni() { //TODO remove

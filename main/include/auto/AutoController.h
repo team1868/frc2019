@@ -3,6 +3,7 @@
 
 // #include "modes/AutoMode.h"
 #include "modes/TestMode.h"
+#include "modes/HatchInFrontCargoMode.h"
 
 class AutoController {
 public:

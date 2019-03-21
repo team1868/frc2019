@@ -56,7 +56,8 @@ void Robot::RobotInit()  {
 
   habLimitSwitch_ = new DigitalInput(4);
 
-  testHabPiston = new DoubleSolenoid(0, 7, 1);
+  // testHabPiston = new DoubleSolenoid(0, 7, 1);
+  testHabPiston = new DoubleSolenoid(0,5,2);
   testHabPiston->Set(DoubleSolenoid::kReverse);
 
   sandstormOverride_ = false;
@@ -67,8 +68,9 @@ void Robot::RobotInit()  {
 
 
   ResetTimerVariables();
-  Wait(7.0);
-  CameraServer::GetInstance()->StartAutomaticCapture(0);
+  Wait(1.0);
+  cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
+  camera.SetResolution(320,240);
   //Wait(1.0);
 
 
@@ -87,7 +89,7 @@ void Robot::RobotInit()  {
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
   habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.4).GetEntry();
-  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
 }
 
 /**
@@ -148,8 +150,12 @@ void Robot::AutonomousInit() {
   //curve_->Init();
   // ellipse_ = new EllipseCommand(robot_, 1, 3, 90, false, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
   // ellipse_->Init();
-  //robot_->SetTestSequence("d 11.0 b 0 h 1");  // straight forward hatch deploy
-  robot_->SetTestSequence("h 0 d 11.0 b 1 s 0.6 h 1");
+
+  // robot_->SetTestSequence("h 0 d 10.9 b 1 s 0.4 h 1"); // straight forward hatch deploy
+  // robot_->SetTestSequence("h 0 d 2");
+  robot_->SetTestSequence("h 0");
+  // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
+  
   autoMode_ = new TestMode(robot_);
   autoController_->SetAutonomousMode(autoMode_);
   autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1);
@@ -213,19 +219,24 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
+  robot_->SetHabBrake(true);
+  printf("setting hab arms to reverse\n");
+  testHabPiston->Set(DoubleSolenoid::kReverse);
 }
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
 
-  if(humanControl_->GetTest2Desired()){
+  if(humanControl_->GetHabBrakeDesired()){ //hab arms, change this name or put in superstructure
+    printf("greetings hab brake has been released\n");
     testHabPiston->Set(DoubleSolenoid::kForward);
   } /*else {
     testHabPiston->Set(DoubleSolenoid::kReverse);
   }*/
 
-  if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards
+  if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards //habdeploy
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
+    // robot_->SetHabBrake(false);
     robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.4));
     printf("Hab downing at %f power.\n", testerPowerNet_.GetDouble(0.4));
   } else if (humanControl_->GetTest3Desired()){
@@ -235,12 +246,10 @@ void Robot::TeleopPeriodic() {
     robot_->SetHabMotorOutput(0.0);
   }
 
-
   leftEncoderNet_.SetDouble(robot_->GetLeftEncoderValue());
   rightEncoderNet_.SetDouble(robot_->GetRightEncoderValue());
   leftEncoderStopNet_.SetBoolean(robot_->GetLeftEncoderStopped());
   rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
-
 
 
   switch(robot_->GetGameMode()){ //TODO MAKE INTO SEMIAUTO OR REG

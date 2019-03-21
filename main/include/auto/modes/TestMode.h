@@ -6,7 +6,7 @@
 class TestMode : public AutoMode {
 public:
     TestMode(RobotModel *robot);
-    void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl);
+    void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) override;
     void Init();
 
     virtual ~TestMode();

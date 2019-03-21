@@ -108,6 +108,7 @@ class RobotModel {
   void SetCargoIntakeWrist(bool change);
   void SetHatchOuttake(bool change);
   void SetHatchBeak(bool change);
+  void SetHabBrake(bool change);
 
   double GetCargoFlywheelMotorOutput(double output);
 
@@ -175,7 +176,7 @@ class RobotModel {
   rev::CANSparkMax *habSparkMotor_;
   //rev::CANEncoder *habSparkMotor_;
   Encoder *cargoFlywheelEncoder_;
-  DoubleSolenoid *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_;
+  DoubleSolenoid *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_, *habBrakeSolenoid_;
   Solenoid *hatchOuttakeSolenoid_;
 
   frc::Timer *timer_;

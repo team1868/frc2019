@@ -22,14 +22,13 @@
 #include "../include/auto/commands/PivotCommand.h"
 #include "../include/auto/commands/CurveCommand.h"
 #include "auto/AutoController.h"
-#include "auto/modes/TestMode.h"
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardTab.h>
 #include <networktables/NetworkTableEntry.h>
 #include "rev/CANSparkMax.h"
 
-class Robot : public frc::TimedRobot { //TODO CHANGE
+class Robot : public frc::TimedRobot {
  public:
   void RobotInit() override;
   void RobotPeriodic() override;
