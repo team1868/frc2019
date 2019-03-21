@@ -219,16 +219,28 @@ void Robot::TeleopInit() {
 	robot_->StartCompressor();
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
+<<<<<<< HEAD
   robot_->SetHabBrake(true);
   printf("setting hab arms to reverse\n");
   testHabPiston->Set(DoubleSolenoid::kReverse);
+||||||| merged common ancestors
+=======
+  robot_->SetHabBrake(true);
+  testHabPiston->Set(DoubleSolenoid::kReverse);
+>>>>>>> 50aefd44ddafbf9fea51aaa560ea00602023cd06
 }
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
 
+<<<<<<< HEAD
   if(humanControl_->GetHabBrakeDesired()){ //hab arms, change this name or put in superstructure
     printf("greetings hab brake has been released\n");
+||||||| merged common ancestors
+  if(humanControl_->GetTest2Desired()){
+=======
+  if(humanControl_->GetHabBrakeDesired()){ //hab arms, change this name or put in superstructure
+>>>>>>> 50aefd44ddafbf9fea51aaa560ea00602023cd06
     testHabPiston->Set(DoubleSolenoid::kForward);
   } /*else {
     testHabPiston->Set(DoubleSolenoid::kReverse);
@@ -236,7 +248,12 @@ void Robot::TeleopPeriodic() {
 
   if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards //habdeploy
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
+<<<<<<< HEAD
     // robot_->SetHabBrake(false);
+||||||| merged common ancestors
+=======
+    robot_->SetHabBrake(false);
+>>>>>>> 50aefd44ddafbf9fea51aaa560ea00602023cd06
     robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.4));
     printf("Hab downing at %f power.\n", testerPowerNet_.GetDouble(0.4));
   } else if (humanControl_->GetTest3Desired()){

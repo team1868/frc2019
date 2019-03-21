@@ -124,9 +124,16 @@ static const int HATCH_OUTTAKE_IN_DOUBLE_SOLENOID_CHAN     = 0;
 static const int HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN     = 0; //A
 static const int HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN       = 1; //A
 
+<<<<<<< HEAD
 static const int HAB_BRAKE_ENGAGE_DOUBLE_SOLENOID_CHAN      = 7; //A
 static const int HAB_BRAKE_RELEASE_DOUBLE_SOLENOID_CHAN     = 1; //A
 
+||||||| merged common ancestors
+=======
+static const int HAB_BRAKE_ENGAGE_DOUBLE_SOLENOID_CHAN      = 2; //A
+static const int HAB_BRAKE_RELEASE_DOUBLE_SOLENOID_CHAN     = 5; //A
+
+>>>>>>> 50aefd44ddafbf9fea51aaa560ea00602023cd06
 static const int FLYWHEEL_ENCODER_A_PWM_PORT = 0; //INCORRECT, TODO
 static const int FLYWHEEL_ENCODER_B_PWM_PORT = 1; //INCORRECT, TODO
 
