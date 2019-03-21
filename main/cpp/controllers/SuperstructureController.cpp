@@ -183,19 +183,12 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             } else if(humanControl_->GetCargoFlywheelDesired()){ //flywheel for cargo ship
                 printf("cargo shooting into cargo ship\n");
                 robot_->SetHatchBeak(false);
-<<<<<<< HEAD
                 robot_->SetCargoFlywheelOutput(RatioFlywheel(desiredFlywheelVelocCargo_)); 
                 printf("flywheel speed is following %f\n", RatioFlywheel(desiredFlywheelVelocRocket_));
             } else if (humanControl_->GetCargoFlywheelUnintakeDesired()) {
                 printf("unintaking the flywheel\n");
                 robot_->SetHatchBeak(true);
                 robot_->SetCargoFlywheelOutput(-desiredFlywheelVelocRocket_);
-||||||| merged common ancestors
-                robot_->SetCargoFlywheelOutput(desiredFlywheelVelocCargo_);
-=======
-                robot_->SetCargoFlywheelOutput(RatioFlywheel(desiredFlywheelVelocCargo_)); 
-                printf("flywheel speed is following %f\n", RatioFlywheel(desiredFlywheelVelocRocket_));
->>>>>>> 50aefd44ddafbf9fea51aaa560ea00602023cd06
             } else {
                 robot_->SetCargoFlywheelOutput(0.0);
 
@@ -212,22 +205,12 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 }
             }
 
-<<<<<<< HEAD
-            if(humanControl_->GetHabBrakeDesired()){ //&& !humanControl_->GetTestDesired() && !humanControl_->GetTest3Desired()
-                robot_->SetHabBrake(false);
-                printf("hab brake not on\n");
-            } else {
-                robot_->SetHabBrake(true);
-                // printf("hab brake activate\n");
-||||||| merged common ancestors
-=======
             if(humanControl_->GetHabBrakeDesired()){ //&& !humanControl_->GetTestDesired() && !humanControl_->GetTest3Desired()
                 robot_->SetHabBrake(false);
                 printf("hab brake not on\n");
             } else {
                 robot_->SetHabBrake(true);
                 printf("hab brake activate\n");
->>>>>>> 50aefd44ddafbf9fea51aaa560ea00602023cd06
             }
             
             //TODO SUPER SKETCH 2 messages random everywhere see robot

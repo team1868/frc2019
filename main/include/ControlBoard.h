@@ -102,19 +102,9 @@ private:
 		*testButton_, *testButton2, *testButton3;
 
 	//Variables for superstructure
-<<<<<<< HEAD
 	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoFlywheelUnintakeDesired_, cargoIntakeWristDesired_,
 		hatchBeakDesired_, hatchOuttakeDesired_, hatchIntakeWheelDesired_, hatchUnintakeWheelDesired_, hatchWristUpDesired_,  
 		hatchWristDownDesired_, habDeployDesired_, habRetractDesired_, habPrepDesired_,  habBrakeDesired_;
-||||||| merged common ancestors
-	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoIntakeWristDesired_,
-		hatchBeakDesired_, hatchOuttakeDesired_, hatchIntakeWheelDesired_, hatchUnintakeWheelDesired_, hatchWristUpDesired_, 
-		hatchWristDownDesired_, habDeployDesired_, habPrepDesired_;
-=======
-	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoIntakeWristDesired_,
-		hatchBeakDesired_, hatchOuttakeDesired_, hatchIntakeWheelDesired_, hatchUnintakeWheelDesired_, hatchWristUpDesired_,  
-		hatchWristDownDesired_, habDeployDesired_, habRetractDesired_, habPrepDesired_,  habBrakeDesired_;
->>>>>>> 50aefd44ddafbf9fea51aaa560ea00602023cd06
 
 
 };

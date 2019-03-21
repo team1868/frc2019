@@ -188,32 +188,6 @@ void ControlBoard::ReadControls() {
 
 	//no switch, so using buttons
 	reverseDriveDesired_ = driveDirectionButton_->IsDown();
-<<<<<<< HEAD
-	switch(curJoyMode) {
-		case(gamePad):
-			if(gearLowShiftButton_->IsDown()){
-				highGearDesired_ = false;
-			} else if (gearHighShiftButton_->IsDown()){
-				highGearDesired_ = true;
-			} //else remain as is
-			break;
-		case(twoJoy):
-			if(gearHighShiftButton_->IsDown()){
-				highGearDesired_ = true;
-			} else {
-				highGearDesired_ = false;
-			}
-			break;
-		default:
-			printf("WARNING: curJoyMode not valid in ControlBoard.cpp/ReadControls()\n");
-	}
-||||||| merged common ancestors
-	if(gearLowShiftButton_->IsDown()){
-		highGearDesired_ = false;
-	} else if (gearHighShiftButton_->IsDown()){
-		highGearDesired_ = true;
-	} //else remain as is
-=======
 	switch(curJoyMode) {
 		case(gamePad):
 			if(gearLowShiftButton_->IsDown()){
@@ -234,7 +208,6 @@ void ControlBoard::ReadControls() {
 		default:
 			printf("WARNING: curJoyMode not valid in ControlBoard.cpp/ReadControls()\n");
 	}
->>>>>>> 50aefd44ddafbf9fea51aaa560ea00602023cd06
 	//gearHighShiftButton_->IsDown();
 	arcadeDriveDesired_ = arcadeDriveButton_->IsDown(); //TODO DEAD CODE
 	quickTurnDesired_ = quickTurnButton_->IsDown();
