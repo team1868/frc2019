@@ -36,12 +36,15 @@ void AlignWithTapeCommand::Init() {
     context_ = new zmq::context_t(1);
 
     try {
+		printf("in try lol homie\n");
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-        subscriber_->connect("tcp://10.18.68.12:5808"); // TODO CHECK ID
+        subscriber_->connect("tcp://10.18.68.12:1188"); // TODO CHECK ID
+		printf("connected to socket\n");
         int confl = 1;
 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
 		subscriber_->setsockopt(ZMQ_RCVTIMEO, 1000);
 		subscriber_->setsockopt(ZMQ_SUBSCRIBE, "MESSAGE", 0);
+		printf("done with try\n");
     } catch(const zmq::error_t &exc) {
 		printf("TRY CATCH FAILED IN ALIGNWITHTAPECOMMAND INIT\n");
 		std::cerr << exc.what();

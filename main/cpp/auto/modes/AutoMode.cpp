@@ -156,6 +156,22 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				// }
 			}
 			break;
+		case '^':
+			printf("Outtake cargo to cargo ship command\n");
+			if (IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new OuttakeCargoToShipCommand(robot_);
+			}
+			break;
+		case 'w':
+			printf("intaking with cargo wrist command\n");
+			if (IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new CargoWristCommand(robot_);
+			}
+			break;
 		case 's':
 			printf("Wait Command\n");
 			double waitTime;

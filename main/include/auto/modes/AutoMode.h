@@ -9,6 +9,8 @@
 #include "../commands/HatchBeakCommand.h"
 #include "../commands/AlignWithTapeCommand.h"
 #include "../commands/OuttakeHatchCommand.h"
+#include "../commands/OuttakeCargoToShipCommand.h"
+#include "../commands/CargoWristCommand.h"
 #include "../PIDSource/PIDInputSource.h"
 #include "../PIDSource/PIDOutputSource.h"
 

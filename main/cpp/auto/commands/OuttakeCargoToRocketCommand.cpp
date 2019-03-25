@@ -11,7 +11,7 @@ OuttakeCargoToRocketCommand::OuttakeCargoToRocketCommand(RobotModel *robot) : Au
 	outtakeCargoToRocketMotorOutput_ = 0.5; //TODO TEST
     cargoIntakeMotorOutput_ = 1.0;
 	startTime_ = 0.0;
-    deltaFlywheelStartTime_ = 0.5;  //TODO TEST
+    deltaFlywheelStartTime_ = 1.0;  //TODO TEST
 	deltaTime_ = 2.5; //TODO TEST
 }
 
@@ -21,6 +21,8 @@ void OuttakeCargoToRocketCommand::Init() {
 }
 
 void OuttakeCargoToRocketCommand::Reset() {
+	robot_->SetCargoFlywheelOutput(0.0);
+    robot_->SetCargoIntakeOutput(0.0);
 	isDone_ = true;
 }
 

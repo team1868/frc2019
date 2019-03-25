@@ -55,9 +55,9 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   rIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional I", 0.0).GetEntry();
   rDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional D", 0.0).GetEntry();
 
-  pivotPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command P", 0.07).GetEntry();
+  pivotPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command P", 0.075).GetEntry();
   pivotIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command I", 0.0).GetEntry();
-  pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.04).GetEntry();
+  pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.07).GetEntry();
   pivotPFacNet_.SetDouble(0.07);
   pivotDFacNet_.SetDouble(0.04);
 
@@ -185,7 +185,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   } else {
 		leftDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   }
-  leftDriveEncoder_->SetReverseDirection(true);
+  leftDriveEncoder_->SetReverseDirection(false); // WAS TRUE
 
   rightDriveEncoder_ = new frc::Encoder(RIGHT_DRIVE_ENCODER_YELLOW_PWM_PORT, RIGHT_DRIVE_ENCODER_RED_PWM_PORT, false);
   if(highGear_){
@@ -193,7 +193,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   } else {
 		rightDriveEncoder_->SetDistancePerPulse((LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
   }
-  rightDriveEncoder_->SetReverseDirection(false);
+  rightDriveEncoder_->SetReverseDirection(true); // WAS FALSE
   printf("Distance per pulse: %f", (LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 
   SetLowGear();

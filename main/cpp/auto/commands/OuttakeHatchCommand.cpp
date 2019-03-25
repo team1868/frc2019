@@ -14,6 +14,7 @@ OuttakeHatchCommand::OuttakeHatchCommand(RobotModel *robot, bool hatchOut) : Aut
 }
 
 void OuttakeHatchCommand::Init() {}
+
 void OuttakeHatchCommand::Update(double currTimeSec, double deltaTimeSec) {
     if (hatchOut_) {
         robot_->SetHatchOuttake(true);

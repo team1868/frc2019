@@ -210,7 +210,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 printf("hab brake not on\n");
             } else {
                 robot_->SetHabBrake(true);
-                printf("hab brake activate\n");
+                // printf("hab brake activate\n");
             }
             
             //TODO SUPER SKETCH 2 messages random everywhere see robot
@@ -220,7 +220,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 printf("High Gear \n");
             } else {
                 robot_->SetLowGear();
-                printf("Low Gear \n");
+                // printf("Low Gear \n");
             }
 
             break;
