@@ -65,7 +65,7 @@ private:
 	
 	nt::NetworkTableEntry rocketPNet_, rocketINet_, rocketDNet_, cargoPNet_, cargoINet_, cargoDNet_,
 		cargoVelocNet_, cargoRocketVelocNet_, hatchPDownNet_, hatchIDownNet_, hatchDDownNet_, 
-		hatchPUpNet_, hatchIUpNet_, hatchDUpNet_;
+		hatchPUpNet_, hatchIUpNet_, hatchDUpNet_, hatchPowerNet_;
 
 };
 
