@@ -84,7 +84,7 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 				printf("vision done at: %f\n", robot_->GetTime() - initTimeVision_);
 
 				printf("ANGLE FOR PIVOT COMMAND: %f\n", -desiredDeltaAngle_);
-				pivotCommand_ = new PivotCommand(robot_, -desiredDeltaAngle_, false, navXSource_);
+				pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()-desiredDeltaAngle_, false, navXSource_);
 				printf("pivotCommand constructed: %f\n", robot_->GetTime() - initTimeVision_);
 				pivotCommand_->Init();
 				printf("pivotCommand inited: %f\n", robot_->GetTime() - initTimeVision_);
@@ -164,7 +164,7 @@ void AlignWithTapeCommand::ReadFromJetson() {
 
 	try {
 		string contents = s_recv(*subscriber_);
-
+		printf("contents from jetson: %s\n", contents.c_str());
 		stringstream ss(contents);
 		vector<string> result;
 
@@ -173,13 +173,18 @@ void AlignWithTapeCommand::ReadFromJetson() {
 			getline( ss, substr, ' ' );
 			result.push_back( substr );
 		}
-
-		desiredDeltaAngle_ = stod(result.at(0));
+		if(result.size() > 0) {
+			desiredDeltaAngle_ = stod(result.at(0));
+		} else {
+			desiredDeltaAngle_ = 0.0;
+		}
+		
+		
 		// desiredDistance_ = stod(result.at(1));
-		printf("contents from jetson: %s\n", contents.c_str());
+		// printf("contents from jetson: %s\n", contents.c_str());
 	} catch (const std::exception &exc) {
 		printf("TRY CATCH FAILED IN READFROMJETSON\n");
-		std::cerr << exc.what();
+		std::cout << exc.what() << std::endl;
 		desiredDeltaAngle_ = 0.0;
 		// desiredDistance_ = 0.0;
 	}

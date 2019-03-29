@@ -59,7 +59,7 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     hatchIUpNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Iu", 0.0).GetEntry();
     hatchDUpNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch Du", 0.02).GetEntry();
 
-    hatchPowerNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch POWER", 0.3).GetEntry();
+    hatchPowerNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("hatch POWER", 0.4).GetEntry();
 
     //shuffleboard PID values
     cargoFlyPID_  = new PIDController(cargoPFac_, cargoIFac_, cargoDFac_, robot_->GetCargoFlywheelEncoder(),
@@ -135,9 +135,9 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
             if (humanControl_->GetHatchWristDownDesired()) { 
 			    printf("hatch intake wrist to floor\n");
-                robot_->SetHatchWristOutput(-hatchPowerNet_.GetDouble(0.3));
+                robot_->SetHatchWristOutput(-hatchPowerNet_.GetDouble(0.4));
             } else if (humanControl_->GetHatchWristUpDesired()) { 
-			    robot_->SetHatchWristOutput(hatchPowerNet_.GetDouble(0.3));
+			    robot_->SetHatchWristOutput(hatchPowerNet_.GetDouble(0.4));
 		    } else { //otherwise, keep in past 90 degree point
 			    robot_->SetHatchWristOutput(0.0);
             }

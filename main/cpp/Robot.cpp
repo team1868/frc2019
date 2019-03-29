@@ -30,6 +30,8 @@ void Robot::RobotInit()  {
 
   printf("In robot init.\n");
 
+  frc::Shuffleboard::GetTab("AUTO CHOOSER");
+
   //initialize RobotModel
   robot_ = new RobotModel();
 
@@ -79,6 +81,25 @@ void Robot::RobotInit()  {
   //m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   //m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   //frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+    // robot_->SetTestSequence("h 0 d 10.9"); //  b 1 s 0.4 h 1 straight forward hatch deploy
+  // robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3"); // left hab 2 to left front hatch deploy working
+  // robot_->SetTestSequence("h 0 a");
+  // robot_->SetTestSequence("h 0 d 4.0 t -90.0 d 4.9 t 0.0 d 4.5 t -23.0 d 1.5"); // rocket near in progress lol left
+  // robot_->SetTestSequence("h 0 d 19.1 t 90.0"); // cargo ship from hab 2 near cargo shot left
+  // robot_->SetTestSequence("h 0 d 16.1 t 90.0"); // chargo ship from hab 1 near cargo shot left
+  // robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
+
+  //autoSendableChooser_ = new frc::SendableChooser<std::string>();
+  // autoSendableChooser_.InitSendable();
+  autoSendableChooser_.SetDefaultOption("0: blank", "h 0");
+  autoSendableChooser_.AddOption("1: hab 1, straight, hatch", "h 0 d 10.9");
+  autoSendableChooser_.AddOption("2: left, hab 2, left front hatch", "h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("3: right, hab 2, right front hatch", "h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("4: left, hab 2, left near cargo ship, 1 cargo", "h 0 d 19.1 t 90.0 ^");
+  autoSendableChooser_.AddOption("5: left, hab 2, left near cargo ship, 1 cargo + pickup", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("6: right, hab 2, right near cargo ship, 1 cargo", "h 0 d 19.1 t -90.0 ^");
+  autoSendableChooser_.AddOption("7: right, hab 2, right near cargo ship, 1 cargo + pickup", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("8: other, input your string", "h 0");
   
   //TODODODOD MOVE TO ROBOT MODEL
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
@@ -90,6 +111,9 @@ void Robot::RobotInit()  {
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
   habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.4).GetEntry();
   guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("lala info", 0.0);
+  // frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose yo auto here fam", autoSendableChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
+  frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose yo auto here fam", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
 }
 
 /**
@@ -113,6 +137,7 @@ void Robot::RobotPeriodic() {
   SmartDashboard::PutNumber("right encoder scale", robot_->GetRightEncodingScale());
   SmartDashboard::PutBoolean("is high gear?", robot_->IsHighGear());
   robot_->PrintState();
+  // std::cout << "INFORMATION:            " << autoSendableChooser_.GetSelected() << std::endl;
 }
 
 /**
@@ -128,6 +153,7 @@ void Robot::RobotPeriodic() {
  */
 void Robot::AutonomousInit() {
   frc::Shuffleboard::StartRecording();
+  std::string autoModeString = autoSendableChooser_.GetSelected();
 
   printf("IN AUTONOMOUS \n");
   robot_->ResetDriveEncoders();
@@ -157,8 +183,9 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 d 4.0 t -90.0 d 4.9 t 0.0 d 4.5 t -23.0 d 1.5"); // rocket near in progress lol left
   // robot_->SetTestSequence("h 0 d 19.1 t 90.0"); // cargo ship from hab 2 near cargo shot left
   // robot_->SetTestSequence("h 0 d 16.1 t 90.0"); // chargo ship from hab 1 near cargo shot left
-  robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
-  
+  // robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
+  // robot_->SetTestSequence(autoModeString);
+  robot_->SetTestSequence("a h 0");
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
   
   autoMode_ = new TestMode(robot_);

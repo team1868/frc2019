@@ -199,7 +199,7 @@ void ControlBoard::ReadControls() {
 		case(twoJoy):
 			// printf("hi again\n");
 			if(gearHighShiftButton_->IsDown()){
-				printf("hello\n");
+				// printf("hello\n");
 				highGearDesired_ = true;
 			} else {
 				highGearDesired_ = false;

@@ -81,4 +81,7 @@ class Robot : public frc::TimedRobot {
 
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
     testerPowerNet_, guidedDriveNet_, habRisePowerNet_, leftDistanceNet_, rightDistanceNet_;
+
+  frc::SendableChooser<std::string> autoSendableChooser_;
+  nt::NetworkTableEntry autoChooser_;
 };
