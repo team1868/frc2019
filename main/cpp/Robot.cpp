@@ -91,7 +91,7 @@ void Robot::RobotInit()  {
 
   //autoSendableChooser_ = new frc::SendableChooser<std::string>();
   // autoSendableChooser_.InitSendable();
-  autoSendableChooser_.SetDefaultOption("0: blank", "h 0");
+  /*autoSendableChooser_.SetDefaultOption("0: blank", "h 0");
   autoSendableChooser_.AddOption("1: hab 1, straight, hatch", "h 0 d 10.9");
   autoSendableChooser_.AddOption("2: left, hab 2, left front hatch", "h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
   autoSendableChooser_.AddOption("3: right, hab 2, right front hatch", "h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
@@ -99,7 +99,17 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("5: left, hab 2, left near cargo ship, 1 cargo + pickup", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
   autoSendableChooser_.AddOption("6: right, hab 2, right near cargo ship, 1 cargo", "h 0 d 19.1 t -90.0 ^");
   autoSendableChooser_.AddOption("7: right, hab 2, right near cargo ship, 1 cargo + pickup", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
-  autoSendableChooser_.AddOption("8: other, input your string", "h 0");
+  autoSendableChooser_.AddOption("8: other, input your string", "h 0");*/
+
+  autoSendableChooser_.SetDefaultOption("0: blank", "h 0");
+  autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.9");
+  autoSendableChooser_.AddOption("2:2L,Lfront,H", "h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("3:2R,Rfront,H", "h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("4:2L,Lship,C", "h 0 d 19.1 t 90.0 ^");
+  autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.1 t -90.0 ^");
+  autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("8:other", "h 0");
   
   //TODODODOD MOVE TO ROBOT MODEL
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
@@ -111,9 +121,31 @@ void Robot::RobotInit()  {
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
   habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.4).GetEntry();
   guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("lala info", 0.0);
+  //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("lala info", 0.0);
   // frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose yo auto here fam", autoSendableChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
-  frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose yo auto here fam", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
+  frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
+  
+  
+  autoChooserType_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("SendableChooser", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto0_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("0: blank", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto1_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("1: 1S,H", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto2_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("2:2L,Lfront,H", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto3_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("3:2R,Rfront,H", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto4_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("4:2L,Lship,C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto5_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("5:2L,Lship,1.5C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto6_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("6:2R,Rship,1C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto7_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("7:2R,Rship,1.5C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto8_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other", "h 0").WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto0Change_ = auto0_.GetLastChange();
+  auto1Change_ = auto1_.GetLastChange();
+  auto2Change_ = auto2_.GetLastChange();
+  auto3Change_ = auto3_.GetLastChange();
+  auto4Change_ = auto4_.GetLastChange();
+  auto5Change_ = auto5_.GetLastChange();
+  auto6Change_ = auto6_.GetLastChange();
+  auto7Change_ = auto7_.GetLastChange();
+  auto8Change_ = auto8_.GetLastChange();
 }
 
 /**
@@ -137,6 +169,99 @@ void Robot::RobotPeriodic() {
   SmartDashboard::PutNumber("right encoder scale", robot_->GetRightEncodingScale());
   SmartDashboard::PutBoolean("is high gear?", robot_->IsHighGear());
   robot_->PrintState();
+  //auto0_.GetLastChange();
+
+  if(auto0_.GetLastChange() != auto0Change_ && auto0_.GetBoolean(true)){
+    auto1_.SetBoolean(false);
+    auto2_.SetBoolean(false);
+    auto3_.SetBoolean(false);
+    auto4_.SetBoolean(false);
+    auto5_.SetBoolean(false);
+    auto6_.SetBoolean(false);
+    auto7_.SetBoolean(false);
+    auto8_.SetBoolean(false);
+    auto0Change_ = auto0_.GetLastChange();
+  } else if (auto1_.GetLastChange() != auto1Change_ && auto1_.GetBoolean(true)){
+    auto0_.SetBoolean(false);
+    auto2_.SetBoolean(false);
+    auto3_.SetBoolean(false);
+    auto4_.SetBoolean(false);
+    auto5_.SetBoolean(false);
+    auto6_.SetBoolean(false);
+    auto7_.SetBoolean(false);
+    auto8_.SetBoolean(false);
+    auto1Change_ = auto1_.GetLastChange();
+  } else if (auto2_.GetLastChange() != auto2Change_ && auto2_.GetBoolean(true)){
+    auto1_.SetBoolean(false);
+    auto0_.SetBoolean(false);
+    auto3_.SetBoolean(false);
+    auto4_.SetBoolean(false);
+    auto5_.SetBoolean(false);
+    auto6_.SetBoolean(false);
+    auto7_.SetBoolean(false);
+    auto8_.SetBoolean(false);
+    auto2Change_ = auto2_.GetLastChange();
+  } else if (auto3_.GetLastChange() != auto3Change_ && auto3_.GetBoolean(true)){
+    auto1_.SetBoolean(false);
+    auto0_.SetBoolean(false);
+    auto2_.SetBoolean(false);
+    auto4_.SetBoolean(false);
+    auto5_.SetBoolean(false);
+    auto6_.SetBoolean(false);
+    auto7_.SetBoolean(false);
+    auto8_.SetBoolean(false);
+    auto3Change_ = auto3_.GetLastChange();
+  } else if (auto4_.GetLastChange() != auto4Change_ && auto4_.GetBoolean(true)){
+    auto1_.SetBoolean(false);
+    auto2_.SetBoolean(false);
+    auto3_.SetBoolean(false);
+    auto0_.SetBoolean(false);
+    auto5_.SetBoolean(false);
+    auto6_.SetBoolean(false);
+    auto7_.SetBoolean(false);
+    auto8_.SetBoolean(false);
+    auto4Change_ = auto4_.GetLastChange();
+  } else if (auto5_.GetLastChange() != auto5Change_ && auto5_.GetBoolean(true)){
+    auto1_.SetBoolean(false);
+    auto2_.SetBoolean(false);
+    auto3_.SetBoolean(false);
+    auto4_.SetBoolean(false);
+    auto0_.SetBoolean(false);
+    auto6_.SetBoolean(false);
+    auto7_.SetBoolean(false);
+    auto8_.SetBoolean(false);
+    auto5Change_ = auto5_.GetLastChange();
+  } else if (auto6_.GetLastChange() != auto6Change_ && auto6_.GetBoolean(true)){
+    auto1_.SetBoolean(false);
+    auto2_.SetBoolean(false);
+    auto3_.SetBoolean(false);
+    auto4_.SetBoolean(false);
+    auto5_.SetBoolean(false);
+    auto0_.SetBoolean(false);
+    auto7_.SetBoolean(false);
+    auto8_.SetBoolean(false);
+    auto6Change_ = auto6_.GetLastChange();
+  } else if (auto7_.GetLastChange() != auto7Change_ && auto7_.GetBoolean(true)){
+    auto1_.SetBoolean(false);
+    auto2_.SetBoolean(false);
+    auto3_.SetBoolean(false);
+    auto4_.SetBoolean(false);
+    auto5_.SetBoolean(false);
+    auto6_.SetBoolean(false);
+    auto0_.SetBoolean(false);
+    auto8_.SetBoolean(false);
+    auto7Change_ = auto7_.GetLastChange();
+  } else if (auto8_.GetLastChange() != auto8Change_ && auto8_.GetBoolean(true)){
+    auto1_.SetBoolean(false);
+    auto2_.SetBoolean(false);
+    auto3_.SetBoolean(false);
+    auto4_.SetBoolean(false);
+    auto5_.SetBoolean(false);
+    auto6_.SetBoolean(false);
+    auto7_.SetBoolean(false);
+    auto0_.SetBoolean(false);
+    auto8Change_ = auto8_.GetLastChange();
+  }
   // std::cout << "INFORMATION:            " << autoSendableChooser_.GetSelected() << std::endl;
 }
 
@@ -185,8 +310,36 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 d 16.1 t 90.0"); // chargo ship from hab 1 near cargo shot left
   // robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // robot_->SetTestSequence(autoModeString);
-  robot_->SetTestSequence("a h 0");
+  //robot_->SetTestSequence("a h 0");
+  robot_->SetTestSequence("h 0");
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
+  if(autoChooserType_.GetBoolean(true)){
+    robot_->SetTestSequence(autoSendableChooser_.GetSelected());
+  } else {
+    if(auto0_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0");
+    } else if(auto1_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 10.9");
+    } else if(auto2_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
+    } else if(auto3_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
+    } else if(auto4_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^");
+    } else if(auto5_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
+    } else if(auto6_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^");
+    } else if(auto7_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
+    } else if(auto8_.GetBoolean(false)){
+      robot_->SetTestSequence(auto8Val_.GetString("h 0"));
+      printf("WARNING: In Auto Init.  using other option in auto, string not checked and confirmed to be valid");
+    } else {
+      printf("ERROR: In Auto Init.  not using sendablechooser and none of the auto switches are true.  Continuing to teleop.");
+      sandstormAuto_ = false;
+    }
+  }
   
   autoMode_ = new TestMode(robot_);
   autoController_->SetAutonomousMode(autoMode_);
