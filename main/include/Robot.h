@@ -80,7 +80,7 @@ class Robot : public frc::TimedRobot {
   bool sandstormAuto_;
 
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
-    testerPowerNet_, guidedDriveNet_, habRisePowerNet_, leftDistanceNet_, rightDistanceNet_;
+    testerPowerNet_, guidedDriveNet_, habRisePowerNet_, leftDistanceNet_, rightDistanceNet_, sparkEncoderNet_;
 
   uint64_t auto0Change_, auto1Change_, auto2Change_, auto3Change_, auto4Change_, auto5Change_, auto6Change_, auto7Change_, auto8Change_;
   frc::SendableChooser<std::string> autoSendableChooser_;

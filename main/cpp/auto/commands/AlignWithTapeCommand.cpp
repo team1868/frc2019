@@ -38,7 +38,7 @@ void AlignWithTapeCommand::Init() {
     try {
 		printf("in try lol homie\n");
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-        subscriber_->connect("tcp://10.18.68.12:1188"); // TODO CHECK ID
+        subscriber_->connect("tcp://10.18.68.12:5808"); // TODO CHECK ID
 		printf("connected to socket\n");
         int confl = 1;
 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));

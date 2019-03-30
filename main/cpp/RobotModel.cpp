@@ -58,9 +58,6 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   pivotPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command P", 0.075).GetEntry();
   pivotIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command I", 0.0).GetEntry();
   pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.07).GetEntry();
-  pivotPFacNet_.SetDouble(0.07);
-  pivotDFacNet_.SetDouble(0.04);
-
   
   maxOutputNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("MAX DRIVE OUTPUT", 1.0).GetEntry();
   minVoltNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Min Volt", MIN_VOLTAGE_BROWNOUT).GetEntry();

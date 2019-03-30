@@ -79,13 +79,15 @@ static const int CARGO_FLYWHEEL_UNINTAKE_BUTTON_PORT = 2;
 
 //operatorJoyB_
 static const int HAB_PREP_BUTTON_PORT              = 1;
-static const int HAB_DEPLOY_BUTTON_PORT            = 11; //CHANGE TO DRIVER JOY
-static const int HAB_RETRACT_BUTTON_PORT           = 12; //CHANGE TO DRIVER JOY
+static const int HAB_DEPLOY_BUTTON_PORT            = 11;
+static const int HAB_RETRACT_BUTTON_PORT           = 12; 
 static const int CARGO_FLYWHEEL_BUTTON_PORT        = 5; //unused
 static const int CARGO_FLYWHEEL_ROCKET_BUTTON_PORT = 4; //TODO CHANGE THIS
 static const int HATCH_OUTTAKE_BUTTON_PORT         = 6;
 static const int HATCH_BEAK_BUTTON_PORT            = 7;
-static const int HAB_BREAK_BUTTON_PORT             = 1; 
+static const int HAB_BREAK_BUTTON_PORT             = 3; 
+static const int HAB_BRAKE_LEVEL2_BUTTON_PORT      = 1;
+static const int HAB_ARMS_RETRACT_BUTTON_PORT      = 2;
 
 //------------------superstruture gamePad ports------------------------
 static const int CARGO_INTAKE_BUTTON_PORT_G     = 5;

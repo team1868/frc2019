@@ -7,13 +7,13 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
 	currState_ = kInit;
 	nextState_ = kIdle;
 
-    desiredFlywheelVelocCargo_ = 0.7; 
+    desiredFlywheelVelocCargo_ = 0.65; 
     desiredFlywheelVelocRocket_ = 0.25; 
 
     desiredHatchWristAngle_ = 90;
     hatchWristNewAngle_ = true;
 
-    cargoVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo veloc", 0.7).GetEntry(); //0.7
+    cargoVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo veloc", 0.65).GetEntry(); //0.65
     cargoRocketVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket veloc", 0.25).GetEntry(); //0.25
     
     cargoIntakeOutput_ = 0.8; 
@@ -76,7 +76,7 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     rocketFlyPID_->SetAbsoluteTolerance(0.05); //TODO
     rocketFlyPID_->SetContinuous(false);
 
-    /**
+    /**0
      * for hatch PID: currently 2 positions
      * 
      * down - stowed position to floor
@@ -207,19 +207,19 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 }
             }
 
-            if(humanControl_->GetHabBrakeDesired()){ //&& !humanControl_->GetTestDesired() && !humanControl_->GetTest3Desired()
+            if(humanControl_->GetHabBrakeDesired() || humanControl_->GetHabBrakeLevel2Desired()){ //&& !humanControl_->GetTestDesired() && !humanControl_->GetTest3Desired()
                 robot_->SetHabBrake(false);
                 printf("hab brake not on\n");
             } else {
                 robot_->SetHabBrake(true);
                 // printf("hab brake activate\n");
             }
-            
+
             //TODO SUPER SKETCH 2 messages random everywhere see robot
 
             if(humanControl_->GetHighGearDesired()){
                 robot_->SetHighGear();
-                printf("High Gear \n");
+                // printf("High Gear \n");
             } else {
                 robot_->SetLowGear();
                 // printf("Low Gear \n");
@@ -254,7 +254,7 @@ void SuperstructureController::LightSensorTest(){
 }
 
 void SuperstructureController::RefreshShuffleboard() {
-    desiredFlywheelVelocCargo_ = cargoVelocNet_.GetDouble(0.7);
+    desiredFlywheelVelocCargo_ = cargoVelocNet_.GetDouble(0.65);
     desiredFlywheelVelocRocket_ = cargoRocketVelocNet_.GetDouble(0.25);
 
     cargoPFac_ = cargoPNet_.GetDouble(0.8);

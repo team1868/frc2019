@@ -118,13 +118,13 @@ void Robot::RobotInit()  {
 	rightDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Distance (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
-  testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.4).GetEntry();
-  habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.4).GetEntry();
+  testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.6).GetEntry();
+  habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.9).GetEntry();
   guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("lala info", 0.0);
   // frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose yo auto here fam", autoSendableChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
   frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
-  
+  sparkEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("hab encoder val", 0.0).GetEntry();
   
   autoChooserType_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("SendableChooser", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto0_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("0: blank", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
@@ -163,6 +163,8 @@ void Robot::RobotPeriodic() {
   rightEncoderStopNet_.SetBoolean(robot_->GetRightEncoderStopped());
   leftDistanceNet_.SetDouble(robot_->GetLeftDistance());
   rightDistanceNet_.SetDouble(robot_->GetRightDistance());
+  sparkEncoderNet_.SetDouble(robot_->GetHabEncoderValue());
+
   SmartDashboard::PutNumber("left distance per pulse", robot_->GetLeftDistancePerPulse());
   SmartDashboard::PutNumber("right distance per pulse", robot_->GetRightDistancePerPulse());
   SmartDashboard::PutNumber("left encoder scale", robot_->GetLeftEncodingScale());
@@ -278,11 +280,12 @@ void Robot::RobotPeriodic() {
  */
 void Robot::AutonomousInit() {
   frc::Shuffleboard::StartRecording();
-  std::string autoModeString = autoSendableChooser_.GetSelected();
+  // std::string autoModeString = autoSendableChooser_.GetSelected();
 
   printf("IN AUTONOMOUS \n");
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
+  robot_->SetLowGear();
 
   //TODO BAD FORM but whatev
   NavXPIDSource *navXSource = new NavXPIDSource(robot_);
@@ -311,35 +314,43 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // robot_->SetTestSequence(autoModeString);
   //robot_->SetTestSequence("a h 0");
-  robot_->SetTestSequence("h 0");
+
+
+  // robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
+  robot_->SetTestSequence("h 0 t 90.0");
+  // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -17.0"); //w d 17.0 t 90.0
+  // robot_->SetTestSequence("h 0 d 18.8 t 90.0"); //w d 17.0 t 90.0
+  // robot_->SetTestSequence("h 0 t 90.0");
+  // robot_->SetTestSequence("h 0 d 10.9"); //  b 1 s 0.4 h 1 straight forward hatch deploy
+
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
-  if(autoChooserType_.GetBoolean(true)){
-    robot_->SetTestSequence(autoSendableChooser_.GetSelected());
-  } else {
-    if(auto0_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0");
-    } else if(auto1_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 10.9");
-    } else if(auto2_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
-    } else if(auto3_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
-    } else if(auto4_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^");
-    } else if(auto5_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
-    } else if(auto6_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^");
-    } else if(auto7_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
-    } else if(auto8_.GetBoolean(false)){
-      robot_->SetTestSequence(auto8Val_.GetString("h 0"));
-      printf("WARNING: In Auto Init.  using other option in auto, string not checked and confirmed to be valid");
-    } else {
-      printf("ERROR: In Auto Init.  not using sendablechooser and none of the auto switches are true.  Continuing to teleop.");
-      sandstormAuto_ = false;
-    }
-  }
+  // if(autoChooserType_.GetBoolean(true)){
+  //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
+  // } else {
+  //   if(auto0_.GetBoolean(false)){
+  //     robot_->SetTestSequence("h 0");
+  //   } else if(auto1_.GetBoolean(false)){
+  //     robot_->SetTestSequence("h 0 d 10.9");
+  //   } else if(auto2_.GetBoolean(false)){
+  //     robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
+  //   } else if(auto3_.GetBoolean(false)){
+  //     robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
+  //   } else if(auto4_.GetBoolean(false)){
+  //     robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^");
+  //   } else if(auto5_.GetBoolean(false)){
+  //     robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
+  //   } else if(auto6_.GetBoolean(false)){
+  //     robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^");
+  //   } else if(auto7_.GetBoolean(false)){
+  //     robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
+  //   } else if(auto8_.GetBoolean(false)){
+  //     robot_->SetTestSequence(auto8Val_.GetString("h 0"));
+  //     printf("WARNING: In Auto Init.  using other option in auto, string not checked and confirmed to be valid");
+  //   } else {
+  //     printf("ERROR: In Auto Init.  not using sendablechooser and none of the auto switches are true.  Continuing to teleop.");
+  //     sandstormAuto_ = false;
+  //   }
+  // }
   
   autoMode_ = new TestMode(robot_);
   autoController_->SetAutonomousMode(autoMode_);
@@ -407,6 +418,7 @@ void Robot::TeleopInit() {
   robot_->SetHabBrake(true);
   printf("setting hab arms to reverse\n");
   testHabPiston->Set(DoubleSolenoid::kReverse);
+
 }
 
 // read controls and get current time from controllers
@@ -415,7 +427,10 @@ void Robot::TeleopPeriodic() {
   if(humanControl_->GetHabBrakeDesired()){ //hab arms, change this name or put in superstructure
     printf("greetings hab brake has been released\n");
     testHabPiston->Set(DoubleSolenoid::kForward);
-  } /*else {
+  } else if(humanControl_->GetHabArmsRetractDesired()){
+    testHabPiston->Set(DoubleSolenoid::kReverse);
+  }
+  /*else {
     testHabPiston->Set(DoubleSolenoid::kReverse);
   }*/
 
@@ -424,9 +439,14 @@ void Robot::TeleopPeriodic() {
     // robot_->SetHabBrake(false);
     robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.4));
     printf("Hab downing at %f power.\n", testerPowerNet_.GetDouble(0.4));
-  } else if (humanControl_->GetTest3Desired()){
-    robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.2));
-    printf("Hab rising at %f power.\n", -habRisePowerNet_.GetDouble(0.2));
+  } else if (humanControl_->GetTest3Desired()){ /* && robot_->GetHabEncoderValue() >= 4.0*/ // TODO TEST
+    if (robot_->GetHabEncoderValue() <= 10.0) {
+      // printf("high enough...stopping hab retract\n");
+      robot_->SetHabMotorOutput(0.0);
+    } else {
+      robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.2));
+      printf("Hab rising at %f power.\n", -habRisePowerNet_.GetDouble(0.2));
+    }
   } else {
     robot_->SetHabMotorOutput(0.0);
   }

@@ -72,6 +72,8 @@ ControlBoard::ControlBoard() {
 	habDeployDesired_ = false;
 	habPrepDesired_ = false;
 	habBrakeDesired_ = false;
+	habBrakeLevel2Desired_ = false;
+	habArmsRetractDesired_ = false;
 
 	switch(curOpJoyMode_){
 		case twoJoy:
@@ -105,6 +107,8 @@ ControlBoard::ControlBoard() {
 			habRetractButton_ = new ButtonReader(operatorJoyB_, HAB_RETRACT_BUTTON_PORT); //CHANGE THIS TO DRIVER JOY
 			habPrepButton_ = new ButtonReader(operatorJoyB_, HAB_PREP_BUTTON_PORT); //unused
 			habBrakeButton_ = new ButtonReader(operatorJoyB_, HAB_BREAK_BUTTON_PORT);
+			habBrakeLevel2Button_ = new ButtonReader(operatorJoyB_, HAB_BRAKE_LEVEL2_BUTTON_PORT);
+			habArmsRetractButton_ = new ButtonReader(operatorJoyB_, HAB_ARMS_RETRACT_BUTTON_PORT);
 
 			testButton_ = new ButtonReader(leftJoy_, 2);
 			testButton2 = new ButtonReader(leftJoy_, 7); //unused
@@ -238,6 +242,8 @@ void ControlBoard::ReadControls() {
 			habBrakeDesired_ = habBrakeButton_->IsDown();
 			habDeployDesired_ = habDeployButton_->IsDown();
 			habRetractDesired_ = habRetractButton_->IsDown();
+			habBrakeLevel2Desired_ = habBrakeLevel2Button_->IsDown();
+			habArmsRetractDesired_ = habArmsRetractButton_->IsDown();
 			//habPrepDesired_ = habPrepButton_->IsDown();
 
 
@@ -392,6 +398,14 @@ bool ControlBoard::GetHabRetractDesired(){
 	return habRetractDesired_;
 }
 
+bool ControlBoard::GetHabBrakeLevel2Desired(){
+	return habBrakeLevel2Desired_;
+}
+
+bool ControlBoard::GetHabArmsRetractDesired(){
+	return habArmsRetractDesired_;
+}
+
 void ControlBoard::ReadAllButtons() {
 	driveDirectionButton_->ReadValue();
 	gearHighShiftButton_->ReadValue();
@@ -419,6 +433,8 @@ void ControlBoard::ReadAllButtons() {
 			habRetractButton_->ReadValue();
 			habPrepButton_->ReadValue();
 			habBrakeButton_->ReadValue();
+			habBrakeLevel2Button_->ReadValue();
+			habArmsRetractButton_->ReadValue();
 			break;
 		case gamePad:
 			cargoIntakeButton_->ReadValue();
