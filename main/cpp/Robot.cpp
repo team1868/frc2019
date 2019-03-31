@@ -294,34 +294,59 @@ void Robot::AutonomousInit() {
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
 
   ResetTimerVariables();
-  //driveStraight_ = new DriveStraightCommand(navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput, robot_, 2);
-  //autoStartTime = currTimeSec_;
-  //driveStraight_->Init();
-  //printf("\n\n AUTO BEGINS AT %f\n\n", autoStartTime);
-  //pivot_ = new PivotCommand(robot_, -90.0, true, navXSource);
-  //pivot_->Init();
-  //curve_ = new CurveCommand(robot_, 2, 90, true, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
-  //curve_->Init();
-  // ellipse_ = new EllipseCommand(robot_, 1, 3, 90, false, navXSource, talonEncoderSource, anglePIDOutput, distancePIDOutput);
-  // ellipse_->Init();
 
+  // tuning pid
+  // robot_->SetTestSequence("h 0 t -90.0 s 2.0 t 0.0");
+
+  // really sketch needs fixing:
+  // blank
+  // robot_->SetTestSequence("h 0");
+
+  // RED ALLIANCE
+  // hatches:
   // robot_->SetTestSequence("h 0 d 10.9"); //  b 1 s 0.4 h 1 straight forward hatch deploy
-  // robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3"); // left hab 2 to left front hatch deploy working
-  // robot_->SetTestSequence("h 0 a");
+  // robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.9 t 0.0 d 2.3"); // left hab 2 to left front hatch deploy included offset WORKS actually go back to 2.8
+  // robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.95 t 0.0 d 2.3"); // right hab 2 to right front hatch deploy included offset
+
+  // cargo:
+  // left:
+  // robot_->SetTestSequence("h 0 d 15.8 t 90.0"); // chargo ship from hab 1 near cargo shot left
+  robot_->SetTestSequence("h 0 d 19.0 t 90.0"); // cargo ship from hab 2 near cargo shot left
+  // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t 90.0");  // 1.5 ish cargo shoot left hab 2
+  // right:
+  // robot_->SetTestSequence("h 0 d 15.8 t -90.0"); // chargo ship from hab 1 near cargo shot right
+  // robot_->SetTestSequence("h 0 d 18.8 t -90.0"); // cargo ship from hab 2 near cargo shot right
+  // robot_->SetTestSequence("h 0 d 18.8 t -90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t -90.0");  // 1.5 ish cargo shoot left hab 2
+
+
+  // BLUE ALLIANCE
+  // hatches:
+  // robot_->SetTestSequence("h 0 d 10.9"); //  b 1 s 0.4 h 1 straight forward hatch deploy
+  // robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 3.05 t 0.0 d 2.3"); // left hab 2 to left front hatch deploy included offset
+  // robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3"); // right hab 2 to right front hatch deploy included offset
+
+  // cargo:
+  // left:
+  // robot_->SetTestSequence("h 0 d 15.8 t 90.0"); // chargo ship from hab 1 near cargo shot left
+  // robot_->SetTestSequence("h 0 d 18.8 t 90.0"); // cargo ship from hab 2 near cargo shot left
+  // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t 90.0");  // 1.5 ish cargo shoot left hab 2
+  // right:
+  // robot_->SetTestSequence("h 0 d 15.8 t -90.0"); // chargo ship from hab 1 near cargo shot right
+  // robot_->SetTestSequence("h 0 d 18.8 t -90.0"); // cargo ship from hab 2 near cargo shot right
+  // robot_->SetTestSequence("h 0 d 18.8 t -90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t -90.0");  // 1.5 ish cargo shoot left hab 2
+  
+
+  // NASA FIELD
+  // robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 3.05 t 0.0 d 2.3"); // left hab 2 to left front hatch deploy included offset, should work
   // robot_->SetTestSequence("h 0 d 4.0 t -90.0 d 4.9 t 0.0 d 4.5 t -23.0 d 1.5"); // rocket near in progress lol left
+  
   // robot_->SetTestSequence("h 0 d 19.1 t 90.0"); // cargo ship from hab 2 near cargo shot left
   // robot_->SetTestSequence("h 0 d 16.1 t 90.0"); // chargo ship from hab 1 near cargo shot left
   // robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // robot_->SetTestSequence(autoModeString);
   //robot_->SetTestSequence("a h 0");
 
-
-  // robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
-  robot_->SetTestSequence("h 0 t 90.0");
-  // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -17.0"); //w d 17.0 t 90.0
-  // robot_->SetTestSequence("h 0 d 18.8 t 90.0"); //w d 17.0 t 90.0
   // robot_->SetTestSequence("h 0 t 90.0");
-  // robot_->SetTestSequence("h 0 d 10.9"); //  b 1 s 0.4 h 1 straight forward hatch deploy
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
   // if(autoChooserType_.GetBoolean(true)){
@@ -437,15 +462,15 @@ void Robot::TeleopPeriodic() {
   if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards //habdeploy
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
     // robot_->SetHabBrake(false);
-    robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.4));
-    printf("Hab downing at %f power.\n", testerPowerNet_.GetDouble(0.4));
+    robot_->SetHabMotorOutput(testerPowerNet_.GetDouble(0.6));
+    printf("Hab downing at %f power.\n", testerPowerNet_.GetDouble(0.6));
   } else if (humanControl_->GetTest3Desired()){ /* && robot_->GetHabEncoderValue() >= 4.0*/ // TODO TEST
     if (robot_->GetHabEncoderValue() <= 10.0) {
       // printf("high enough...stopping hab retract\n");
       robot_->SetHabMotorOutput(0.0);
     } else {
-      robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.2));
-      printf("Hab rising at %f power.\n", -habRisePowerNet_.GetDouble(0.2));
+      robot_->SetHabMotorOutput(-habRisePowerNet_.GetDouble(0.9));
+      printf("Hab rising at %f power.\n", -habRisePowerNet_.GetDouble(0.9));
     }
   } else {
     robot_->SetHabMotorOutput(0.0);

@@ -212,7 +212,10 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
         if (currentCommand_->IsDone()) {
             //				DO_PERIODIC(1, printf("Command complete at: %f \n", currTimeSec));
             currentCommand_->Reset();
-            currentCommand_ = currentCommand_->GetNextCommand();
+			AutoCommand *nextCommand = currentCommand_->GetNextCommand();
+			// currentCommand_->~AutoCommand();
+            // delete currentCommand_;
+			currentCommand_ = nextCommand;
             if (currentCommand_ != NULL) {
                 //					DO_PERIODIC(1, printf("Command start at: %f \n", currTimeSec));
                 currentCommand_->Init();
