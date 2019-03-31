@@ -32,10 +32,10 @@ static const double MIN_VOLTAGE_BROWNOUT = 7.5;//7.5; //6.8; //brownout protecti
 static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are 40-50 Amps
 
 //currently tuned for Mo Practice Bot
-static const double LOW_GEAR_STATIC_FRICTION_POWER = 0.11;
-static const double HIGH_GEAR_STATIC_FRICTION_POWER = 0.14;
-static const double LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER =  0.15 - LOW_GEAR_STATIC_FRICTION_POWER;
-static const double HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = 0.2 - HIGH_GEAR_STATIC_FRICTION_POWER;
+static double LOW_GEAR_STATIC_FRICTION_POWER = 0.06;//0.11;
+static double HIGH_GEAR_STATIC_FRICTION_POWER = 0.09;//0.14;
+static double LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER =  /*0.15*/0.1 - LOW_GEAR_STATIC_FRICTION_POWER;
+static double HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = /*0.2*/0.19 - HIGH_GEAR_STATIC_FRICTION_POWER;
 
 RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
@@ -55,13 +55,19 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   rIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional I", 0.0).GetEntry();
   rDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Drive Straight Directional D", 0.0).GetEntry();
 
-  pivotPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command P", 0.057).GetEntry();
+  pivotPFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command P", 0.015).GetEntry();
   pivotIFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command I", 0.0).GetEntry();
-  pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.06).GetEntry();
+  pivotDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Pivot Command D", 0.011).GetEntry();
   
   maxOutputNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("MAX DRIVE OUTPUT", 1.0).GetEntry();
+  maxOutputNet_.SetDouble(1.0);
   minVoltNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Min Volt", MIN_VOLTAGE_BROWNOUT).GetEntry();
   maxCurrentNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Max Current", MAX_CURRENT_OUTPUT).GetEntry();
+
+  lowGearStaticFric_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("L SF", LOW_GEAR_STATIC_FRICTION_POWER).GetEntry();
+  lowGearTurnStaticFric_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("LT total SF", LOW_GEAR_STATIC_FRICTION_POWER+LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER).GetEntry();
+  highGearStaticFric_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("H SF", HIGH_GEAR_STATIC_FRICTION_POWER).GetEntry();
+  highGearTurnStaticFric_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("HT total SF", HIGH_GEAR_STATIC_FRICTION_POWER+HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER).GetEntry();
 
   printf("tabs done for pid\n");
   frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
@@ -308,6 +314,10 @@ void RobotModel::SetDriveValues(double leftValue, double rightValue) {
 }
 
 double RobotModel::GetStaticFriction(double thrustValue){ //TODODODODODODOD MAKE A VARIABLE DON'T BE AN IDIOT
+    LOW_GEAR_STATIC_FRICTION_POWER = lowGearStaticFric_.GetDouble(LOW_GEAR_STATIC_FRICTION_POWER);
+	HIGH_GEAR_STATIC_FRICTION_POWER = highGearStaticFric_.GetDouble(HIGH_GEAR_STATIC_FRICTION_POWER);
+	LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = lowGearTurnStaticFric_.GetDouble(LOW_GEAR_STATIC_FRICTION_POWER+LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER)-LOW_GEAR_STATIC_FRICTION_POWER;
+	HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = highGearTurnStaticFric_.GetDouble(HIGH_GEAR_STATIC_FRICTION_POWER+HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER)-HIGH_GEAR_STATIC_FRICTION_POWER;
 	double staticFriction;
 	if(IsHighGear()){
 		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
@@ -868,7 +878,7 @@ double RobotModel::GetRDFac(){
 
 // pivot P
 double RobotModel::GetPivotPFac(){
-	double pivotPFac = pivotPFacNet_.GetDouble(0.07);
+	double pivotPFac = pivotPFacNet_.GetDouble(0.015);
 	if(pivotPFac > 1.0 || pivotPFac < 0.0){
 		return 0.0;
 	} else {
@@ -888,7 +898,7 @@ double RobotModel::GetPivotIFac(){
 
 // pivot D
 double RobotModel::GetPivotDFac(){
-	double pivotDFac = pivotDFacNet_.GetDouble(0.04);
+	double pivotDFac = pivotDFacNet_.GetDouble(0.011);
 	if(pivotDFac > 1.0 || pivotDFac < 0.0){
 		return 0.0;
 	} else {

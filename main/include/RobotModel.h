@@ -196,5 +196,5 @@ class RobotModel {
 
   nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_,
     dPFacNet_, dIFacNet_, dDFacNet_, rPFacNet_, rIFacNet_, rDFacNet_, pivotPFacNet_, pivotIFacNet_, pivotDFacNet_,
-    ratioAllNet_, ratioDriveNet_, ratioSuperNet_, maxOutputNet_, minVoltNet_, maxCurrentNet_;
+    ratioAllNet_, ratioDriveNet_, ratioSuperNet_, maxOutputNet_, minVoltNet_, maxCurrentNet_, lowGearStaticFric_, lowGearTurnStaticFric_, highGearStaticFric_, highGearTurnStaticFric_;
 };

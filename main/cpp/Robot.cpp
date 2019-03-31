@@ -306,16 +306,16 @@ void Robot::AutonomousInit() {
   // hatches:
   // robot_->SetTestSequence("h 0 d 10.9"); //  b 1 s 0.4 h 1 straight forward hatch deploy
   // robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.9 t 0.0 d 2.3"); // left hab 2 to left front hatch deploy included offset WORKS actually go back to 2.8
-  // robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.95 t 0.0 d 2.3"); // right hab 2 to right front hatch deploy included offset
+  //robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.9 t 0.0 d 2.3"); // right hab 2 to right front hatch deploy included offset
 
   // cargo:
   // left:
   // robot_->SetTestSequence("h 0 d 15.8 t 90.0"); // chargo ship from hab 1 near cargo shot left
-  robot_->SetTestSequence("h 0 d 19.0 t 90.0"); // cargo ship from hab 2 near cargo shot left
+  // robot_->SetTestSequence("h 0 d 19.0 t 90.0"); // cargo ship from hab 2 near cargo shot left
   // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // right:
   // robot_->SetTestSequence("h 0 d 15.8 t -90.0"); // chargo ship from hab 1 near cargo shot right
-  // robot_->SetTestSequence("h 0 d 18.8 t -90.0"); // cargo ship from hab 2 near cargo shot right
+  robot_->SetTestSequence("h 0 d 19.0 t -90.0"); // cargo ship from hab 2 near cargo shot right
   // robot_->SetTestSequence("h 0 d 18.8 t -90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t -90.0");  // 1.5 ish cargo shoot left hab 2
 
 
@@ -329,6 +329,7 @@ void Robot::AutonomousInit() {
   // left:
   // robot_->SetTestSequence("h 0 d 15.8 t 90.0"); // chargo ship from hab 1 near cargo shot left
   // robot_->SetTestSequence("h 0 d 18.8 t 90.0"); // cargo ship from hab 2 near cargo shot left
+  // robot_->SetTestSequence("h 0 d 19.0 t 90.0"); // cargo ship from hab 2 near cargo shot left
   // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // right:
   // robot_->SetTestSequence("h 0 d 15.8 t -90.0"); // chargo ship from hab 1 near cargo shot right
@@ -346,7 +347,7 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence(autoModeString);
   //robot_->SetTestSequence("a h 0");
 
-  // robot_->SetTestSequence("h 0 t 90.0");
+  // robot_->SetTestSequence("h 0 t -90.0");
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
   // if(autoChooserType_.GetBoolean(true)){
