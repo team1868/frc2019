@@ -68,6 +68,7 @@ class Robot : public frc::TimedRobot {
   bool guidedDrive_;
   PivotCommand *pivot_; //testing TODO delte
   CurveCommand *curve_; //TODO DELETE
+  bool aligningTape_;
   //double autoStartTime;
 
   bool sandstormOverride_;
@@ -75,6 +76,8 @@ class Robot : public frc::TimedRobot {
 
   AutoController *autoController_;
   AutoMode *autoMode_;
+
+  AlignWithTapeCommand *aCommand;
 
   int curvesDone;// delete plz
   bool sandstormAuto_;

@@ -39,6 +39,8 @@ void Robot::RobotInit()  {
   robot_->CalibrateGyro();
   robot_->ResetGyro();
 
+  aligningTape_ = false;
+
   //NOTE: POSSIBLE ERROR bc making multiple sources teleop vs auto
   NavXPIDSource *navXSource = new NavXPIDSource(robot_);
   //TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
@@ -70,9 +72,9 @@ void Robot::RobotInit()  {
 
 
   ResetTimerVariables();
-  Wait(1.0);
-  cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
-  camera.SetResolution(320,240);
+  // Wait(1.0);
+  // cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
+  // camera.SetResolution(320,240);
   //Wait(1.0);
 
 
@@ -295,8 +297,11 @@ void Robot::AutonomousInit() {
 
   ResetTimerVariables();
 
+
+
   // tuning pid
-  // robot_->SetTestSequence("h 0 t -90.0 s 2.0 t 0.0");
+  //  robot_->SetTestSequence("h 0 t -90.0 s 2.0 t 0.0");
+  robot_->SetTestSequence("h 0 t 8.0");
 
   // really sketch needs fixing:
   // blank
@@ -315,7 +320,7 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // right:
   // robot_->SetTestSequence("h 0 d 15.8 t -90.0"); // chargo ship from hab 1 near cargo shot right
-  robot_->SetTestSequence("h 0 d 19.0 t -90.0"); // cargo ship from hab 2 near cargo shot right
+  //robot_->SetTestSequence("h 0 d 19.0 t -90.0"); // cargo ship from hab 2 near cargo shot right
   // robot_->SetTestSequence("h 0 d 18.8 t -90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t -90.0");  // 1.5 ish cargo shoot left hab 2
 
 
@@ -377,6 +382,11 @@ void Robot::AutonomousInit() {
   //     sandstormAuto_ = false;
   //   }
   // }
+  // if(autoChooserType_.GetBoolean(true)){
+  //   printf("selected auto: %s\n", autoSendableChooser_.GetSelected());
+  //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
+  // }
+
   
   autoMode_ = new TestMode(robot_);
   autoController_->SetAutonomousMode(autoMode_);
@@ -444,11 +454,49 @@ void Robot::TeleopInit() {
   robot_->SetHabBrake(true);
   printf("setting hab arms to reverse\n");
   testHabPiston->Set(DoubleSolenoid::kReverse);
+  aligningTape_ = false;
 
 }
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
+
+  if(!aligningTape_ && humanControl_->GetAlignTapeDesired()){
+    printf("in align tape\n");
+    aligningTape_ = true;
+    aCommand = new AlignWithTapeCommand(robot_, new NavXPIDSource(robot_));
+    aCommand->Init();
+    printf("initing lol\n");
+    // robot_->SetTestSequence("= h 0"); //assuming alignwithtape handles everything including outtake
+
+    // autoMode_ = new TestMode(robot_);
+    // autoController_->SetAutonomousMode(autoMode_);
+    // autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1); //TODO super sketch
+
+    return;
+  } else if (aligningTape_){
+    // printf("in part align tape :))\n");
+    humanControl_->ReadControls();
+    autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
+    autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
+    if(autoJoyVal_ != 0.0){ //TODO mild sketch, check deadbands more
+      printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband, not == 0\n\n",autoJoyVal_);
+      //autoController_->~AutoController(); //TODO check that these are being destructed
+      aCommand->~AlignWithTapeCommand();
+      aligningTape_ = false;
+    } else if(!aCommand->IsDone()){
+      aCommand->Update(currTimeSec_, deltaTimeSec_);
+      printf("updated a command\n");
+    //} else if (!autoController_->IsDone()) {
+      //autoController_->Update(currTimeSec_, deltaTimeSec_);
+    } else { //isDone() is true
+      aCommand->~AlignWithTapeCommand();
+      aligningTape_ = false;
+      //printf("destroyed a command\n");
+    }
+
+    return;
+  }
 
   if(humanControl_->GetHabBrakeDesired()){ //hab arms, change this name or put in superstructure
     printf("greetings hab brake has been released\n");

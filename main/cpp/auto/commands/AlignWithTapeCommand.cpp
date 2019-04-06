@@ -77,10 +77,11 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 
 			diffInAngle = fabs(lastDesiredAngle - desiredDeltaAngle_);
 			printf("Difference in Angle: %f\n", diffInAngle);
-			if (diffInAngle > 2.0 || (diffInAngle == 0.0 && desiredDeltaAngle_ == 0.0)) {
-				printf("diff in angle is > 2\n");
-				nextState_ = kPivotInit;
-			} else if (fabs(desiredDeltaAngle_) > 2.0) {
+			// if (fabs(diffInAngle) < 2.0 || (diffInAngle == 0.0 && desiredDeltaAngle_ == 0.0)) {
+			// 	printf("diff in angle is < 2\n");
+			// 	nextState_ = kPivotInit;
+			// } else 
+			if (fabs(desiredDeltaAngle_) > 2.0) {
 				printf("vision done at: %f\n", robot_->GetTime() - initTimeVision_);
 
 				printf("ANGLE FOR PIVOT COMMAND: %f\n", -desiredDeltaAngle_);
@@ -100,7 +101,7 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 			}
 			break;
 
-		case (kPivotUpdate) :
+		case (kPivotUpdate):
 			if (!pivotCommand_->IsDone()) {
 				pivotCommand_->Update(currTimeSec, deltaTimeSec);
 				nextState_ = kPivotUpdate;
@@ -115,6 +116,9 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 					printf("AlighWithTape Done \n");
 				// }
 			}
+			break;
+		default:
+			printf("default in align tape tals;dkjf;laskdfj;ak\n");
 			break;
 
 		// case (kDriveInit) :
@@ -162,32 +166,45 @@ bool AlignWithTapeCommand::IsDone() {
 void AlignWithTapeCommand::ReadFromJetson() {
     printf("starting read from jetson\n");
 
-	try {
-		string contents = s_recv(*subscriber_);
-		printf("contents from jetson: %s\n", contents.c_str());
-		stringstream ss(contents);
-		vector<string> result;
+	//try {
+	string contents = s_recv(*subscriber_);
+	printf("contents from jetson: %s\n", contents.c_str());
+	stringstream ss(contents);
+	vector<string> result;
 
-		while(ss.good()) {
-			string substr;
-			getline( ss, substr, ' ' );
-			result.push_back( substr );
+	while(ss.good()) {
+		string substr;
+		getline( ss, substr, ' ' );
+		if (substr == "") {
+			continue;
 		}
-		if(result.size() > 0) {
-			desiredDeltaAngle_ = stod(result.at(0));
-		} else {
-			desiredDeltaAngle_ = 0.0;
-		}
+		result.push_back( substr );
+	}
+	
+	contents = contents.c_str();
+	if(!contents.empty()) {
+		desiredDeltaAngle_ = stod(result.at(0));
+		//set distance at(2)
+	} else {
+		printf("contents empty in alignwithtape\n");
+	}
+
+	if(result.size() > 0) {
+		desiredDeltaAngle_ = stod(result.at(0));
+	} else {
+		desiredDeltaAngle_ = 0.0;
+	}
+	printf("desired delta angle at %f in AlignWithTapeCommand\n", desiredDeltaAngle_);
 		
 		
 		// desiredDistance_ = stod(result.at(1));
 		// printf("contents from jetson: %s\n", contents.c_str());
-	} catch (const std::exception &exc) {
+	/*} catch (const std::exception &exc) {
 		printf("TRY CATCH FAILED IN READFROMJETSON\n");
 		std::cout << exc.what() << std::endl;
 		desiredDeltaAngle_ = 0.0;
 		// desiredDistance_ = 0.0;
-	}
+	}*/
 	printf("end of read from jetson\n");
 }
 

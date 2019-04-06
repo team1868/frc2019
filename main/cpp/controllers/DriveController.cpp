@@ -88,9 +88,10 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 			}
 		
 			// Checks quickturn or arcade drive
-			if (humanControl_->GetQuickTurnDesired()) {
-				QuickTurn(rightJoyX, 0.0);
-			} else {
+			//*******************No QuickTurn Needed!******************, not implemented, quickturnDesired for alignwithtapecommand
+			//if (humanControl_->GetQuickTurnDesired()) {
+			//	QuickTurn(rightJoyX, 0.0);
+			//} else {
 				//if (humanControl_->GetArcadeDriveDesired()) {
 				if(arcadeDesireNet_.GetBoolean(true)){
 					ArcadeDrive(rightJoyX, leftJoyY, thrustSensitivity_, rotateSensitivity_);
@@ -98,7 +99,7 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 					printf("Using Tank drive------------------------------------------------------------------------------------------------------- \n");
 					TankDrive(leftJoyY, rightJoyY);
 				}
-			}
+			//}
 			break;
 		case (RobotModel::SANDSTORM):
 			printf("WARNING: DriveController initialized in sandstorm????");

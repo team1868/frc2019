@@ -49,11 +49,13 @@ ControlBoard::ControlBoard() {
 	smallTurnDesired_ = false;
 	arcadeDriveDesired_ = true;
 	quickTurnDesired_ = true;
+	alignTapeDesired_ = false;
 	reverseDriveDesired_ = false;
 
 	smallTurnButton_ = new ButtonReader(leftJoy_, SMALL_TURN_BUTTON_PORT);
 	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); //unused
 	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //USED
+	alignTapeButton_ = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
 	
 	//Superstructure Buttons
@@ -213,8 +215,9 @@ void ControlBoard::ReadControls() {
 			printf("WARNING: curJoyMode not valid in ControlBoard.cpp/ReadControls()\n");
 	}
 	//gearHighShiftButton_->IsDown();
-	arcadeDriveDesired_ = arcadeDriveButton_->IsDown(); //TODO DEAD CODE
+	arcadeDriveDesired_ = arcadeDriveButton_->IsDown(); //DEAD CODE, now on shuffleboard
 	quickTurnDesired_ = quickTurnButton_->IsDown();
+	alignTapeDesired_ = alignTapeButton_->WasJustPressed(); //TODO POSSIBLE ERROR
 	smallTurnDesired_ = smallTurnButton_->IsDown();
 
 
@@ -248,9 +251,9 @@ void ControlBoard::ReadControls() {
 
 
 			break;
-		case gamePad: //TODODODODODODODODODOSLDKJFALSDKJAFOIEWHGNLKDGAILEDFJOILEJAOIEJOIJ             TUNE DEADBANDS!
+		case gamePad:
 			cargoIntakeDesired_ = cargoIntakeButton_->IsDown();
-			cargoUnintakeDesired_ = (operatorJoy_->GetRawAxis(CARGO_UNINTAKE_JOY_PORT_G)) >= 0.5; //TODO review raw vs getleft() or getRight()
+			cargoUnintakeDesired_ = (operatorJoy_->GetRawAxis(CARGO_UNINTAKE_JOY_PORT_G)) >= 0.5;
 			cargoFlywheelDesired_ = (operatorJoy_->GetRawAxis(CARGO_FLYWHEEL_JOY_PORT_G)) >= 0.2;
 			cargoFlywheelDesiredRocket_ = (operatorJoy_->GetRawAxis(CARGO_FLYWHEEL_JOY_PORT_G)) <= -0.2;
 			cargoIntakeWristDesired_ = (operatorJoy_->GetPOV()) != -1;
@@ -316,6 +319,10 @@ bool ControlBoard::GetArcadeDriveDesired() {
 
 bool ControlBoard::GetQuickTurnDesired() {
 	return quickTurnDesired_;
+}
+
+bool ControlBoard::GetAlignTapeDesired(){
+	return alignTapeDesired_;
 }
 
 //TODO DELETE
@@ -413,6 +420,7 @@ void ControlBoard::ReadAllButtons() {
 	smallTurnButton_->ReadValue();
 	arcadeDriveButton_->ReadValue();
 	quickTurnButton_->ReadValue();
+	alignTapeButton_->ReadValue();
 
 	//TODO maybe change this format, it is disgusting
 	switch(curOpJoyMode_){

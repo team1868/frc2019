@@ -56,6 +56,14 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 		AutoCommand* commandA = NULL;
 
 		switch(command) {
+		case '=': //added by Kaylia, kinda sketch
+			printf("= command is align with tape command");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				tempCommand = new AlignWithTapeCommand(robot_, navX_);
+			}
+			break;
 		case '[':
 			char charA;
 			iss >> charA;

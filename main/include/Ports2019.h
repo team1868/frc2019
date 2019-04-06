@@ -47,7 +47,8 @@ static const int LOW_GEAR_BUTTON_PORT_G       = 1;
 static const int HIGH_GEAR_BUTTON_PORT        = 3;
 static const int SMALL_TURN_BUTTON_PORT       = 5;
 static const int ARCADE_DRIVE_BUTTON_PORT     = 5; //unused
-static const int QUICK_TURN_BUTTON_PORT       = 6; //used but unimportant
+static const int QUICK_TURN_BUTTON_PORT       = 6; //used and unimplemented
+static const int ALIGN_TAPE_BUTTON_PORT       = 1;
 static const int DRIVE_DIRECTION_BUTTON_PORT  = 7; //used for tank
 
 //---------------superstructure twoJoyMode ports-----------------

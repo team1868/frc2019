@@ -43,6 +43,7 @@ public:
 	bool GetSmallTurnDesired();
 	bool GetArcadeDriveDesired();
 	bool GetQuickTurnDesired();
+	bool GetAlignTapeDesired();
 
 	//TODO DELETE
 	bool GetTestDesired();
@@ -101,12 +102,13 @@ private:
 	ButtonReader *cargoFlywheelButton_, *cargoFlywheelRocketButton_, *cargoFlywheelUnintakeButton_, *cargoIntakeButton_, *cargoUnintakeButton_,
 		*cargoIntakeWristButton_, *hatchOuttakeButton_, *hatchBeakButton_, *hatchIntakeWheelButton_, *hatchUnintakeWheelButton_,
 		*hatchWristUpButton_, *hatchWristDownButton_, *habDeployButton_, *habRetractButton_, *habPrepButton_ , *habBrakeButton_, 
-		*testButton_, *testButton2, *testButton3, *habBrakeLevel2Button_, *habArmsRetractButton_;
+		*testButton_, *testButton2, *testButton3, *habBrakeLevel2Button_, *habArmsRetractButton_, *alignTapeButton_;
 
 	//Variables for superstructure
 	bool cargoIntakeDesired_, cargoUnintakeDesired_, cargoFlywheelDesired_, cargoFlywheelDesiredRocket_, cargoFlywheelUnintakeDesired_, cargoIntakeWristDesired_,
 		hatchBeakDesired_, hatchOuttakeDesired_, hatchIntakeWheelDesired_, hatchUnintakeWheelDesired_, hatchWristUpDesired_,  
-		hatchWristDownDesired_, habDeployDesired_, habRetractDesired_, habPrepDesired_,  habBrakeDesired_, habBrakeLevel2Desired_, habArmsRetractDesired_;
+		hatchWristDownDesired_, habDeployDesired_, habRetractDesired_, habPrepDesired_,  habBrakeDesired_, habBrakeLevel2Desired_, habArmsRetractDesired_,
+		alignTapeDesired_;
 
 
 };
