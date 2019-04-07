@@ -6,12 +6,13 @@ AutoMode::AutoMode(RobotModel* robot) {
         firstCommand_ = NULL;
 		currentCommand_ = NULL;
 		robot_ = robot;
-		navX_ = new NavXPIDSource(robot_);
+		navX_ = robot_->GetNavXSource();
+		//navX_ = new NavXPIDSource(robot_);
 		talonEncoder_ = new TalonEncoderPIDSource(robot_);
 		angleOutput_ = new AnglePIDOutput();
 		distanceOutput_ = new DistancePIDOutput();
 		breakDesired_ = false;
-		currAngle_ = robot_->GetNavXYaw();
+		currAngle_ = 0.0;//robot_->GetNavXYaw();
 
 	printf("Done constructing AutoMode\n");
 }
@@ -23,7 +24,7 @@ void AutoMode:: QueueFromString(string autoSequence) {
 		iss.str (autoSequence);
 		cout << string ("autosequence" ) + autoSequence << endl;
 		breakDesired_ = false;
-		currAngle_ = robot_->GetNavXYaw();
+		currAngle_ = 0.0;//robot_->GetNavXYaw();
 
 		if (autoSequence == "") {
 			printf("NO SEQUENCE ! TRY AGAIN KID");

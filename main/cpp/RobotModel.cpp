@@ -219,6 +219,11 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   ratioSuperNet_ = tab_.Add("Ratio Superstructure", ratioSuperstructure_).GetEntry();
 
 	testSequence_ = "";
+
+}
+
+void RobotModel::CreateNavX(){
+	navXSource_ = new NavXPIDSource(this);
 }
 
 // reset timer
@@ -925,6 +930,10 @@ std::string RobotModel::GetTestSequence() {
 
 void RobotModel::SetTestSequence(std::string testSequence) {
 	testSequence_ = testSequence;
+}
+
+NavXPIDSource* RobotModel::GetNavXSource(){
+	return navXSource_;
 }
 
 // deconstructor

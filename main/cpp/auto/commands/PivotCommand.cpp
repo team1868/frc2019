@@ -46,7 +46,7 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
 
 	maxOutput_ = 0.9;
-	tolerance_ = 3.0;
+	tolerance_ = 2.0;//3.0;
 
 	numTimesOnTarget_ = 0;
 
@@ -119,6 +119,7 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 	double timeDiff = robot_->GetTime() - pivotCommandStartTime_;
 	bool timeOut = (timeDiff > pivotTimeoutSec_);								//test this value
 
+	printf("error is %f in pivot command\n",pivotPID_->GetError());
 	// on target
 	if (pivotPID_->OnTarget()) {
 		numTimesOnTarget_++;

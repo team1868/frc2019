@@ -34,6 +34,7 @@ void Robot::RobotInit()  {
 
   //initialize RobotModel
   robot_ = new RobotModel();
+  robot_->CreateNavX();
 
   robot_->ZeroNavXYaw();
   robot_->CalibrateGyro();
@@ -42,7 +43,7 @@ void Robot::RobotInit()  {
   aligningTape_ = false;
 
   //NOTE: POSSIBLE ERROR bc making multiple sources teleop vs auto
-  NavXPIDSource *navXSource = new NavXPIDSource(robot_);
+  navX_ = robot_->GetNavXSource();//new NavXPIDSource(robot_);
   //TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   //DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
@@ -51,7 +52,7 @@ void Robot::RobotInit()  {
   //initialize controllers
   humanControl_ = new ControlBoard();
   driveController_ = new DriveController(robot_, humanControl_);
-  guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navXSource, anglePIDOutput);
+  guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navX_, anglePIDOutput);
 
   superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
   //talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
@@ -72,9 +73,9 @@ void Robot::RobotInit()  {
 
 
   ResetTimerVariables();
-  // Wait(1.0);
-  // cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
-  // camera.SetResolution(320,240);
+  Wait(1.0);
+  cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
+  camera.SetResolution(320,240);
   //Wait(1.0);
 
 
@@ -104,14 +105,14 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("8: other, input your string", "h 0");*/
 
   autoSendableChooser_.SetDefaultOption("0: blank", "h 0");
-  autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.9");
+  autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.9 a b 1 s 0.4 h 1");
   autoSendableChooser_.AddOption("2:2L,Lfront,H", "h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
   autoSendableChooser_.AddOption("3:2R,Rfront,H", "h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("4:2L,Lship,C", "h 0 d 19.1 t 90.0 ^");
+  autoSendableChooser_.AddOption("4:2L,Lship,C", "h 0 d 19.1 t 90.0 a h 0");
   autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
   autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.1 t -90.0 ^");
   autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
-  autoSendableChooser_.AddOption("8:other", "h 0");
+  autoSendableChooser_.AddOption("8:other", "");
   
   //TODODODOD MOVE TO ROBOT MODEL
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
@@ -138,7 +139,7 @@ void Robot::RobotInit()  {
   auto6_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("6:2R,Rship,1C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto7_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("7:2R,Rship,1.5C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto8_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other", "h 0").WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0").GetEntry();
   auto0Change_ = auto0_.GetLastChange();
   auto1Change_ = auto1_.GetLastChange();
   auto2Change_ = auto2_.GetLastChange();
@@ -290,7 +291,7 @@ void Robot::AutonomousInit() {
   robot_->SetLowGear();
 
   //TODO BAD FORM but whatev
-  NavXPIDSource *navXSource = new NavXPIDSource(robot_);
+  //NavXPIDSource *navXSource = new NavXPIDSource(robot_);
   TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
@@ -301,7 +302,7 @@ void Robot::AutonomousInit() {
 
   // tuning pid
   //  robot_->SetTestSequence("h 0 t -90.0 s 2.0 t 0.0");
-  robot_->SetTestSequence("h 0 t 8.0");
+  // robot_->SetTestSequence("h 0 t 8.0");
 
   // really sketch needs fixing:
   // blank
@@ -355,40 +356,46 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 t -90.0");
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
-  // if(autoChooserType_.GetBoolean(true)){
-  //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
-  // } else {
-  //   if(auto0_.GetBoolean(false)){
-  //     robot_->SetTestSequence("h 0");
-  //   } else if(auto1_.GetBoolean(false)){
-  //     robot_->SetTestSequence("h 0 d 10.9");
-  //   } else if(auto2_.GetBoolean(false)){
-  //     robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
-  //   } else if(auto3_.GetBoolean(false)){
-  //     robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
-  //   } else if(auto4_.GetBoolean(false)){
-  //     robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^");
-  //   } else if(auto5_.GetBoolean(false)){
-  //     robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
-  //   } else if(auto6_.GetBoolean(false)){
-  //     robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^");
-  //   } else if(auto7_.GetBoolean(false)){
-  //     robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
-  //   } else if(auto8_.GetBoolean(false)){
-  //     robot_->SetTestSequence(auto8Val_.GetString("h 0"));
-  //     printf("WARNING: In Auto Init.  using other option in auto, string not checked and confirmed to be valid");
-  //   } else {
-  //     printf("ERROR: In Auto Init.  not using sendablechooser and none of the auto switches are true.  Continuing to teleop.");
-  //     sandstormAuto_ = false;
-  //   }
-  // }
+  if(autoChooserType_.GetBoolean(true)){
+    printf("auto sequence is %s from autoChooser (which is being used)", autoSendableChooser_.GetSelected());
+    if(autoSendableChooser_.GetSelected()!=""){
+      robot_->SetTestSequence(autoSendableChooser_.GetSelected());
+    } else {
+      robot_->SetTestSequence(auto8Val_.GetString("h 0"));
+    }
+  } else {
+    if(auto0_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0");
+    } else if(auto1_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 10.9");
+    } else if(auto2_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
+    } else if(auto3_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
+    } else if(auto4_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^");
+    } else if(auto5_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
+    } else if(auto6_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^");
+    } else if(auto7_.GetBoolean(false)){
+      robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
+    } else if(auto8_.GetBoolean(false)){
+      robot_->SetTestSequence(auto8Val_.GetString("h 0"));
+      printf("WARNING: In Auto Init.  using other option in auto, string not checked and confirmed to be valid");
+    } else {
+      printf("ERROR: In Auto Init.  not using sendablechooser and none of the auto switches are true.  Continuing to teleop.");
+      sandstormAuto_ = false;
+    }
+  }
   // if(autoChooserType_.GetBoolean(true)){
   //   printf("selected auto: %s\n", autoSendableChooser_.GetSelected());
   //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
   // }
 
-  
+  //robot_->ZeroNavXYaw();
   autoMode_ = new TestMode(robot_);
+  //robot_->ZeroNavXYaw();
   autoController_->SetAutonomousMode(autoMode_);
   autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1);
 
@@ -455,16 +462,18 @@ void Robot::TeleopInit() {
   printf("setting hab arms to reverse\n");
   testHabPiston->Set(DoubleSolenoid::kReverse);
   aligningTape_ = false;
+  navX_ = new NavXPIDSource(robot_);
 
 }
 
 // read controls and get current time from controllers
 void Robot::TeleopPeriodic() {
 
+
   if(!aligningTape_ && humanControl_->GetAlignTapeDesired()){
     printf("in align tape\n");
     aligningTape_ = true;
-    aCommand = new AlignWithTapeCommand(robot_, new NavXPIDSource(robot_));
+    aCommand = new AlignWithTapeCommand(robot_, navX_);
     aCommand->Init();
     printf("initing lol\n");
     // robot_->SetTestSequence("= h 0"); //assuming alignwithtape handles everything including outtake
@@ -482,7 +491,9 @@ void Robot::TeleopPeriodic() {
     if(autoJoyVal_ != 0.0){ //TODO mild sketch, check deadbands more
       printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband, not == 0\n\n",autoJoyVal_);
       //autoController_->~AutoController(); //TODO check that these are being destructed
-      aCommand->~AlignWithTapeCommand();
+      delete(aCommand);
+      aCommand = NULL;
+      //aCommand->~AlignWithTapeCommand();
       aligningTape_ = false;
     } else if(!aCommand->IsDone()){
       aCommand->Update(currTimeSec_, deltaTimeSec_);
@@ -490,9 +501,12 @@ void Robot::TeleopPeriodic() {
     //} else if (!autoController_->IsDone()) {
       //autoController_->Update(currTimeSec_, deltaTimeSec_);
     } else { //isDone() is true
-      aCommand->~AlignWithTapeCommand();
+      delete(aCommand);
+      aCommand = NULL;
+      //aCommand->~AlignWithTapeCommand();
       aligningTape_ = false;
-      //printf("destroyed a command\n");
+      printf("destroyed a command\n");
+      //printf(" pivot is done? %d", aCommand->IsDone());
     }
 
     return;
@@ -591,8 +605,6 @@ void Robot::ResetControllers() {
 	driveController_->Reset();
 	superstructureController_->Reset();
 }
-
-
 //TODO get game data? needed?
 
 

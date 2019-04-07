@@ -48,6 +48,7 @@ class Robot : public frc::TimedRobot {
   DriveController *driveController_;
   SuperstructureController *superstructureController_;
   TalonEncoderPIDSource *talonEncoderSource_;
+  NavXPIDSource *navX_;
 
   DoubleSolenoid *testHabPiston;
   DigitalInput *habLimitSwitch_;

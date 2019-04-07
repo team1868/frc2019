@@ -7,6 +7,7 @@
 
 #include "../../../include/auto/PIDSource/PIDInputSource.h"
 #include <frc/WPILib.h>
+#include "RobotModel.h"
 
 NavXPIDSource::NavXPIDSource(RobotModel *robot) {
 	robot_ = robot;

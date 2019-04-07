@@ -32,6 +32,8 @@ AlignWithTapeCommand::AlignWithTapeCommand(RobotModel* robot, NavXPIDSource* nav
 
 void AlignWithTapeCommand::Init() {
     printf("in align with tape command init\n");
+	initTimeAlign_ = robot_->GetTime();
+	initTimeVision_ = robot_->GetTime(); //TODO is this right
 
     context_ = new zmq::context_t(1);
 
@@ -63,6 +65,7 @@ void AlignWithTapeCommand::Init() {
 }
 
 void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
+	printf("in align with tape update()");
     double lastDesiredAngle = desiredDeltaAngle_;
 	// double lastDesiredDistance = desiredDistance_;
 	double diffInAngle;
@@ -84,9 +87,9 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 			if (fabs(desiredDeltaAngle_) > 2.0) {
 				printf("vision done at: %f\n", robot_->GetTime() - initTimeVision_);
 
-				printf("ANGLE FOR PIVOT COMMAND: %f\n", -desiredDeltaAngle_);
-				pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()-desiredDeltaAngle_, false, navXSource_);
-				printf("pivotCommand constructed: %f\n", robot_->GetTime() - initTimeVision_);
+				printf("ANGLE turning FOR PIVOT COMMAND: %f, abs angle turning to is %f (includes orig angle)\n", desiredDeltaAngle_, robot_->GetNavXYaw()+desiredDeltaAngle_);
+				pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+desiredDeltaAngle_, true, navXSource_);
+				printf("pivotCommand constructed at time: %f\n", robot_->GetTime() - initTimeVision_);
 				pivotCommand_->Init();
 				printf("pivotCommand inited: %f\n", robot_->GetTime() - initTimeVision_);
 				nextState_ = kPivotUpdate;
@@ -102,9 +105,11 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 			break;
 
 		case (kPivotUpdate):
+			printf("in kPivot update");
 			if (!pivotCommand_->IsDone()) {
 				pivotCommand_->Update(currTimeSec, deltaTimeSec);
 				nextState_ = kPivotUpdate;
+				printf("in alignwithtape update() pivot command on, updated pivot command\n");
 			} else {
 				ReadFromJetson();
 				printf("Final Vision Angle: %f\n", desiredDeltaAngle_);
@@ -153,9 +158,12 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 		// 	break;
 	}
 	currState_ = nextState_;
+	//printf("moving to next state in align with tape\n");
 
-	if (robot_->GetTime() - initTimeAlign_ > 3.5) {	// Timeout for align with tape command
+	if (robot_->GetTime() - initTimeAlign_ > 4.0) {	// Timeout for align with tape command
 		isDone_ = true;
+		printf("align with tape is DONE TIMEOUT\n robot time is %f, init time is %f, diff time is %f\n",
+			robot_->GetTime(), initTimeAlign_, robot_->GetTime() - initTimeAlign_);
 	}
 }
 

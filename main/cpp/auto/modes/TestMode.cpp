@@ -11,6 +11,7 @@ void TestMode::CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablv
 
 void TestMode::Init() {
 	printf("Initializing Test mode\n");
+    //currAngle_ = robot_->GetNavXYaw();
 	currentCommand_->Init();
 	printf("Finished initializing\n");
 }

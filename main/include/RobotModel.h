@@ -15,6 +15,9 @@
 #include <AHRS.h>
 #include "ctre/Phoenix.h" //TODO <>
 #include <networktables/NetworkTableEntry.h>
+
+#include "../include/auto/PIDSource/PIDInputSource.h"
+#include "../include/auto/PIDSource/PIDOutputSource.h"
 //#include "../ext/ini/ini.h"
 //#include <TalonSRX.h>
 //#include <VictorSPX.h>
@@ -138,6 +141,9 @@ class RobotModel {
   std::string GetTestSequence();
   void SetTestSequence(std::string testSequence);
 
+  NavXPIDSource* GetNavXSource();
+  void CreateNavX();
+
  private:
 
   double GetStaticFriction(double thrustValue);
@@ -193,6 +199,7 @@ class RobotModel {
   bool highGear_, cargoWristEngaged_, hatchOuttakeEngaged_, hatchBeakEngaged_;
 
   std::string testSequence_;
+  NavXPIDSource *navXSource_;
 
   nt::NetworkTableEntry jerkYNet_, jerkXNet_, leftDistanceNet_, rightDistanceNet_, yawNet_, pitchNet_, rollNet_, pressureNet_,
     dPFacNet_, dIFacNet_, dDFacNet_, rPFacNet_, rIFacNet_, rDFacNet_, pivotPFacNet_, pivotIFacNet_, pivotDFacNet_,

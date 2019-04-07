@@ -10,9 +10,9 @@
 #ifndef SRC_AUTO_PIDINPUTSOURCE_H_
 #define SRC_AUTO_PIDINPUTSOURCE_H_
 
-#include "RobotModel.h"
 #include <frc/WPILib.h>
 
+class RobotModel;
  /*------------------- NAVX PID SOURCE!! -------------------*/
 
 class NavXPIDSource : public frc::PIDSource {
