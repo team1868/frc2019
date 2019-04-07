@@ -45,6 +45,8 @@ public:
 	 */
 	bool IsDone();
 
+	bool Abort();
+
 private:
 	AutoMode *autoMode;
 };

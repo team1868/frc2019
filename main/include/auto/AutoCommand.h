@@ -39,6 +39,8 @@ public:
 
 	virtual void Reset() = 0;
 
+	virtual bool Abort() { return false; }
+
 	AutoCommand* GetNextCommand() {
 		return nextCommand_;
 	}

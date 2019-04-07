@@ -35,3 +35,7 @@ void AutoController::Update(double currTimeSec, double deltaTimeSec) {
 bool AutoController::IsDone() {
 	return autoMode->IsDone();
 }
+
+bool AutoController::Abort() {
+	return autoMode->Abort();
+}

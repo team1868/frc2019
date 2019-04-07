@@ -57,14 +57,6 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 		AutoCommand* commandA = NULL;
 
 		switch(command) {
-		case '=': //added by Kaylia, kinda sketch
-			printf("= command is align with tape command");
-			if(IsFailed(command)) {
-				tempCommand = NULL;
-			} else {
-				tempCommand = new AlignWithTapeCommand(robot_, navX_);
-			}
-			break;
 		case '[':
 			char charA;
 			iss >> charA;
@@ -153,16 +145,16 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			}
 			break;
 		case 'a':	// align with tape command
-			// int driveStraightDesired;	// 1 = true = drive, 0 = false = just pivot
-			// iss >> driveStraightDesired;
+			int driveStraightDesired;	// 1 = true = drive, 0 = false = just pivot
+			iss >> driveStraightDesired;
 			if (IsFailed(command)) {
 				tempCommand = NULL;
 			} else {
-				// if (driveStraightDesired == 0) {
-					tempCommand = new AlignWithTapeCommand(robot_, navX_/*, talonEncoder_*/); //, false
-				// } else {
-					// tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, true);
-				// }
+				if (driveStraightDesired == 0) {
+					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, false); //, false
+				} else {
+					tempCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoder_, true);
+				}
 			}
 			break;
 		case '^':
@@ -218,6 +210,10 @@ bool AutoMode::IsFailed(char command) {
 void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
     if (currentCommand_ != NULL) {
         //			printf("Update in automode running\n");
+		// if (currentCommand_->Abort()) {
+		// 	currentCommand_->Reset();
+		// 	printf("aborting auto sequence. start driver control\n");
+		// }
         if (currentCommand_->IsDone()) {
             //				DO_PERIODIC(1, printf("Command complete at: %f \n", currTimeSec));
             currentCommand_->Reset();
@@ -241,6 +237,10 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
 
 bool AutoMode::IsDone() {
     return (currentCommand_ == NULL);
+}
+
+bool AutoMode::Abort() {
+	return currentCommand_->Abort();
 }
 
 void AutoMode::Disable() {

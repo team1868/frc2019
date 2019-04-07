@@ -83,8 +83,13 @@ class Robot : public frc::TimedRobot {
   int curvesDone;// delete plz
   bool sandstormAuto_;
 
+  double curHabPowerDeploy_;
+  double habStartTime_;
+  bool wasJustRaisingHab_, wasJustDeployingHab_;
+
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
-    testerPowerNet_, guidedDriveNet_, habRisePowerNet_, leftDistanceNet_, rightDistanceNet_, sparkEncoderNet_;
+    testerPowerNet_, guidedDriveNet_, habRisePowerNet_, leftDistanceNet_, rightDistanceNet_, sparkEncoderNet_,
+    habRaiseAccelNet_, habDeployAccelNet_;
 
   uint64_t auto0Change_, auto1Change_, auto2Change_, auto3Change_, auto4Change_, auto5Change_, auto6Change_, auto7Change_, auto8Change_;
   frc::SendableChooser<std::string> autoSendableChooser_;

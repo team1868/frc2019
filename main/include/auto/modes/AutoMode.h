@@ -37,6 +37,8 @@ public:
 
     bool IsDone();
 
+    bool Abort();
+
 	void Disable();
 
 protected:
