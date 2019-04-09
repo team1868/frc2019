@@ -122,8 +122,8 @@ void Robot::RobotInit()  {
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.6).GetEntry();
-  habDeployAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab deploy accel", 1.05).GetEntry();
-  habRaiseAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab raise accel", 1.05).GetEntry();
+  habDeployAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab deploy accel", 1.001).GetEntry();
+  habRaiseAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab raise accel", 1.001).GetEntry();
   habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.9).GetEntry();
   guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("lala info", 0.0);
@@ -530,18 +530,26 @@ void Robot::TeleopPeriodic() {
   if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards //habdeploy
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
     // robot_->SetHabBrake(false);
-    if(!wasJustDeployingHab_){
-      curHabPowerDeploy_ = testerPowerNet_.GetDouble(0.6);
-    }
-    robot_->SetHabMotorOutput(curHabPowerDeploy_);
-    printf("Hab downing at %f power after accel.\n", curHabPowerDeploy_);
-    //TODO reach 1.0 eventually
-    if(robot_->GetTime() - habStartTime_ > 2 && curHabPowerDeploy_*habDeployAccelNet_.GetDouble(1.05) <= 1.0){ //2 sec slow deploy, then accel
-      curHabPowerDeploy_ *= habDeployAccelNet_.GetDouble(1.05); //exponential increase
-    }
-    wasJustRaisingHab_ = false;
-    wasJustDeployingHab_ = true;
-    
+    if (robot_->GetHabEncoderValue() >= 202.0) { //5 val slippage, so ends at val 207
+      // printf("high enough...stopping hab retract\n");
+      robot_->SetHabMotorOutput(0.0);
+      wasJustRaisingHab_ = false;
+      wasJustDeployingHab_ = false;
+    } else {
+      if(!wasJustDeployingHab_){
+        curHabPowerDeploy_ = testerPowerNet_.GetDouble(0.6);
+      }
+      robot_->SetHabMotorOutput(curHabPowerDeploy_);
+      printf("Hab downing at %f power after accel.\n", curHabPowerDeploy_);
+      //TODO reach 1.0 eventually
+      if(robot_->GetTime() - habStartTime_ > 2 && curHabPowerDeploy_*habDeployAccelNet_.GetDouble(1.001) <= 1.0){ //2 sec slow deploy, then accel
+        curHabPowerDeploy_ *= habDeployAccelNet_.GetDouble(1.001); //exponential increase
+      } else if (robot_->GetTime() - habStartTime_ > 2 && curHabPowerDeploy_ <= 1.0){
+        curHabPowerDeploy_ = 1.0;
+      }
+      wasJustRaisingHab_ = false;
+      wasJustDeployingHab_ = true;
+    }  
   } else if (humanControl_->GetTest3Desired()){ /* && robot_->GetHabEncoderValue() >= 4.0*/ // TODO TEST
     if (robot_->GetHabEncoderValue() <= 10.0) {
       // printf("high enough...stopping hab retract\n");
@@ -554,8 +562,10 @@ void Robot::TeleopPeriodic() {
       }
       robot_->SetHabMotorOutput(curHabPowerDeploy_);
       printf("Hab rising at %f power.\n", curHabPowerDeploy_);
-      if (curHabPowerDeploy_ * habRaiseAccelNet_.GetDouble(1.05) <= 1.0){ //TODO reach 1.0 eventually
-        curHabPowerDeploy_ *= habRaiseAccelNet_.GetDouble(1.05);
+      if (curHabPowerDeploy_ * habRaiseAccelNet_.GetDouble(1.001) >= -1.0){ //TODO reach 1.0 eventually
+        curHabPowerDeploy_ *= habRaiseAccelNet_.GetDouble(1.001);
+      } else if (curHabPowerDeploy_>= -1.0){
+        curHabPowerDeploy_ = -1.0;
       }
       wasJustRaisingHab_ = true;
       wasJustDeployingHab_ = false;
