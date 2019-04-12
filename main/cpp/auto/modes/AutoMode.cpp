@@ -225,7 +225,10 @@ void AutoMode::Update(double currTimeSec, double deltaTimeSec) {
                 //					DO_PERIODIC(1, printf("Command start at: %f \n", currTimeSec));
                 currentCommand_->Init();
                 printf("Initializing current commmand\n");
-            }
+				printf("AM I DONE???? %d\n", currentCommand_->IsDone());
+            } else {
+				printf("DONE WITH LIFE HAIHSIDFALKSDJFLASKJDFLAKSHDFLKSJF\n");
+			}
         } else {
             //				printf("Update current command\n");
             currentCommand_->Update(currTimeSec, deltaTimeSec);

@@ -108,12 +108,14 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.9 a 1 b 1 s 0.1 h 1 d -0.5");
   autoSendableChooser_.AddOption("2:2L,Lfront,H", "h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
   autoSendableChooser_.AddOption("3:2R,Rfront,H", "h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("4:2L,Lship,C", "h 0 d 19.1 t 90.0 a 1 b 1 s 0.1 h 1 s 1.0 d -1.4");
+  autoSendableChooser_.AddOption("4:2L,Lship,H", "t -1.0 d 19.05 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
   autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
   autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.1 t -90.0 ^");
   autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.05 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 t -167 d 18.75 a 1 b 1 d 0.6 b 0 d -5.0 t 20.0");
   autoSendableChooser_.AddOption("8:other", "");
   
+
   //TODODODOD MOVE TO ROBOT MODEL
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
@@ -141,6 +143,7 @@ void Robot::RobotInit()  {
   auto6_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("6:2R,Rship,1C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto7_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("7:2R,Rship,1.5C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto8_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  
   auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0").GetEntry();
   auto0Change_ = auto0_.GetLastChange();
   auto1Change_ = auto1_.GetLastChange();
@@ -401,16 +404,16 @@ void Robot::AutonomousInit() {
   autoController_->SetAutonomousMode(autoMode_);
   autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1);
 
-  m_autoSelected = m_chooser.GetSelected();
-  // m_autoSelected = SmartDashboard::GetString(
-  //     "Auto Selector", kAutoNameDefault);
-  std::cout << "Auto selected: " << m_autoSelected << std::endl;
+  // m_autoSelected = m_chooser.GetSelected();
+  // // m_autoSelected = SmartDashboard::GetString(
+  // //     "Auto Selector", kAutoNameDefault);
+  // std::cout << "Auto selected: " << m_autoSelected << std::endl;
 
-  if (m_autoSelected == kAutoNameCustom) {
-    // Custom Auto goes here
-  } else {
-    // Default Auto goes here
-  }
+  // if (m_autoSelected == kAutoNameCustom) {
+  //   // Custom Auto goes here
+  // } else {
+  //   // Default Auto goes here
+  // }
   sandstormAuto_ = true;
 }
 
@@ -426,18 +429,23 @@ void Robot::AutonomousPeriodic() {
   }*/
   //if (!curve_->IsDone()) curve_->Update(currTimeSec_, deltaTimeSec_);
   // if(!ellipse_->IsDone()) ellipse_->Update(currTimeSec_, deltaTimeSec_);
-
+  //printf("is auto mode done %d\n\n", autoMode_->IsDone());
   if(sandstormAuto_){
+    printf("enter sandstorm auto");
     humanControl_->ReadControls();
     autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
     autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
-    if(autoJoyVal_ != 0.0 || autoController_->Abort()){ //TODO mild sketch, check deadbands more
-      printf("WARNING: EXITED SANDSTORM.  autoJoyVal_ is %f after deadband, not == 0\n\n",autoJoyVal_);
-      autoController_->~AutoController(); //TODO check that these are being destructed
+    printf("checkpoint");
+    if(autoJoyVal_ != 0.0 || autoMode_->IsDone() || autoController_->Abort()){ //TODO mild sketch, check deadbands more
+      printf("WARNING: EXITED SANDSTORM.\n\n",autoJoyVal_);
+      //autoController_->~AutoController(); //TODO check that these are being destructed
+      delete autoController_;
+      autoController_ = NULL; 
       sandstormAuto_ = false;
       TeleopInit();
     } else if (!autoController_->IsDone()) {
       autoController_->Update(currTimeSec_, deltaTimeSec_);
+      printf("updating auto controller");
     }
   } else {
     TeleopPeriodic();
@@ -495,23 +503,17 @@ void Robot::TeleopPeriodic() {
     autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
     if(autoJoyVal_ != 0.0){ //TODO mild sketch, check deadbands more
       printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband, not == 0\n\n",autoJoyVal_);
-      //autoController_->~AutoController(); //TODO check that these are being destructed
       delete(aCommand);
       aCommand = NULL;
-      //aCommand->~AlignWithTapeCommand();
       aligningTape_ = false;
     } else if(!aCommand->IsDone()){
       aCommand->Update(currTimeSec_, deltaTimeSec_);
       printf("updated a command\n");
-    //} else if (!autoController_->IsDone()) {
-      //autoController_->Update(currTimeSec_, deltaTimeSec_);
     } else { //isDone() is true
       delete(aCommand);
       aCommand = NULL;
-      //aCommand->~AlignWithTapeCommand();
       aligningTape_ = false;
       printf("destroyed a command\n");
-      //printf(" pivot is done? %d", aCommand->IsDone());
     }
 
     return;
