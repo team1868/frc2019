@@ -217,7 +217,7 @@ void AlignWithTapeCommand::ReadFromJetson() {
 
 	if(result.size() > 0) {
 		desiredDeltaAngle_ = stod(result.at(0));
-		desiredDistance_ = stod(result.at(1))-1.75;
+		desiredDistance_ = stod(result.at(1))-1.5;//1.6;
 	} else {
 		abort_ = true;
 		desiredDeltaAngle_ = 0.0;

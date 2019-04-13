@@ -57,6 +57,10 @@ private:
 	int habRailsEncoderVal_;
 	bool currLightSensorStatus_;
 
+	double timeEngagedCargoWrist_;
+
+	bool hookEngaged_;
+
 	uint32_t currState_;
 	uint32_t nextState_;
 

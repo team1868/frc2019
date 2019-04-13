@@ -112,7 +112,7 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
   autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.1 t -90.0 ^");
   autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
-  autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.05 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 t -167 d 18.75 a 1 b 1 d 0.6 b 0 d -5.0 t 20.0");
+  autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.0 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 b 1 a 0");
   autoSendableChooser_.AddOption("8:other", "");
   
 
@@ -133,7 +133,8 @@ void Robot::RobotInit()  {
   frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
   sparkEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("hab encoder val", 0.0).GetEntry();
   
-  autoChooserType_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("SendableChooser", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  //autoChooserType_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("SendableChooser", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  /*
   auto0_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("0: blank", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto1_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("1: 1S,H", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto2_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("2:2L,Lfront,H", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
@@ -143,17 +144,18 @@ void Robot::RobotInit()  {
   auto6_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("6:2R,Rship,1C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto7_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("7:2R,Rship,1.5C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto8_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  
+  */
   auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0").GetEntry();
-  auto0Change_ = auto0_.GetLastChange();
-  auto1Change_ = auto1_.GetLastChange();
-  auto2Change_ = auto2_.GetLastChange();
-  auto3Change_ = auto3_.GetLastChange();
-  auto4Change_ = auto4_.GetLastChange();
-  auto5Change_ = auto5_.GetLastChange();
-  auto6Change_ = auto6_.GetLastChange();
-  auto7Change_ = auto7_.GetLastChange();
-  auto8Change_ = auto8_.GetLastChange();
+  // auto0Change_ = auto0_.GetLastChange();
+  // auto1Change_ = auto1_.GetLastChange();
+  // auto2Change_ = auto2_.GetLastChange();
+  // auto3Change_ = auto3_.GetLastChange();
+  // auto4Change_ = auto4_.GetLastChange();
+  // auto5Change_ = auto5_.GetLastChange();
+  // auto6Change_ = auto6_.GetLastChange();
+  // auto7Change_ = auto7_.GetLastChange();
+  // auto8Change_ = auto8_.GetLastChange();
+  
 }
 
 /**
@@ -180,7 +182,7 @@ void Robot::RobotPeriodic() {
   SmartDashboard::PutBoolean("is high gear?", robot_->IsHighGear());
   robot_->PrintState();
   //auto0_.GetLastChange();
-
+  /*
   if(auto0_.GetLastChange() != auto0Change_ && auto0_.GetBoolean(true)){
     auto1_.SetBoolean(false);
     auto2_.SetBoolean(false);
@@ -272,7 +274,9 @@ void Robot::RobotPeriodic() {
     auto0_.SetBoolean(false);
     auto8Change_ = auto8_.GetLastChange();
   }
+  
   // std::cout << "INFORMATION:            " << autoSendableChooser_.GetSelected() << std::endl;
+  */
 }
 
 /**
@@ -293,7 +297,7 @@ void Robot::AutonomousInit() {
   printf("IN AUTONOMOUS \n");
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
-  robot_->SetLowGear();
+  robot_->SetLowGear(); //faster, for 2 hatch, so cargo does not fall out
 
   //TODO BAD FORM but whatev
   //NavXPIDSource *navXSource = new NavXPIDSource(robot_);
@@ -361,14 +365,14 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 t -90.0");
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
-  if(autoChooserType_.GetBoolean(true)){
+  //if(autoChooserType_.GetBoolean(true)){
     printf("auto sequence is %s from autoChooser (which is being used)", autoSendableChooser_.GetSelected());
     if(autoSendableChooser_.GetSelected()!=""){
       robot_->SetTestSequence(autoSendableChooser_.GetSelected());
     } else {
       robot_->SetTestSequence(auto8Val_.GetString("h 0"));
     }
-  } else {
+  /*} else {
     if(auto0_.GetBoolean(false)){
       robot_->SetTestSequence("h 0");
     } else if(auto1_.GetBoolean(false)){
@@ -391,8 +395,7 @@ void Robot::AutonomousInit() {
     } else {
       printf("ERROR: In Auto Init.  not using sendablechooser and none of the auto switches are true.  Continuing to teleop.");
       sandstormAuto_ = false;
-    }
-  }
+    }*/
   // if(autoChooserType_.GetBoolean(true)){
   //   printf("selected auto: %s\n", autoSendableChooser_.GetSelected());
   //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
@@ -437,7 +440,7 @@ void Robot::AutonomousPeriodic() {
     autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
     printf("checkpoint");
     if(autoJoyVal_ != 0.0 || autoMode_->IsDone() || autoController_->Abort()){ //TODO mild sketch, check deadbands more
-      printf("WARNING: EXITED SANDSTORM.\n\n",autoJoyVal_);
+      printf("WARNING: EXITED SANDSTORM.\n\n");
       //autoController_->~AutoController(); //TODO check that these are being destructed
       delete autoController_;
       autoController_ = NULL; 
@@ -544,9 +547,9 @@ void Robot::TeleopPeriodic() {
       robot_->SetHabMotorOutput(curHabPowerDeploy_);
       printf("Hab downing at %f power after accel.\n", curHabPowerDeploy_);
       //TODO reach 1.0 eventually
-      if(robot_->GetTime() - habStartTime_ > 2 && curHabPowerDeploy_*habDeployAccelNet_.GetDouble(1.001) <= 1.0){ //2 sec slow deploy, then accel
+      if(/*robot_->GetTime() - habStartTime_ > 2 && */curHabPowerDeploy_*habDeployAccelNet_.GetDouble(1.001) <= 1.0){ //2 sec slow deploy, then accel
         curHabPowerDeploy_ *= habDeployAccelNet_.GetDouble(1.001); //exponential increase
-      } else if (robot_->GetTime() - habStartTime_ > 2 && curHabPowerDeploy_ <= 1.0){
+      } else if (/*robot_->GetTime() - habStartTime_ > 2 && */curHabPowerDeploy_ >= 1.0){
         curHabPowerDeploy_ = 1.0;
       }
       wasJustRaisingHab_ = false;
@@ -566,7 +569,7 @@ void Robot::TeleopPeriodic() {
       printf("Hab rising at %f power.\n", curHabPowerDeploy_);
       if (curHabPowerDeploy_ * habRaiseAccelNet_.GetDouble(1.001) >= -1.0){ //TODO reach 1.0 eventually
         curHabPowerDeploy_ *= habRaiseAccelNet_.GetDouble(1.001);
-      } else if (curHabPowerDeploy_>= -1.0){
+      } else if (curHabPowerDeploy_<= -1.0){
         curHabPowerDeploy_ = -1.0;
       }
       wasJustRaisingHab_ = true;

@@ -112,6 +112,8 @@ class RobotModel {
   void SetHatchOuttake(bool change);
   void SetHatchBeak(bool change);
   void SetHabBrake(bool change);
+  void EngageHook();
+  void DisengageHook();
 
   double GetCargoFlywheelMotorOutput(double output);
 
@@ -183,7 +185,7 @@ class RobotModel {
   //rev::CANEncoder *habSparkMotor_;
   Encoder *cargoFlywheelEncoder_;
   DoubleSolenoid *cargoIntakeWristSolenoid_, *hatchBeakSolenoid_, *habBrakeSolenoid_;
-  Solenoid *hatchOuttakeSolenoid_;
+  Solenoid *hatchOuttakeSolenoid_, *hookSolenoid_;
 
   frc::Timer *timer_;
   AHRS *navX_; 

@@ -24,6 +24,9 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     cargoIntakeWristEngaged_ = false;
     hatchOuttakeEngaged_ = false;
 
+  hookEngaged_ = false;
+  timeEngagedCargoWrist_ = robot_->GetTime();
+
     //get PID vals for cargo ship
     cargoPFac_ = 0.8;
     cargoIFac_ = 0.0;
@@ -132,6 +135,19 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             RefreshShuffleboard();
             //HATCH STUFF
 
+            // if(humanControl_->GetHatchIntakeWheelDesired()){ //beak
+            //     if(hookEngaged_){
+            //         hookEngaged_ = false;
+            //     } else {
+            //         hookEngaged_ = true;
+            //     }
+            // }
+            // if(hookEngaged_){
+            //     robot_->EngageHook();
+            // } else {
+            //     robot_->DisengageHook();
+            // }
+
             //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
             if (humanControl_->GetHatchWristDownDesired()) { 
 			    printf("hatch intake wrist to floor\n");
@@ -142,6 +158,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 			    robot_->SetHatchWristOutput(0.0);
             }
 
+            /*
             // TODO FIX BELOW SO THAT WHEELS ONLY RUN IF GYRO IS 90 ISH
             if(humanControl_->GetHatchIntakeWheelDesired()){ //only run wheels if wrist down (otherwise wheels are irrelevant)
                     printf("hatch intaking\n");
@@ -152,12 +169,16 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             } else {
                 robot_->SetHatchIntakeWheelOutput(0.0);
             } 
+            */
             //CARGO STUFF
 
             //note: combined wrist and intake/unintake (so if wrist down and not unintaking, auto intake + no two controllers on same motor)
             if(humanControl_->GetCargoIntakeWristDesired()){
                 printf("wrist down\n");
+                hookEngaged_ = false;
+                // robot_->DisengageHook();
                 robot_->SetCargoIntakeWrist(true);
+                
                 if(!humanControl_->GetCargoUnintakeDesired()){  //!humanControl_->GetCargoUnintakeDesired()){ 
                     if (!CargoInIntake()) {
                        robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
@@ -168,6 +189,11 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                     robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
                 }
             } else {
+                 if(!hookEngaged_){
+                    timeEngagedCargoWrist_ = robot_->GetTime();
+                }
+                hookEngaged_ = true;
+                //robot_->EngageHook();
                 robot_->SetCargoIntakeWrist(false);
                 if(humanControl_->GetCargoIntakeDesired()){ //if(humanControl_->GetCargoIntakeDesired()){ 
                     robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
@@ -176,7 +202,14 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 } else {
                     robot_->SetCargoIntakeOutput(0.0);
                 }
-            }        
+            }    
+            if(hookEngaged_ && currTimeSec-timeEngagedCargoWrist_ > 2){
+                robot_->DisengageHook(); //closes hook
+                //printf("disengage hook\n");
+            } else {
+                robot_->EngageHook();
+                //printf("engage hook\n");
+            } 
 
             if (humanControl_->GetCargoFlywheelDesiredRocket()){ //Note: check if less power first, don't want accident more power
                robot_->SetHatchBeak(true);

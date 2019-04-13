@@ -162,6 +162,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   hatchBeakSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
   hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN); //TODO possible error?
 	habBrakeSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HAB_BRAKE_ENGAGE_DOUBLE_SOLENOID_CHAN, HAB_BRAKE_RELEASE_DOUBLE_SOLENOID_CHAN);
+	hookSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HOOK_FORWARD_SINGLE_SOL_CHAN);
 
 	cargoIntakeMotor_ = new Victor(CARGO_INTAKE_MOTOR_PORT);
 	cargoFlywheelMotor_ = new Victor(CARGO_FLYWHEEL_MOTOR_PORT);
@@ -318,7 +319,7 @@ void RobotModel::SetDriveValues(double leftValue, double rightValue) {
   rightMaster_->Set(-rightValue);
 }
 
-double RobotModel::GetStaticFriction(double thrustValue){ //TODODODODODODOD MAKE A VARIABLE DON'T BE AN IDIOT
+double RobotModel::GetStaticFriction(double thrustValue){ //TODO MAKE A VARIABLE DON'T BE AN IDIOT
     LOW_GEAR_STATIC_FRICTION_POWER = lowGearStaticFric_.GetDouble(LOW_GEAR_STATIC_FRICTION_POWER);
 	HIGH_GEAR_STATIC_FRICTION_POWER = highGearStaticFric_.GetDouble(HIGH_GEAR_STATIC_FRICTION_POWER);
 	LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = lowGearTurnStaticFric_.GetDouble(LOW_GEAR_STATIC_FRICTION_POWER+LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER)-LOW_GEAR_STATIC_FRICTION_POWER;
@@ -327,7 +328,7 @@ double RobotModel::GetStaticFriction(double thrustValue){ //TODODODODODODOD MAKE
 	if(IsHighGear()){
 		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
 		
-		if(thrustValue <= 0.1 && thrustValue >= -0.1){ //TODO TUNNNNNNNNNNNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEEEEEEEEE NNNNNNNNNNEEEEEEEEEEDDDDDDDDDD
+		if(thrustValue <= 0.1 && thrustValue >= -0.1){ //TODO TUNE
 			//quick turn
 			staticFriction += HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
 		}
@@ -504,7 +505,6 @@ int RobotModel::GetHabEncoderValue() {
 	//todo: convert from encoder ticks to feet
 }
 
-// ****************************REMINDER:::::::: USE POWER CONTROLLER DON'T DO RANDOM MOTOR ON DANG IT
 void RobotModel::SetCargoIntakeOutput(double output){
 	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
 	cargoIntakeMotor_->Set(-output); //motor is negatized
@@ -530,6 +530,14 @@ void RobotModel::SetHabMotorOutput(double output){
 
 void RobotModel::SetHatchWristOutput(double output){
 	hatchWristMotor_->Set(-output);
+}
+
+void RobotModel::EngageHook(){
+	hookSolenoid_->Set(true);
+}
+
+void RobotModel::DisengageHook(){
+	hookSolenoid_->Set(false);
 }
 
 void RobotModel::SetHabBrake(bool change){

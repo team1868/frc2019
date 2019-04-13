@@ -129,6 +129,8 @@ static const int HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN       = 1; //A
 static const int HAB_BRAKE_ENGAGE_DOUBLE_SOLENOID_CHAN      = 7; //A
 static const int HAB_BRAKE_RELEASE_DOUBLE_SOLENOID_CHAN     = 1; //A
 
+static const int HOOK_FORWARD_SINGLE_SOL_CHAN               = 2;
+
 // static const int HAB_SLIDERS_
 
 static const int FLYWHEEL_ENCODER_A_PWM_PORT = 0; //INCORRECT, TODO
