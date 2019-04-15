@@ -73,9 +73,10 @@ void Robot::RobotInit()  {
 
 
   ResetTimerVariables();
-  Wait(1.0);
-  cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
-  camera.SetResolution(320,240);
+  //Wait(1.0);
+  //NOTE camera commeted out
+  //cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
+  //camera.SetResolution(320,240);
   //Wait(1.0);
 
 
@@ -93,7 +94,7 @@ void Robot::RobotInit()  {
   // robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
 
   //autoSendableChooser_ = new frc::SendableChooser<std::string>();
-  // autoSendableChooser_.InitSendable();
+  //autoSendableChooser_.InitSendable();
   /*autoSendableChooser_.SetDefaultOption("0: blank", "h 0");
   autoSendableChooser_.AddOption("1: hab 1, straight, hatch", "h 0 d 10.9");
   autoSendableChooser_.AddOption("2: left, hab 2, left front hatch", "h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
@@ -112,7 +113,8 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
   autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.1 t -90.0 ^");
   autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
-  autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.0 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 b 1 a 0");
+  autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.85 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 t -180.0 b 1 a 0");
+  autoSendableChooser_.AddOption("10:2L,Lship,HC", "t -1.0 d 19.6 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.3 h 0 t 0.0 d -16.0 t -20.0 w b 0");
   autoSendableChooser_.AddOption("8:other", "");
   
 
@@ -124,7 +126,7 @@ void Robot::RobotInit()  {
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.6).GetEntry();
-  habDeployAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab deploy accel", 1.001).GetEntry();
+  habDeployAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab deploy accel", 1.0005).GetEntry();
   habRaiseAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab raise accel", 1.001).GetEntry();
   habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.9).GetEntry();
   guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
@@ -298,6 +300,7 @@ void Robot::AutonomousInit() {
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
   robot_->SetLowGear(); //faster, for 2 hatch, so cargo does not fall out
+  robot_->EngageHook();
 
   //TODO BAD FORM but whatev
   //NavXPIDSource *navXSource = new NavXPIDSource(robot_);
@@ -366,12 +369,13 @@ void Robot::AutonomousInit() {
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
   //if(autoChooserType_.GetBoolean(true)){
-    printf("auto sequence is %s from autoChooser (which is being used)", autoSendableChooser_.GetSelected());
+    printf("auto sequence is %s from autoChooser (which is being used)\n", autoSendableChooser_.GetSelected().c_str());
     if(autoSendableChooser_.GetSelected()!=""){
       robot_->SetTestSequence(autoSendableChooser_.GetSelected());
     } else {
       robot_->SetTestSequence(auto8Val_.GetString("h 0"));
     }
+    printf("done choosing auto sequence\n");
   /*} else {
     if(auto0_.GetBoolean(false)){
       robot_->SetTestSequence("h 0");
@@ -567,8 +571,8 @@ void Robot::TeleopPeriodic() {
       }
       robot_->SetHabMotorOutput(curHabPowerDeploy_);
       printf("Hab rising at %f power.\n", curHabPowerDeploy_);
-      if (curHabPowerDeploy_ * habRaiseAccelNet_.GetDouble(1.001) >= -1.0){ //TODO reach 1.0 eventually
-        curHabPowerDeploy_ *= habRaiseAccelNet_.GetDouble(1.001);
+      if (curHabPowerDeploy_ * habRaiseAccelNet_.GetDouble(1.0005) >= -1.0){ //TODO reach 1.0 eventually
+        curHabPowerDeploy_ *= habRaiseAccelNet_.GetDouble(1.0005);
       } else if (curHabPowerDeploy_<= -1.0){
         curHabPowerDeploy_ = -1.0;
       }

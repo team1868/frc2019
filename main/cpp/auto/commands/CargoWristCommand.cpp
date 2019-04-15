@@ -24,11 +24,11 @@ void CargoWristCommand::Reset(){
 }
 
 void CargoWristCommand::Update(double currTimeSec, double deltaTimeSec){
-    if(deltaTimeSec >= 0.7){
+    if(robot_->GetLightSensorStatus() || deltaTimeSec >= 0.7){
         robot_->SetCargoIntakeWrist(false);
         robot_->SetCargoIntakeOutput(0.0);
         isDone_ = true;
-        printf("cargo intake wrist command done by timeout");
+        printf("cargo intake wrist command done by timeout or light sensor at %f delta time sec\n", deltaTimeSec);
     } else {
         robot_->SetCargoIntakeWrist(true);
         robot_->SetCargoIntakeOutput(0.7);
