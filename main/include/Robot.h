@@ -89,7 +89,7 @@ class Robot : public frc::TimedRobot {
 
   nt::NetworkTableEntry leftEncoderNet_, rightEncoderNet_, leftEncoderStopNet_, rightEncoderStopNet_,
     testerPowerNet_, guidedDriveNet_, habRisePowerNet_, leftDistanceNet_, rightDistanceNet_, sparkEncoderNet_,
-    habRaiseAccelNet_, habDeployAccelNet_;
+    habRaiseAccelNet_, habDeployAccelNet_, lightSensorDisplayNet_;
   // nt::NetworkTableEntry usingOffset_, side_, redShipHorizOffset_, redShipVertiOffset_, redRocketHorizOffset_, redRocketVertiOffset_,
   //   blueShipHorizOffset_, blueShipVertiOffset_, blueRocketHorizOffset_, blueRocketVertiOffset_;
 

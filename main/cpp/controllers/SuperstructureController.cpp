@@ -15,6 +15,7 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
 
     cargoVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo veloc", 0.65).GetEntry(); //0.65
     cargoRocketVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("rocket veloc", 0.25).GetEntry(); //0.25
+    lightSensorNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("enable light sensor", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
     
     cargoIntakeOutput_ = 0.8; 
 
@@ -110,10 +111,12 @@ void SuperstructureController::Reset() {
 
 void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
+    //lightSensorDisplayNet_.SetBoolean(CargoInIntake());
+
     SetOutputs(); 
 
     //TODO TAKE THIS OUT
-    HatchWristAngleTest();
+    //HatchWristAngleTest();
     // printf("current flywheel veloc cargo ship %f\n", desiredFlywheelVelocCargo_);
     // printf("curr flywheel veloc rocket ship %f\n", desiredFlywheelVelocRocket_);
 
@@ -180,7 +183,7 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 robot_->SetCargoIntakeWrist(true);
                 
                 if(!humanControl_->GetCargoUnintakeDesired()){  //!humanControl_->GetCargoUnintakeDesired()){ 
-                    if (!CargoInIntake()) {
+                    if (!CargoInIntake() || !lightSensorNet_.GetBoolean(true)) {
                        robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
                     } else {
                         robot_->SetCargoIntakeOutput(0.0);
@@ -270,12 +273,12 @@ void SuperstructureController::SetOutputs() {
     rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);
     //hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
 }
-
+/*
 void SuperstructureController::HatchWristAngleTest() {
     currHatchWristAngle_ = robot_->GetGyroAngle();
     //printf("Gryo Angle is the following %f\n", currHatchWristAngle_);
 }
-
+*/
 void SuperstructureController::HabEncoderTest() {
     currHabEncoderVal_ = robot_->GetHabEncoderValue();
     printf("Hab Encoder Value is the follwoing %f\n", currHabEncoderVal_);

@@ -7,12 +7,11 @@ AutoMode::AutoMode(RobotModel* robot) {
 		currentCommand_ = NULL;
 		robot_ = robot;
 		navX_ = robot_->GetNavXSource();
-		//navX_ = new NavXPIDSource(robot_);
 		talonEncoder_ = new TalonEncoderPIDSource(robot_);
 		angleOutput_ = new AnglePIDOutput();
 		distanceOutput_ = new DistancePIDOutput();
 		breakDesired_ = false;
-		currAngle_ = 0.0;//robot_->GetNavXYaw();
+		currAngle_ = 0.0;
 
 	printf("Done constructing AutoMode\n");
 }
@@ -30,7 +29,7 @@ void AutoMode:: QueueFromString(string autoSequence) {
 			printf("NO SEQUENCE ! TRY AGAIN KID");
 		}
 
-		//printf("AUto sequence: %s", autoSequence.c_str());
+		//printf("Auto sequence: %s", autoSequence.c_str());
 
 		while (!iss.eof() && !breakDesired_) {
 			AutoCommand* tempCommand = NULL;
@@ -183,6 +182,15 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = new WaitingCommand(waitTime);
 			}
 			break;
+		case 'm':
+			printf("Motion Profile Command\n");
+			if(IsFailed(command)) {
+				tempCommand = NULL;
+			} else {
+				printf("Distance: %f\n", distance);
+				tempCommand = new MotionProfileCommand(robot_);
+			}
+			break;
 		default:	// When it's not listed, don't do anything :)
 			printf("Unexpected character %c detected. Terminating queue", command);
 			firstCommand_ = NULL;
@@ -257,7 +265,7 @@ void AutoMode::Disable() {
         AutoCommand* nextCommand;
         while (currentCommand_ != NULL) {
             nextCommand = currentCommand_->GetNextCommand();
-            delete(currentCommand_);
+            delete currentCommand_; //changed here
             currentCommand_ = nextCommand;
         }
     }

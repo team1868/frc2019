@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
+
 #include "frc/WPILib.h" //TODO <>
 #include <string>
 #include <frc/shuffleboard/Shuffleboard.h>
@@ -23,6 +24,35 @@
 //#include <VictorSPX.h>
 //#include "CANTalon.h"
 #include "rev/CANSparkMax.h"
+
+#define PI 3.141592
+
+static const double WHEEL_DIAMETER = 4.0 / 12.0; //ft
+static const double HIGH_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*32/34; //ft
+static const double LOW_GEAR_ENCODER_ROTATION_DISTANCE = WHEEL_DIAMETER*PI*16/50;
+static const double ENCODER_COUNT_PER_ROTATION = 256.0;
+static const int EDGES_PER_ENCODER_COUNT = 4;
+
+static const double MAX_VELOCITY = 5.75; //low gear ft/s
+
+static const double FLYWHEEL_DIAMETER = 1.0 / 12.0; //CHECK (in ft)
+
+static const double MAX_CURRENT_OUTPUT = 180.0; //Amps //TODO INCORRECT< FIX
+static const double MAX_DRIVE_MOTOR_CURRENT = 40.0; //Amps
+//ratios work in 5 or 10% increments (accumulative)
+static const double MIN_RATIO_ALL_CURRENT = 0.2;//0.7; //TODO add to shuffleboard
+static const double MIN_RATIO_DRIVE_CURRENT = 0.7; //TODO add to shuffleboard //NOTE: UNUSED
+static const double MIN_RATIO_SUPERSTRUCTURE_CURRENT = 0.5; //TODO add to shuffleboard
+static const double MIN_VOLTAGE_BROWNOUT = 7.5;//7.5; //6.8; //brownout protection state; PWM, CAN, 6V, relay outputs, CAN motors disabled
+
+//unused
+static const double MAX_CURRENT_DRIVE_PERCENT = 0.8; //per motor, most teams are 40-50 Amps
+
+//currently tuned for Mo Practice Bot
+static double LOW_GEAR_STATIC_FRICTION_POWER = 0.06;//0.11;
+static double HIGH_GEAR_STATIC_FRICTION_POWER = 0.09;//0.14;
+static double LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER =  /*0.15*/0.09 - LOW_GEAR_STATIC_FRICTION_POWER;
+static double HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = /*0.2*/0.19 - HIGH_GEAR_STATIC_FRICTION_POWER;
 
 class RobotModel {
  public:

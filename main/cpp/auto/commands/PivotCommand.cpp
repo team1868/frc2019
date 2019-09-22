@@ -60,6 +60,58 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 
 }
 
+// constructor
+PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsoluteAngle, NavXPIDSource* navXSource, int tolerance) {
+	navXSource_ = navXSource;
+
+	initYaw_ = navXSource_->PIDGet();
+
+	// adjust angle is absolute
+	if (isAbsoluteAngle){
+		desiredAngle_ = desiredAngle;
+	} else {
+		desiredAngle_ = initYaw_ + desiredAngle;
+		if (desiredAngle_ > 180) {
+			desiredAngle_ -= -360; //TODO bug that doesn't matter
+		} else if (desiredAngle_ < -180) {
+			desiredAngle_ += 360;
+		}
+	}
+
+	// initialize variables
+	isDone_ = false;
+	robot_ = robot;
+	
+	// initialize PID talon output
+	talonOutput_ = new PivotPIDTalonOutput(robot_);
+
+	// initialize time variables
+	pivotCommandStartTime_ = robot_->GetTime();
+	pivotTimeoutSec_ = 5.0;//0.0; //note edited from last year
+
+	// retrieve pid values from user
+	pFac_ = robot_->GetPivotPFac();
+	iFac_ = robot_->GetPivotIFac();
+	dFac_ = robot_->GetPivotDFac();
+
+//	actualTimeoutSec_ = fabs(desiredAngle) * pivotTimeoutSec_ / 90.0;
+	pivotPID_ = new PIDController(pFac_, iFac_, dFac_, navXSource_, talonOutput_);
+
+	maxOutput_ = 0.9;
+	tolerance_ = tolerance;//3.0;
+
+	numTimesOnTarget_ = 0;
+
+	//ERROR (possibly) WARNING NOTE: this is adding every pivot
+	//frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", pivotPID_->GetError());
+	// TODO THIS NEEDS TO MOVE STAT
+	leftDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Left Drive", 0.0).GetEntry();
+	rightDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Right Drive", 0.0).GetEntry();
+	pivotErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", 0.0).GetEntry();
+	//NOTE: not printing time difference
+
+}
+
 void PivotCommand::Init() {
 	//Profiler profiler(robot_, "Pivot Init");
 	// Setting PID values (in case they changed)
@@ -145,7 +197,8 @@ void PivotCommand::Update(double currTimeSec, double deltaTimeSec) { //Possible 
 		double output = talonOutput_->GetOutput();
 //		double output = 0.0;
 		// adjust motor values according to PID
-		robot_->SetDriveValues(-output, -output);
+		robot_->SetDriveValues(RobotModel::kAllWheels, -output);
+		//robot_->SetDriveValues(-output, -output); //NOTE: NO STATIC FRICTION
 
 		// update shuffleboard
 		rightDriveNet_.SetDouble(-output);

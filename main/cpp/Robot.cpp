@@ -37,8 +37,8 @@ void Robot::RobotInit()  {
   robot_->CreateNavX();
 
   robot_->ZeroNavXYaw();
-  robot_->CalibrateGyro();
-  robot_->ResetGyro();
+  //robot_->CalibrateGyro();
+  //robot_->ResetGyro();
 
   aligningTape_ = false;
 
@@ -73,10 +73,10 @@ void Robot::RobotInit()  {
 
 
   ResetTimerVariables();
-  //Wait(1.0);
-  //NOTE camera commeted out
-  //cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
-  //camera.SetResolution(320,240);
+  // Wait(1.0);
+  // NOTE camera commeted out
+  // cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
+  // camera.SetResolution(320,240);
   //Wait(1.0);
 
 
@@ -105,20 +105,41 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("7: right, hab 2, right near cargo ship, 1 cargo + pickup", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
   autoSendableChooser_.AddOption("8: other, input your string", "h 0");*/
 
-  autoSendableChooser_.SetDefaultOption("0: blank", "h 0");
-  autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.9 a 1 b 1 s 0.1 h 1 d -0.5");
-  autoSendableChooser_.AddOption("2:2L,Lfront,H", "h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("3:2R,Rfront,H", "h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("4:2L,Lship,H", "t -1.0 d 19.05 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
-  autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
-  autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.1 t -90.0 ^");
-  autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
-  autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.85 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 t -180.0 b 1 a 0");
-  autoSendableChooser_.AddOption("10:2L,Lship,HC", "t -1.0 d 19.6 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.3 h 0 t 0.0 d -16.0 t -20.0 w b 0");
-  autoSendableChooser_.AddOption("8:other", "");
-  
+  // //NASA field code
+  // autoSendableChooser_.SetDefaultOption("0: blank", "h 0");
+  // autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.9 a 1 b 1 s 0.1 h 1 d -0.5");
+  // autoSendableChooser_.AddOption("2:2L,Lfront,H", "h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
+  // autoSendableChooser_.AddOption("3:2R,Rfront,H", "h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
+  // autoSendableChooser_.AddOption("4:2L,Lship,H", "t -1.0 d 19.05 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  // autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
+  // autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.1 t -90.0 ^");
+  // autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
+  // autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.85 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 t -180.0 b 1 a 0");
+  // autoSendableChooser_.AddOption("10:2L,Lship,HC", "t -1.0 d 19.6 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  // autoSendableChooser_.AddOption("11:2R,Rship,1.2H", "t 1.0 d 19.85 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t 164.0 d 18.2 t 180.0 b 1 a 0"); //flipped of 9
+  // autoSendableChooser_.AddOption("12:2R,Rship,HC", "t 1.0 d 19.6 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  // autoSendableChooser_.AddOption("13:2L,Lfront,H", "d 14.5 t 90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t -90.0 d 7.0 t 0.0 d -8.0 t -10.0 w b 0"); //UNTESTED sketch
+  // autoSendableChooser_.AddOption("14:2R,Rfront,H", "d 14.5 t -90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t 90.0 d 7.0 t 0.0 d -8.0 t 10.0 w b 0"); //UNTESTED sketch
+  // autoSendableChooser_.AddOption("8:other", "");
 
-  //TODODODOD MOVE TO ROBOT MODEL
+  //Houston field code TODO
+  autoSendableChooser_.SetDefaultOption("0: blank", "h 0 b 0");
+  autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.817 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("2:2L,Lfront,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("3:2R,Rfront,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("4:2L,Lship,H", "t -1.0 d 18.97 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.016 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.016 t -90.0 ^");
+  autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.016 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  // autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.85 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 t -180.0 b 1 a 0");
+  autoSendableChooser_.AddOption("10:2L,Lship,HC", "t -1.0 d 19.6 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  // autoSendableChooser_.AddOption("11:2R,Rship,1.2H", "t 1.0 d 19.85 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t 164.0 d 18.2 t 180.0 b 1 a 0"); //flipped of 9
+  autoSendableChooser_.AddOption("12:2R,Rship,HC", "t 1.0 d 18.8 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  // autoSendableChooser_.AddOption("13:2L,Lfront,H", "d 14.5 t 90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t -90.0 d 7.0 t 0.0 d -8.0 t -10.0 w b 0"); //UNTESTED sketch
+  // autoSendableChooser_.AddOption("14:2R,Rfront,H", "d 14.5 t -90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t 90.0 d 7.0 t 0.0 d -8.0 t 10.0 w b 0"); //UNTESTED sketch
+  autoSendableChooser_.AddOption("8:other", "");  
+
+  //TODO MOVE TO ROBOT MODEL
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
 	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Distance (RM)", robot_->GetLeftEncoderValue()).GetEntry();
@@ -130,6 +151,7 @@ void Robot::RobotInit()  {
   habRaiseAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab raise accel", 1.001).GetEntry();
   habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.9).GetEntry();
   guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  lightSensorDisplayNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("light sensor read", false).GetEntry();
   //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("lala info", 0.0);
   // frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose yo auto here fam", autoSendableChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
   frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
@@ -147,7 +169,7 @@ void Robot::RobotInit()  {
   auto7_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("7:2R,Rship,1.5C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   auto8_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
   */
-  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0").GetEntry();
+  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0 b 0").GetEntry();
   // auto0Change_ = auto0_.GetLastChange();
   // auto1Change_ = auto1_.GetLastChange();
   // auto2Change_ = auto2_.GetLastChange();
@@ -176,6 +198,8 @@ void Robot::RobotPeriodic() {
   leftDistanceNet_.SetDouble(robot_->GetLeftDistance());
   rightDistanceNet_.SetDouble(robot_->GetRightDistance());
   sparkEncoderNet_.SetDouble(robot_->GetHabEncoderValue());
+
+  lightSensorDisplayNet_.SetBoolean(superstructureController_->CargoInIntake());
 
   SmartDashboard::PutNumber("left distance per pulse", robot_->GetLeftDistancePerPulse());
   SmartDashboard::PutNumber("right distance per pulse", robot_->GetRightDistancePerPulse());
@@ -295,6 +319,11 @@ void Robot::RobotPeriodic() {
 void Robot::AutonomousInit() {
   frc::Shuffleboard::StartRecording();
   // std::string autoModeString = autoSendableChooser_.GetSelected();
+  // if(autoMode_!=NULL){
+  //   printf("deleted previous auto mode, ptr reset to null");
+  //   delete autoMode_;
+  //   autoMode_ = NULL;
+  // }
 
   printf("IN AUTONOMOUS \n");
   robot_->ResetDriveEncoders();
@@ -373,7 +402,7 @@ void Robot::AutonomousInit() {
     if(autoSendableChooser_.GetSelected()!=""){
       robot_->SetTestSequence(autoSendableChooser_.GetSelected());
     } else {
-      robot_->SetTestSequence(auto8Val_.GetString("h 0"));
+      robot_->SetTestSequence(auto8Val_.GetString("h 0 b 0"));
     }
     printf("done choosing auto sequence\n");
   /*} else {

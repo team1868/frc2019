@@ -32,6 +32,7 @@ public:
 	 * @param navXSource a NavXPIDSource
 	 */
 	PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource);
+	PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolutePosition, NavXPIDSource* navXSource, int tolerance);
 
 	/**
 	 * PivotCommand a destructor

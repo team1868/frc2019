@@ -11,6 +11,7 @@
 #include "../commands/OuttakeHatchCommand.h"
 #include "../commands/OuttakeCargoToShipCommand.h"
 #include "../commands/CargoWristCommand.h"
+#include "../commands/MotionProfiling/MotionProfileCommand.h"
 #include "../PIDSource/PIDInputSource.h"
 #include "../PIDSource/PIDOutputSource.h"
 

@@ -116,6 +116,7 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 	//TODO: add safety for deadband values (prevent (-) or >= 0.1)
 	thrustValue = HandleDeadband(thrustValue, thrustDeadbandNet_.GetDouble(0.0));	// 0.02 was too low
 	rotateValue = HandleDeadband(rotateValue, rotateDeadbandNet_.GetDouble(0.0));
+	// printf("%f\n", rotateValue);
 
 	rotateValue = GetCubicAdjustment(rotateValue, rotateSensitivity);
 	thrustValue = GetCubicAdjustment(thrustValue, thrustSensitivity);
@@ -131,6 +132,7 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 	//printf("Left Output: %f and Right Output: %f", -leftOutput, rightOutput);
 	rightDriveNet_.SetDouble(rightOutput);
 	leftDriveNet_.SetDouble(leftOutput);
+	//printf("left output: %f, right output %f \n", leftOutput, rightOutput);
 	robot_->SetDriveValues(-leftOutput, rightOutput);
 	//printf("ROTATE VALUE              --------------------- %f", rotateValue);
 
@@ -138,6 +140,10 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 
 // tank drive
 void DriveController::TankDrive(double myLeft, double myRight) {
+
+	myLeft = HandleDeadband(myLeft, thrustDeadbandNet_.GetDouble(0.0));	// 0.02 was too low
+	myRight = HandleDeadband(myRight, rotateDeadbandNet_.GetDouble(0.0));
+
 	leftOutput = myLeft * GetDriveDirection();
 	rightOutput = myRight * GetDriveDirection();
 

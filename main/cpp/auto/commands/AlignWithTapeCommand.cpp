@@ -95,7 +95,7 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 				printf("vision done at: %f\n", robot_->GetTime() - initTimeVision_);
 
 				printf("ANGLE turning FOR PIVOT COMMAND: %f, abs angle turning to is %f (includes orig angle)\n", desiredDeltaAngle_, robot_->GetNavXYaw()+desiredDeltaAngle_);
-				pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+desiredDeltaAngle_, true, navXSource_);
+				pivotCommand_ = new PivotCommand(robot_, robot_->GetNavXYaw()+desiredDeltaAngle_, true, navXSource_, 1); //last digit is pivot tolerance
 				printf("pivotCommand constructed at time: %f\n", robot_->GetTime() - initTimeVision_);
 				pivotCommand_->Init();
 				printf("pivotCommand inited: %f\n", robot_->GetTime() - initTimeVision_);
