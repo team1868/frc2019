@@ -132,7 +132,7 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.016 t -90.0 ^");
   autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.016 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
   // autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.85 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 t -180.0 b 1 a 0");
-  autoSendableChooser_.AddOption("10:2L,Lship,HC", "t -1.0 d 19.6 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("10:2L,Lship,HC", "t -1.0 d 18.8 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
   // autoSendableChooser_.AddOption("11:2R,Rship,1.2H", "t 1.0 d 19.85 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t 164.0 d 18.2 t 180.0 b 1 a 0"); //flipped of 9
   autoSendableChooser_.AddOption("12:2R,Rship,HC", "t 1.0 d 18.8 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
   // autoSendableChooser_.AddOption("13:2L,Lfront,H", "d 14.5 t 90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t -90.0 d 7.0 t 0.0 d -8.0 t -10.0 w b 0"); //UNTESTED sketch
