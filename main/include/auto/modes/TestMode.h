@@ -5,7 +5,7 @@
 
 class TestMode : public AutoMode {
 public:
-    TestMode(RobotModel *robot);
+    TestMode(RobotModel *robot, ControlBoard *controlBoard);
     void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) override;
     void Init();
 

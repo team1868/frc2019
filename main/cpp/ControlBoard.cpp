@@ -40,7 +40,7 @@ ControlBoard::ControlBoard() {
 
 	smallTurnButton_ = new ButtonReader(leftJoy_, SMALL_TURN_BUTTON_PORT);
 	arcadeDriveButton_ = new ButtonReader(operatorJoy_, ARCADE_DRIVE_BUTTON_PORT); 
-	quickTurnButton_ = new ButtonReader(rightJoy_, QUICK_TURN_BUTTON_PORT); //USED
+	quickTurnButton_ = new ButtonReader(rightJoy_, 4); //FOR WAIT FOR BUTTON COMMAND
 	alignTapeButton_ = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
 	

@@ -153,7 +153,8 @@ void PivotCommand::Reset() {
 	// disable PID
 	if (pivotPID_ != NULL) {
 		pivotPID_->Disable();
-		delete(pivotPID_);
+		delete pivotPID_;
+		//delete talonOutput_;
 		pivotPID_ = NULL;
 		printf("Disabling pivotcommand %f \n", robot_->GetNavXYaw());
 

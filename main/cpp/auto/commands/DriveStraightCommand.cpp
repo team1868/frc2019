@@ -198,7 +198,7 @@ void DriveStraightCommand::Reset() {
 	if (anglePID_ != NULL) {
 		anglePID_->Disable();
 
-		delete(anglePID_);
+		delete anglePID_;
 
 		anglePID_ = NULL;
 
@@ -209,7 +209,7 @@ void DriveStraightCommand::Reset() {
 	if (distancePID_ != NULL) {
 		distancePID_->Disable();
 
-		delete(distancePID_);
+		delete distancePID_;
 
 		distancePID_ = NULL;
 //		printf("Reset Distance PID");

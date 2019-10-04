@@ -1,11 +1,12 @@
 #include "../../../include/auto/modes/AutoMode.h"
 
-AutoMode::AutoMode(RobotModel* robot) {
+AutoMode::AutoMode(RobotModel* robot, ControlBoard *controlBoard) {
     printf("constructing automode\n");
 
         firstCommand_ = NULL;
 		currentCommand_ = NULL;
 		robot_ = robot;
+		humanControl_ = controlBoard;
 		navX_ = robot_->GetNavXSource();
 		talonEncoder_ = new TalonEncoderPIDSource(robot_);
 		angleOutput_ = new AnglePIDOutput();
@@ -21,7 +22,7 @@ void AutoMode:: QueueFromString(string autoSequence) {
 		currentCommand_ = NULL;
 		AutoCommand *lastCommand = NULL;
 		iss.str (autoSequence);
-		cout << string ("autosequence" ) + autoSequence << endl;
+		cout << string ("autosequence ") + autoSequence << endl;
 		breakDesired_ = false;
 		currAngle_ = 0.0;//robot_->GetNavXYaw();
 
@@ -30,14 +31,21 @@ void AutoMode:: QueueFromString(string autoSequence) {
 		}
 
 		//printf("Auto sequence: %s", autoSequence.c_str());
+		
+		AutoCommand* tempCommand = NULL;
+		char command;
 
-		while (!iss.eof() && !breakDesired_) {
-			AutoCommand* tempCommand = NULL;
-			char command;
-			iss >> command;
+		while ((iss >> command) && !breakDesired_) {
+
+			//iss >> command;
 			printf("Command: %c, ", command);
 
 			tempCommand = GetStringCommand(command);
+
+			if(tempCommand==NULL){
+				printf("ERROR: tempCommand is null in autoMode queuing");
+				break;
+			}
 
 			if (firstCommand_ == NULL) {
 				firstCommand_ = tempCommand;
@@ -46,9 +54,13 @@ void AutoMode:: QueueFromString(string autoSequence) {
 			} else {
 				lastCommand->SetNextCommand(tempCommand);
 				lastCommand = lastCommand->GetNextCommand();
+				if(lastCommand == NULL){
+					breakDesired_ = true;
+					printf("last command was NULL\n"); //this code may or may not be necessary
+				}
 			}
 		}
-		iss.clear();
+		iss.clear(); //might be this?
 }
 
 AutoCommand* AutoMode::GetStringCommand(char command) {
@@ -66,7 +78,7 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 			charA = NULL;
 			iss >> charA;
 			while (charA != ']') {
-				printf("bleh %c\n", charA);
+				printf("in parallel %c\n", charA);
 				AutoCommand* memeCommand  = GetStringCommand(charA);
 
 				commandA->SetNextCommand(memeCommand);
@@ -170,6 +182,14 @@ AutoCommand* AutoMode::GetStringCommand(char command) {
 				tempCommand = NULL;
 			} else {
 				tempCommand = new CargoWristCommand(robot_);
+			}
+			break;
+		case 'p':
+			printf("Wait for button command\n");
+			if(IsFailed(command)){
+				tempCommand = NULL;
+			} else {
+				tempCommand = new WaitForButtonCommand(humanControl_);
 			}
 			break;
 		case 's':

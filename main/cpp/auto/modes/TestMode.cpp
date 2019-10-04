@@ -1,6 +1,6 @@
 #include "../../../include/auto/modes/TestMode.h"
 
-TestMode::TestMode(RobotModel *robot) : AutoMode(robot) {
+TestMode::TestMode(RobotModel *robot, ControlBoard *controlBoard) : AutoMode(robot, controlBoard) {
     printf("in test mode constructor \n");
 }
 

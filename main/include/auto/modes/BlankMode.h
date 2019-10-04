@@ -5,7 +5,7 @@
 
 class BlankMode : public AutoMode {
 public:
-	BlankMode(RobotModel *robot);
+	BlankMode(RobotModel *robot, ControlBoard *controlBoard);
 	void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) override;
 	void Init();
 	virtual ~BlankMode();

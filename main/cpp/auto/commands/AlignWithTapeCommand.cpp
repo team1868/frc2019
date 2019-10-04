@@ -39,9 +39,9 @@ void AlignWithTapeCommand::Init() {
     context_ = new zmq::context_t(1);
 
     try {
-		printf("in try lol homie\n");
+		printf("in try connect to jetson\n");
         subscriber_ = new zmq::socket_t(*context_, ZMQ_SUB);
-        subscriber_->connect("tcp://10.18.68.12:5808"); // TODO CHECK ID
+        subscriber_->connect("tcp://10.18.68.12:5808");
 		printf("connected to socket\n");
         int confl = 1;
 		subscriber_->setsockopt(ZMQ_CONFLATE, &confl, sizeof(confl));
@@ -167,8 +167,8 @@ void AlignWithTapeCommand::Update(double currTimeSec, double deltaTimeSec) {
 			}
 			break;
 		default:
-			printf("default in align tape tals;dkjf;laskdfj;ak\n");
-			break;
+			printf("default in align tape\n");
+			break; //unecessary?
 	}
 	currState_ = nextState_;
 	//printf("moving to next state in align with tape\n");
@@ -207,7 +207,7 @@ void AlignWithTapeCommand::ReadFromJetson() {
 	}
 	
 	contents = contents.c_str();
-	if(!contents.empty()) {
+	if(!contents.empty() && result.size() > 1) {
 		desiredDeltaAngle_ = stod(result.at(0));
 		desiredDistance_ = stod(result.at(1));
 	} else {
@@ -215,7 +215,7 @@ void AlignWithTapeCommand::ReadFromJetson() {
 		printf("contents empty in alignwithtape\n");
 	}
 
-	if(result.size() > 0) {
+	if(result.size() > 1) {
 		desiredDeltaAngle_ = stod(result.at(0));
 		desiredDistance_ = stod(result.at(1))-1.5;//1.6;
 	} else {

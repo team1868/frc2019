@@ -22,6 +22,10 @@ void AutoController::Init(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl
 	} else {
 		autoMode->CreateQueue(pos, hablvl);
 		printf("done making queue\n");
+		if(autoMode->IsDone()){
+			printf("auto mode is done\n");
+			return;
+		}
 		autoMode->Init();
 		printf("init finished\n");
 	}

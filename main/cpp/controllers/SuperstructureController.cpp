@@ -286,7 +286,7 @@ void SuperstructureController::HabEncoderTest() {
 
 void SuperstructureController::LightSensorTest(){
     currLightSensorStatus_ = robot_->GetLightSensorStatus();
-    printf("Light Sensor Value is the following %d\n", currLightSensorStatus_);
+    //printf("Light Sensor Value is the following %d\n", currLightSensorStatus_);
 }
 
 void SuperstructureController::RefreshShuffleboard() {
@@ -317,7 +317,7 @@ void SuperstructureController::HatchWristControllerUpdate(double newAngle_, doub
 
 bool SuperstructureController::CargoInIntake(){
     currLightSensorStatus_ = robot_->GetLightSensorStatus();
-    printf("Light Sensor Value is the following %d\n", currLightSensorStatus_);
+    //printf("Light Sensor Value is the following %d\n", currLightSensorStatus_);
     return currLightSensorStatus_;
 }
 

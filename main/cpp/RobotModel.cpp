@@ -173,7 +173,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   rightDriveEncoder_->SetReverseDirection(true); // WAS FALSE
   printf("Distance per pulse: %f", (LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
 
-  SetLowGear();
+  //SetLowGear();
   StartCompressor();
   ResetDriveEncoders();
 

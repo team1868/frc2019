@@ -72,7 +72,6 @@ class Robot : public frc::TimedRobot {
   bool aligningTape_;
   //double autoStartTime;
 
-  bool sandstormOverride_;
   double autoJoyVal_;
 
   AutoController *autoController_;

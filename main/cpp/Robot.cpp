@@ -56,8 +56,6 @@ void Robot::RobotInit()  {
 
   superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
   //talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
-  autoController_ = new AutoController();
-  autoMode_ = NULL;
 
   habLimitSwitch_ = new DigitalInput(4);
 
@@ -65,7 +63,6 @@ void Robot::RobotInit()  {
   testHabPiston = new DoubleSolenoid(0,5,2);
   testHabPiston->Set(DoubleSolenoid::kReverse);
 
-  sandstormOverride_ = false;
   autoJoyVal_ = 0.0;
 
   robot_->SetLowGear();
@@ -122,22 +119,45 @@ void Robot::RobotInit()  {
   // autoSendableChooser_.AddOption("14:2R,Rfront,H", "d 14.5 t -90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t 90.0 d 7.0 t 0.0 d -8.0 t 10.0 w b 0"); //UNTESTED sketch
   // autoSendableChooser_.AddOption("8:other", "");
 
-  //Houston field code TODO
+  // //Houston field code TODO
+  // autoSendableChooser_.SetDefaultOption("0: blank", "h 0 b 0");
+  // autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.817 a 1 b 1 s 0.1 h 1 d -0.5");
+  // autoSendableChooser_.AddOption("2:2L,Lfront,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
+  // autoSendableChooser_.AddOption("3:2R,Rfront,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
+  // autoSendableChooser_.AddOption("4:2L,Lship,H", "t -1.0 d 18.97 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  // autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.016 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  // autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.016 t -90.0 ^");
+  // autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.016 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  // // autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.85 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 t -180.0 b 1 a 0");
+  // autoSendableChooser_.AddOption("10:2L,Lship,HC", "t -1.0 d 18.8 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  // // autoSendableChooser_.AddOption("11:2R,Rship,1.2H", "t 1.0 d 19.85 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t 164.0 d 18.2 t 180.0 b 1 a 0"); //flipped of 9
+  // autoSendableChooser_.AddOption("12:2R,Rship,HC", "t 1.0 d 18.8 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  // // autoSendableChooser_.AddOption("13:2L,Lfront,H", "d 14.5 t 90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t -90.0 d 7.0 t 0.0 d -8.0 t -10.0 w b 0"); //UNTESTED sketch
+  // // autoSendableChooser_.AddOption("14:2R,Rfront,H", "d 14.5 t -90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t 90.0 d 7.0 t 0.0 d -8.0 t 10.0 w b 0"); //UNTESTED sketch
+  
+
+  //--------------------CHEZY-----------------------------------------------
   autoSendableChooser_.SetDefaultOption("0: blank", "h 0 b 0");
-  autoSendableChooser_.AddOption("1:1S,H", "h 0 d 10.817 a 1 b 1 s 0.1 h 1 d -0.5");
-  autoSendableChooser_.AddOption("2:2L,Lfront,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("3:2R,Rfront,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("4:2L,Lship,H", "t -1.0 d 18.97 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
-  autoSendableChooser_.AddOption("5:2L,Lship,1.5C", "h 0 d 19.016 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
-  autoSendableChooser_.AddOption("6:2R,Rship,1C", "h 0 d 19.016 t -90.0 ^");
-  autoSendableChooser_.AddOption("7:2R,Rship,1.5C", "h 0 d 19.016 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
-  // autoSendableChooser_.AddOption("9:2L,Lship,1.2H", "t -1.0 d 19.85 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t -164.0 d 18.2 t -180.0 b 1 a 0");
-  autoSendableChooser_.AddOption("10:2L,Lship,HC", "t -1.0 d 18.8 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
-  // autoSendableChooser_.AddOption("11:2R,Rship,1.2H", "t 1.0 d 19.85 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4 h 0 t 164.0 d 18.2 t 180.0 b 1 a 0"); //flipped of 9
-  autoSendableChooser_.AddOption("12:2R,Rship,HC", "t 1.0 d 18.8 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
-  // autoSendableChooser_.AddOption("13:2L,Lfront,H", "d 14.5 t 90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t -90.0 d 7.0 t 0.0 d -8.0 t -10.0 w b 0"); //UNTESTED sketch
-  // autoSendableChooser_.AddOption("14:2R,Rfront,H", "d 14.5 t -90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t 90.0 d 7.0 t 0.0 d -8.0 t 10.0 w b 0"); //UNTESTED sketch
-  autoSendableChooser_.AddOption("8:other", "");  
+  autoSendableChooser_.AddOption("R1:1S,H", "h 0 d 10.85 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("R2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("R3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("R4:2L,Lsh,H", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("R5:2L,Lsh,1.5C", "h 0 d 18.55 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("R6:2R,Rsh,1C", "h 0 d 18.55 t -90.0 ^ h 0");
+  autoSendableChooser_.AddOption("R7:2R,Rsh,1.5C", "h 0 d 18.55 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("R10:2L,Lsh,HC", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("R12:2R,Rsh,HC", "t 1.0 d 18.55 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  
+  autoSendableChooser_.AddOption("B1:1S,H", "h 0 d 10.817 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("B2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("B3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("B4:2L,Lsh,H", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("B5:2L,Lsh,1.5C", "t -0.5 d 19.35 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("B6:2R,Rsh,1C", "h 0 d 19.35 t -90.0 ^ h 0");
+  autoSendableChooser_.AddOption("B7:2R,Rsh,1.5C", "h 0 d 19.35 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("B10:2L,Lsh,HC", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("B12:2R,Rsh,HC", "t 1.0 d 19.35 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  autoSendableChooser_.AddOption("8:other", "h 0");  
 
   //TODO MOVE TO ROBOT MODEL
 	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
@@ -158,28 +178,9 @@ void Robot::RobotInit()  {
   sparkEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("hab encoder val", 0.0).GetEntry();
   
   //autoChooserType_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("SendableChooser", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  /*
-  auto0_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("0: blank", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto1_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("1: 1S,H", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto2_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("2:2L,Lfront,H", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto3_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("3:2R,Rfront,H", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto4_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("4:2L,Lship,C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto5_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("5:2L,Lship,1.5C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto6_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("6:2R,Rship,1C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto7_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("7:2R,Rship,1.5C", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  auto8_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  */
-  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0 b 0").GetEntry();
-  // auto0Change_ = auto0_.GetLastChange();
-  // auto1Change_ = auto1_.GetLastChange();
-  // auto2Change_ = auto2_.GetLastChange();
-  // auto3Change_ = auto3_.GetLastChange();
-  // auto4Change_ = auto4_.GetLastChange();
-  // auto5Change_ = auto5_.GetLastChange();
-  // auto6Change_ = auto6_.GetLastChange();
-  // auto7Change_ = auto7_.GetLastChange();
-  // auto8Change_ = auto8_.GetLastChange();
   
+  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0").GetEntry();
+
 }
 
 /**
@@ -207,102 +208,9 @@ void Robot::RobotPeriodic() {
   SmartDashboard::PutNumber("right encoder scale", robot_->GetRightEncodingScale());
   SmartDashboard::PutBoolean("is high gear?", robot_->IsHighGear());
   robot_->PrintState();
-  //auto0_.GetLastChange();
-  /*
-  if(auto0_.GetLastChange() != auto0Change_ && auto0_.GetBoolean(true)){
-    auto1_.SetBoolean(false);
-    auto2_.SetBoolean(false);
-    auto3_.SetBoolean(false);
-    auto4_.SetBoolean(false);
-    auto5_.SetBoolean(false);
-    auto6_.SetBoolean(false);
-    auto7_.SetBoolean(false);
-    auto8_.SetBoolean(false);
-    auto0Change_ = auto0_.GetLastChange();
-  } else if (auto1_.GetLastChange() != auto1Change_ && auto1_.GetBoolean(true)){
-    auto0_.SetBoolean(false);
-    auto2_.SetBoolean(false);
-    auto3_.SetBoolean(false);
-    auto4_.SetBoolean(false);
-    auto5_.SetBoolean(false);
-    auto6_.SetBoolean(false);
-    auto7_.SetBoolean(false);
-    auto8_.SetBoolean(false);
-    auto1Change_ = auto1_.GetLastChange();
-  } else if (auto2_.GetLastChange() != auto2Change_ && auto2_.GetBoolean(true)){
-    auto1_.SetBoolean(false);
-    auto0_.SetBoolean(false);
-    auto3_.SetBoolean(false);
-    auto4_.SetBoolean(false);
-    auto5_.SetBoolean(false);
-    auto6_.SetBoolean(false);
-    auto7_.SetBoolean(false);
-    auto8_.SetBoolean(false);
-    auto2Change_ = auto2_.GetLastChange();
-  } else if (auto3_.GetLastChange() != auto3Change_ && auto3_.GetBoolean(true)){
-    auto1_.SetBoolean(false);
-    auto0_.SetBoolean(false);
-    auto2_.SetBoolean(false);
-    auto4_.SetBoolean(false);
-    auto5_.SetBoolean(false);
-    auto6_.SetBoolean(false);
-    auto7_.SetBoolean(false);
-    auto8_.SetBoolean(false);
-    auto3Change_ = auto3_.GetLastChange();
-  } else if (auto4_.GetLastChange() != auto4Change_ && auto4_.GetBoolean(true)){
-    auto1_.SetBoolean(false);
-    auto2_.SetBoolean(false);
-    auto3_.SetBoolean(false);
-    auto0_.SetBoolean(false);
-    auto5_.SetBoolean(false);
-    auto6_.SetBoolean(false);
-    auto7_.SetBoolean(false);
-    auto8_.SetBoolean(false);
-    auto4Change_ = auto4_.GetLastChange();
-  } else if (auto5_.GetLastChange() != auto5Change_ && auto5_.GetBoolean(true)){
-    auto1_.SetBoolean(false);
-    auto2_.SetBoolean(false);
-    auto3_.SetBoolean(false);
-    auto4_.SetBoolean(false);
-    auto0_.SetBoolean(false);
-    auto6_.SetBoolean(false);
-    auto7_.SetBoolean(false);
-    auto8_.SetBoolean(false);
-    auto5Change_ = auto5_.GetLastChange();
-  } else if (auto6_.GetLastChange() != auto6Change_ && auto6_.GetBoolean(true)){
-    auto1_.SetBoolean(false);
-    auto2_.SetBoolean(false);
-    auto3_.SetBoolean(false);
-    auto4_.SetBoolean(false);
-    auto5_.SetBoolean(false);
-    auto0_.SetBoolean(false);
-    auto7_.SetBoolean(false);
-    auto8_.SetBoolean(false);
-    auto6Change_ = auto6_.GetLastChange();
-  } else if (auto7_.GetLastChange() != auto7Change_ && auto7_.GetBoolean(true)){
-    auto1_.SetBoolean(false);
-    auto2_.SetBoolean(false);
-    auto3_.SetBoolean(false);
-    auto4_.SetBoolean(false);
-    auto5_.SetBoolean(false);
-    auto6_.SetBoolean(false);
-    auto0_.SetBoolean(false);
-    auto8_.SetBoolean(false);
-    auto7Change_ = auto7_.GetLastChange();
-  } else if (auto8_.GetLastChange() != auto8Change_ && auto8_.GetBoolean(true)){
-    auto1_.SetBoolean(false);
-    auto2_.SetBoolean(false);
-    auto3_.SetBoolean(false);
-    auto4_.SetBoolean(false);
-    auto5_.SetBoolean(false);
-    auto6_.SetBoolean(false);
-    auto7_.SetBoolean(false);
-    auto0_.SetBoolean(false);
-    auto8Change_ = auto8_.GetLastChange();
-  }
-  
+
+  //printf("----------------------------%s\n", autoSendableChooser_.GetSelected().c_str());
   // std::cout << "INFORMATION:            " << autoSendableChooser_.GetSelected() << std::endl;
-  */
 }
 
 /**
@@ -324,8 +232,14 @@ void Robot::AutonomousInit() {
   //   delete autoMode_;
   //   autoMode_ = NULL;
   // }
-
   printf("IN AUTONOMOUS \n");
+  //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
+  
+  
+  autoController_ = new AutoController();
+  autoMode_ = NULL;
+  autoJoyVal_ = 0.0;
+  
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
   robot_->SetLowGear(); //faster, for 2 hatch, so cargo does not fall out
@@ -398,44 +312,29 @@ void Robot::AutonomousInit() {
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
   //if(autoChooserType_.GetBoolean(true)){
-    printf("auto sequence is %s from autoChooser (which is being used)\n", autoSendableChooser_.GetSelected().c_str());
-    if(autoSendableChooser_.GetSelected()!=""){
-      robot_->SetTestSequence(autoSendableChooser_.GetSelected());
-    } else {
-      robot_->SetTestSequence(auto8Val_.GetString("h 0 b 0"));
-    }
-    printf("done choosing auto sequence\n");
-  /*} else {
-    if(auto0_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0");
-    } else if(auto1_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 10.9");
-    } else if(auto2_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.8 t 0.0 d 2.3");
-    } else if(auto3_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.8 t 0.0 d 2.3");
-    } else if(auto4_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^");
-    } else if(auto5_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");
-    } else if(auto6_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^");
-    } else if(auto7_.GetBoolean(false)){
-      robot_->SetTestSequence("h 0 d 19.1 t -90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t -90.0");
-    } else if(auto8_.GetBoolean(false)){
-      robot_->SetTestSequence(auto8Val_.GetString("h 0"));
-      printf("WARNING: In Auto Init.  using other option in auto, string not checked and confirmed to be valid");
-    } else {
-      printf("ERROR: In Auto Init.  not using sendablechooser and none of the auto switches are true.  Continuing to teleop.");
-      sandstormAuto_ = false;
-    }*/
+  printf("auto sequence is %s from autoChooser (which is being used)\n", autoSendableChooser_.GetSelected().c_str());
+  if(autoSendableChooser_.GetSelected()=="h 0"){ //auto 8: other
+    printf("using auto8 which is %s\n", auto8Val_.GetString("h 0").c_str());
+    robot_->SetTestSequence(auto8Val_.GetString("h 0"));
+  } else { //valid chosen auto
+    robot_->SetTestSequence(autoSendableChooser_.GetSelected());
+  }
+  // if(autoSendableChooser_.GetSelected()!=""){
+  //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
+  // } else if(autoSendableChooser_.GetSelected()){
+  //   printf("WARNING: could not get auto test sequence!  Set auto to h 0 b 0\n");
+  //   robot_->SetTestSequence(auto8Val_.GetString("h 0 b 0"));
+  // }
+  printf("done choosing auto sequence\n");  
+  
   // if(autoChooserType_.GetBoolean(true)){
   //   printf("selected auto: %s\n", autoSendableChooser_.GetSelected());
   //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
   // }
 
   //robot_->ZeroNavXYaw();
-  autoMode_ = new TestMode(robot_);
+  autoMode_ = new TestMode(robot_, humanControl_);
+  printf("STATS:  %d %d\n", autoMode_==NULL, autoController_==NULL);
   //robot_->ZeroNavXYaw();
   autoController_->SetAutonomousMode(autoMode_);
   autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1);
@@ -466,8 +365,11 @@ void Robot::AutonomousPeriodic() {
   //if (!curve_->IsDone()) curve_->Update(currTimeSec_, deltaTimeSec_);
   // if(!ellipse_->IsDone()) ellipse_->Update(currTimeSec_, deltaTimeSec_);
   //printf("is auto mode done %d\n\n", autoMode_->IsDone());
+
   if(sandstormAuto_){
-    printf("enter sandstorm auto");
+    printf("enter sandstorm auto\n");
+    printf("STATS:  %d %d\n", autoMode_==NULL, autoController_==NULL);
+
     humanControl_->ReadControls();
     autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
     autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
@@ -480,8 +382,8 @@ void Robot::AutonomousPeriodic() {
       sandstormAuto_ = false;
       TeleopInit();
     } else if (!autoController_->IsDone()) {
+      printf("updating auto controller\n");
       autoController_->Update(currTimeSec_, deltaTimeSec_);
-      printf("updating auto controller");
     }
   } else {
     TeleopPeriodic();
@@ -510,7 +412,7 @@ void Robot::TeleopInit() {
   aligningTape_ = false;
   navX_ = new NavXPIDSource(robot_);
   curHabPowerDeploy_ = testerPowerNet_.GetDouble(0.6);
-  habStartTime_ = robot_->GetTime();
+  habStartTime_ = -1.0;
   wasJustDeployingHab_ = false;
   wasJustRaisingHab_ = false;
 }
@@ -524,7 +426,7 @@ void Robot::TeleopPeriodic() {
     aligningTape_ = true;
     aCommand = new AlignWithTapeCommand(robot_, navX_, talonEncoderSource_, false);
     aCommand->Init();
-    printf("initing lol\n");
+    printf("initing teleop tape align\n");
     // robot_->SetTestSequence("= h 0"); //assuming alignwithtape handles everything including outtake
 
     // autoMode_ = new TestMode(robot_);
@@ -537,21 +439,20 @@ void Robot::TeleopPeriodic() {
     humanControl_->ReadControls();
     autoJoyVal_ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);
     autoJoyVal_ = driveController_->HandleDeadband(autoJoyVal_, driveController_->GetThrustDeadband()); //TODO certain want this deadband?
-    if(autoJoyVal_ != 0.0){ //TODO mild sketch, check deadbands more
-      printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband, not == 0\n\n",autoJoyVal_);
-      delete(aCommand);
+    if(autoJoyVal_ != 0.0 || aCommand == NULL){ //TODO mild sketch, check deadbands more
+      printf("WARNING: EXITED align.  autoJoyVal_ is %f after deadband or aCommand is NULL %d\n\n",autoJoyVal_, aCommand==NULL);
+      delete aCommand;
       aCommand = NULL;
       aligningTape_ = false;
     } else if(!aCommand->IsDone()){
       aCommand->Update(currTimeSec_, deltaTimeSec_);
-      printf("updated a command\n");
+      printf("updated align tape command\n");
     } else { //isDone() is true
-      delete(aCommand);
+      delete aCommand;
       aCommand = NULL;
       aligningTape_ = false;
-      printf("destroyed a command\n");
+      printf("destroyed align tape command\n");
     }
-
     return;
   }
 
@@ -568,6 +469,12 @@ void Robot::TeleopPeriodic() {
   if(humanControl_->GetTestDesired() && habLimitSwitch_->Get()){ //NOTE IMPORTANT TODO if delete, reenable the one commented out in superstructure and add a backwards //habdeploy
     //printf("\n\n\n hab limit is %f \n\n", habLimitSwitch_->Get());
     // robot_->SetHabBrake(false);
+    if(!wasJustDeployingHab_){
+      habStartTime_ = robot_->GetTime();
+    } else if(robot_->GetTime()-habStartTime_ >= 0.5){
+      robot_->SetHabBrake(false);      
+    }
+
     if (robot_->GetHabEncoderValue() >= 202.0) { //5 val slippage, so ends at val 207
       // printf("high enough...stopping hab retract\n");
       robot_->SetHabMotorOutput(0.0);
@@ -613,6 +520,10 @@ void Robot::TeleopPeriodic() {
     curHabPowerDeploy_ = 0.0;
     wasJustRaisingHab_ = false;
     wasJustDeployingHab_ = false;
+
+    //if(habStartTime_ > 0.0){ //sketch code, change this to using wasJust
+    habStartTime_ = -1.0;
+    //}
   }
 
   leftEncoderNet_.SetDouble(robot_->GetLeftEncoderValue());
