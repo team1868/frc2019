@@ -32,36 +32,30 @@ void Robot::RobotInit()  {
 
   frc::Shuffleboard::GetTab("AUTO CHOOSER");
 
-  //initialize RobotModel
+  // initialize RobotModel
   robot_ = new RobotModel();
   robot_->CreateNavX();
 
   robot_->ZeroNavXYaw();
-  //robot_->CalibrateGyro();
-  //robot_->ResetGyro();
 
   aligningTape_ = false;
 
-  //NOTE: POSSIBLE ERROR bc making multiple sources teleop vs auto
-  navX_ = robot_->GetNavXSource();//new NavXPIDSource(robot_);
-  //TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
+  // NOTE: POSSIBLE ERROR bc making multiple sources teleop vs auto
+  navX_ = robot_->GetNavXSource();
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
-  //DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
   
   
-  //initialize controllers
+  // initialize controllers
   humanControl_ = new ControlBoard();
   driveController_ = new DriveController(robot_, humanControl_);
   guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navX_, anglePIDOutput);
 
-  superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
-  //talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+  superstructureController_ = new SuperstructureController(robot_, humanControl_);
   autoController_ = new AutoController();
   autoMode_ = NULL;
 
   habLimitSwitch_ = new DigitalInput(4);
 
-  // testHabPiston = new DoubleSolenoid(0, 7, 1);
   testHabPiston = new DoubleSolenoid(0,5,2);
   testHabPiston->Set(DoubleSolenoid::kReverse);
 
@@ -69,12 +63,12 @@ void Robot::RobotInit()  {
   autoJoyVal_ = 0.0;
 
   robot_->SetLowGear();
-  robot_->ResetDriveEncoders(); //needed?
+  robot_->ResetDriveEncoders();
 
 
   ResetTimerVariables();
   // Wait(1.0);
-  // NOTE camera commeted out
+  // NOTE camera commented out
   // cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
   // camera.SetResolution(320,240);
   //Wait(1.0);
@@ -182,7 +176,7 @@ void Robot::RobotInit()  {
   
 }
 
-/**
+/*
  * This function is called every robot packet, no matter the mode. Use
  * this for items like diagnostics that you want ran during disabled,
  * autonomous, teleoperated and test.
@@ -305,7 +299,7 @@ void Robot::RobotPeriodic() {
   */
 }
 
-/**
+/*
  * This autonomous (along with the chooser code above) shows how to select
  * between different autonomous modes using the dashboard. The sendable chooser
  * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
@@ -331,8 +325,8 @@ void Robot::AutonomousInit() {
   robot_->SetLowGear(); //faster, for 2 hatch, so cargo does not fall out
   robot_->EngageHook();
 
-  //TODO BAD FORM but whatev
-  //NavXPIDSource *navXSource = new NavXPIDSource(robot_);
+  // TODO BAD FORM but whateva
+  // NavXPIDSource *navXSource = new NavXPIDSource(robot_);
   TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
@@ -342,7 +336,7 @@ void Robot::AutonomousInit() {
 
 
   // tuning pid
-  //  robot_->SetTestSequence("h 0 t -90.0 s 2.0 t 0.0");
+  // robot_->SetTestSequence("h 0 t -90.0 s 2.0 t 0.0");
   // robot_->SetTestSequence("h 0 t 8.0");
 
   // really sketch needs fixing:
@@ -353,7 +347,7 @@ void Robot::AutonomousInit() {
   // hatches:
   // robot_->SetTestSequence("h 0 d 10.9"); //  b 1 s 0.4 h 1 straight forward hatch deploy
   // robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.9 t 0.0 d 2.3"); // left hab 2 to left front hatch deploy included offset WORKS actually go back to 2.8
-  //robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.9 t 0.0 d 2.3"); // right hab 2 to right front hatch deploy included offset
+  // robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.9 t 0.0 d 2.3"); // right hab 2 to right front hatch deploy included offset
 
   // cargo:
   // left:
@@ -362,7 +356,7 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // right:
   // robot_->SetTestSequence("h 0 d 15.8 t -90.0"); // chargo ship from hab 1 near cargo shot right
-  //robot_->SetTestSequence("h 0 d 19.0 t -90.0"); // cargo ship from hab 2 near cargo shot right
+  // robot_->SetTestSequence("h 0 d 19.0 t -90.0"); // cargo ship from hab 2 near cargo shot right
   // robot_->SetTestSequence("h 0 d 18.8 t -90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t -90.0");  // 1.5 ish cargo shoot left hab 2
 
 
@@ -392,12 +386,12 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 d 16.1 t 90.0"); // chargo ship from hab 1 near cargo shot left
   // robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // robot_->SetTestSequence(autoModeString);
-  //robot_->SetTestSequence("a h 0");
+  // robot_->SetTestSequence("a h 0");
 
   // robot_->SetTestSequence("h 0 t -90.0");
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
-  //if(autoChooserType_.GetBoolean(true)){
+  // if(autoChooserType_.GetBoolean(true)){
     printf("auto sequence is %s from autoChooser (which is being used)\n", autoSendableChooser_.GetSelected().c_str());
     if(autoSendableChooser_.GetSelected()!=""){
       robot_->SetTestSequence(autoSendableChooser_.GetSelected());
@@ -434,9 +428,9 @@ void Robot::AutonomousInit() {
   //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
   // }
 
-  //robot_->ZeroNavXYaw();
+  // robot_->ZeroNavXYaw();
   autoMode_ = new TestMode(robot_);
-  //robot_->ZeroNavXYaw();
+  // robot_->ZeroNavXYaw();
   autoController_->SetAutonomousMode(autoMode_);
   autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1);
 

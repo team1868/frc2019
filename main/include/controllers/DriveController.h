@@ -21,15 +21,10 @@
 
 class DriveController {
 public:
-	/**
-	 * Initializes all variables
-	 * takes in RobotModel and ControlBoard
-	 */
+	// initializes all variables
+	// takes in RobotModel and ControlBoard
 	DriveController(RobotModel *robot, ControlBoard *humanControl);
 
-	/**
-	 * Destructor
-	 */
 	virtual ~DriveController();
 
 	void DriveStraightInit();
@@ -39,52 +34,36 @@ public:
 
 	void Update(double currTimeSec, double deltaTimeSec);
 
-	/**
-	 * Checks if align with cube command is done (if we use)
-	 */
+	// checks if align with cube command is done (if we use)
 	bool IsDone();
 
 
-	/**
-	 * Adjusts joystick value if too small
-	 */
+	// adjusts joystick value if too small
 	double HandleDeadband(double value, double deadband);
 	double GetThrustDeadband();
 	double GetRotateDeadband();
 
 
-	/**
-	 * Prints direction, state, angle, etc.
-	 */
+	// prints direction, state, angle, etc.
 	void PrintDriveValues();
 
 	virtual void Enable();
 	virtual void Disable();
 
 protected:
-	/**
-	 * Drives robot in Arcade
-	 */
+	// drives robot in Arcade
 	virtual void ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity);
 
-	/**
-	 * Drives robot in Tank
-	 */
+	// drives robot in Tank
 	void TankDrive(double myLeft, double myRight);
 
-	/**
-	 * Quick Turn
-	 */
+	// quick turn
 	void QuickTurn(double myRight, double turnConstant);
 
-	/**
-	 * Returns -1 for reverse drive, 1 otherwise
-	 */
+	// returns -1 for reverse drive, 1 otherwise
 	int GetDriveDirection();
 
-	/**
-	 * Adjusts sensitivity for turn
-	 */
+	// adjusts sensitivity for turn
 	double GetCubicAdjustment(double value, double adjustmentConstant);
 
 	RobotModel *robot_;

@@ -1,3 +1,10 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
 #pragma once
 
 #ifndef SRC_CONTROLLERS_SUPERSTRUCTURECONTROLLER_H_
@@ -9,6 +16,8 @@
 
 class SuperstructureController {
 public:
+	// initializes all variables
+	// takes in RobotModel and ControlBoard
 	SuperstructureController(RobotModel *myRobot, ControlBoard *myHumanControl);
 
 	void Reset();
@@ -16,8 +25,6 @@ public:
 	void Update(double currTimeSec, double deltaTimeSec);
 
 	void SetOutputs();
-
-	void HatchWristAngleTest();
 
 	void HabEncoderTest();
 
@@ -36,22 +43,22 @@ public:
 	virtual ~SuperstructureController();
 
 	enum SuperstructureState {
-		kInit, kIdle//, kHabDeploy 
+		kInit, kIdle
 	};
 
 private:
 	RobotModel *robot_;
 	ControlBoard *humanControl_;
 
-	//PID for cargo shooter into the cargo ship
+	// PID for cargo shooter into the cargo ship
 	PIDController *cargoFlyPID_;
-	//PID for cargo shooter into the rocket ship
+	// PID for cargo shooter into the rocket ship
 	PIDController *rocketFlyPID_;
-	//PID for hatch wrist motor controller
+	// PID for hatch wrist motor controller
 	PIDController *hatchWristPID_;
 
 	double desiredFlywheelVelocCargo_, desiredFlywheelVelocRocket_, cargoIntakeOutput_, flywheelStartTime_;
-	double desiredHatchWristAngle_, currHatchWristAngle_, ratioFlywheelOutput_;
+	double ratioFlywheelOutput_;
 	bool flywheelStarted_, cargoIntakeWristEngaged_, hatchOuttakeEngaged_, hatchWristNewAngle_;
 	double currHabEncoderVal_;
 	int habRailsEncoderVal_;

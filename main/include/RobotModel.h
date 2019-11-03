@@ -86,26 +86,26 @@ class RobotModel {
   void PrintState();
 
   //---------------DRIVE------------------
-  WPI_TalonSRX *GetTalon(Talons talon); //TODO
+  WPI_TalonSRX *GetTalon(Talons talon); // TODO
 
   bool CollisionDetected();
 
   double GetWheelSpeed(Wheels wheel);
 
-  void SetDriveValues(Wheels wheel, double value); //TODO
+  void SetDriveValues(Wheels wheel, double value); // TODO
   void SetDriveValues(double leftValue, double rightValue);
-  void SetTalonBrakeMode(); //TODO
-  void SetTalonCoastMode(); //TODO
+  void SetTalonBrakeMode(); // TODO
+  void SetTalonCoastMode(); // TODO
 
-  void SetHighGear(); //TODO
-  void SetLowGear(); //TODO
+  void SetHighGear(); // TODO
+  void SetLowGear(); // TODO
   bool IsHighGear();
 
-  double GetLeftEncoderValue(); //TODO
-  double GetRightEncoderValue(); //TODO
+  double GetLeftEncoderValue(); // TODO
+  double GetRightEncoderValue(); // TODO
 
-  double GetLeftDistance(); //TODO
-  double GetRightDistance(); //TODO
+  double GetLeftDistance(); // TODO
+  double GetRightDistance(); // TODO
 
   double GetLeftDistancePerPulse();
   double GetRightDistancePerPulse();
@@ -113,21 +113,19 @@ class RobotModel {
   double GetLeftEncodingScale();
   double GetRightEncodingScale();
 
-  bool GetLeftEncoderStopped(); //TODO
-  bool GetRightEncoderStopped(); //TODO
+  bool GetLeftEncoderStopped(); // TODO
+  bool GetRightEncoderStopped(); // TODO
 
   void ResetDriveEncoders(); //TODO
   
-  double GetNavXYaw(); //TODO
-  double GetNavXPitch(); //TODO
-  double GetNavXRoll(); //TODO
+  double GetNavXYaw(); // TODO
+  double GetNavXPitch(); // TODO
+  double GetNavXRoll(); // TODO
   
-  void ZeroNavXYaw(); //TODO
+  void ZeroNavXYaw(); // TODO
   
   //---------------SUPERSTRUCTURE------------------
-  void ResetGyro();
-  void CalibrateGyro();
-  double GetGyroAngle();
+
   int GetHabEncoderValue();
   bool GetLightSensorStatus();
   

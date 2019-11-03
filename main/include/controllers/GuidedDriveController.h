@@ -21,27 +21,20 @@
 #include <frc/shuffleboard/BuiltInWidgets.h>
 
 
-class GuidedDriveController : public DriveController{ //TODO make protected? why is this public
+class GuidedDriveController : public DriveController{ // TODO make protected? why is this public
 public:
-	/**
-	 * Initializes all variables
-	 * takes in RobotModel and ControlBoard
-	 */
+	// initializes all variables
+	// takes in RobotModel and ControlBoard
 	GuidedDriveController(RobotModel *robot, ControlBoard *humanControl,
 		NavXPIDSource* navXSource, AnglePIDOutput* anglePIDOutput);
 
-	/**
-	 * Destructor
-	 */
 	virtual ~GuidedDriveController();
 
 	virtual void Disable();
 	virtual void Enable();
 
 private:
-	/**
-	 * Drives robot in Arcade
-	 */
+	// drives robot in Arcade
 	virtual void ArcadeDrive(double myX, double myY, double thrustSensitivity, double rotateSensitivity);
 
 	uint32_t currState_;
