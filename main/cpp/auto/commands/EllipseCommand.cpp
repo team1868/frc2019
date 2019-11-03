@@ -93,7 +93,7 @@ void EllipseCommand::Reset(){
 		tPID_->Disable();
         tPID_->~PIDController();
 
-		delete(tPID_);
+		delete tPID_;
 
 		tPID_ = NULL;
 
@@ -105,7 +105,7 @@ void EllipseCommand::Reset(){
 		dPID_->Disable();
         dPID_->~PIDController();
 
-		delete(dPID_);
+		delete dPID_;
 
 		dPID_ = NULL;
 //		printf("Reset Distance PID");

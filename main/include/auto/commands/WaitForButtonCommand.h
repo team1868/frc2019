@@ -5,18 +5,21 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef SRC_AUTO_MODES_TESTMODE_H_
-#define SRC_AUTO_MODES_TESTMODE_H_
+#pragma once
 
-#include "AutoMode.h"
+#include "RobotModel.h"
+#include "ControlBoard.h"
+#include "../AutoCommand.h"
 
-class TestMode : public AutoMode {
-public:
-    TestMode(RobotModel *robot, ControlBoard *controlBoard);
-    void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) override;
-    void Init();
-
-    virtual ~TestMode();
+class WaitForButtonCommand : public AutoCommand {
+ public:
+  WaitForButtonCommand(ControlBoard *controlBoard);
+  virtual ~WaitForButtonCommand();
+  void Init();
+  void Update(double currTimeSec, double deltaTimeSec);
+  bool IsDone();
+  void Reset();
+ private:
+	bool isDone_;
+  ControlBoard *humanControl_;
 };
-
-#endif /* SRC_AUTO_MODES_TESTMODE_H_ */

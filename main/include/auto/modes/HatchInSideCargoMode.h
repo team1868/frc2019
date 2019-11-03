@@ -12,7 +12,7 @@
 
 class HatchInSideCargoMode : public AutoMode {
 public:
-    HatchInSideCargoMode(RobotModel *robot);
+    HatchInSideCargoMode(RobotModel *robot, ControlBoard *controlBoard);
     void CreateQueue(AutoMode::AutoPositions pos, AutoMode::HabLevel hablvl) override;
     void Init();
     virtual ~HatchInSideCargoMode();

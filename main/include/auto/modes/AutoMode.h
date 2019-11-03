@@ -9,10 +9,12 @@
 #define SRC_AUTO_MODES_AUTOMODE_H
 
 #include "../../RobotModel.h"
+#include "../../ControlBoard.h"
 #include "../commands/CurveCommand.h"
 #include "../commands/DriveStraightCommand.h"
 #include "../commands/PivotCommand.h"
 #include "../commands/WaitingCommand.h"
+#include "../commands/WaitForButtonCommand.h"
 #include "../commands/HatchBeakCommand.h"
 #include "../commands/AlignWithTapeCommand.h"
 #include "../commands/OuttakeHatchCommand.h"
@@ -27,7 +29,7 @@ public:
     enum AutoPositions {kBlank, kLeft, kMiddle, kRight};
 	enum HabLevel {kNone, k1, k2};
 
-    AutoMode(RobotModel *robot);
+    AutoMode(RobotModel *robot, ControlBoard *controlBoard);
 
     virtual ~AutoMode() {};
 
@@ -53,6 +55,7 @@ protected:
     AutoCommand *firstCommand_;
 	AutoCommand *currentCommand_;
 	RobotModel* robot_;
+    ControlBoard *humanControl_;
 
 	NavXPIDSource* navX_;
 	TalonEncoderPIDSource* talonEncoder_;

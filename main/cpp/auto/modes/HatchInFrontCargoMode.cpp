@@ -7,7 +7,7 @@
 
 #include "../../../include/auto/modes/HatchInFrontCargoMode.h"
 
-HatchInFrontCargoMode::HatchInFrontCargoMode(RobotModel *robot) : AutoMode(robot){
+HatchInFrontCargoMode::HatchInFrontCargoMode(RobotModel *robot, ControlBoard *controlBoard) : AutoMode(robot, controlBoard){
     robot_ = robot;
 }
 
