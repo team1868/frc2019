@@ -22,4 +22,8 @@ class WaitForButtonCommand : public AutoCommand {
  private:
 	bool isDone_;
   ControlBoard *humanControl_;
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
