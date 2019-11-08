@@ -50,12 +50,7 @@ void Robot::RobotInit()  {
   driveController_ = new DriveController(robot_, humanControl_);
   guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navX_, anglePIDOutput);
 
-<<<<<<< HEAD
   superstructureController_ = new SuperstructureController(robot_, humanControl_);
-=======
-  superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
-  //talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
 
   habLimitSwitch_ = new DigitalInput(4);
 
@@ -133,11 +128,6 @@ void Robot::RobotInit()  {
   // autoSendableChooser_.AddOption("12:2R,Rship,HC", "t 1.0 d 18.8 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
   // // autoSendableChooser_.AddOption("13:2L,Lfront,H", "d 14.5 t 90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t -90.0 d 7.0 t 0.0 d -8.0 t -10.0 w b 0"); //UNTESTED sketch
   // // autoSendableChooser_.AddOption("14:2R,Rfront,H", "d 14.5 t -90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t 90.0 d 7.0 t 0.0 d -8.0 t 10.0 w b 0"); //UNTESTED sketch
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
 
   //--------------------CHEZY-----------------------------------------------
   autoSendableChooser_.SetDefaultOption("0: blank", "h 0 b 0");
@@ -150,11 +140,6 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("R7:2R,Rsh,1.5C", "h 0 d 18.55 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
   autoSendableChooser_.AddOption("R10:2L,Lsh,HC", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
   autoSendableChooser_.AddOption("R12:2R,Rsh,HC", "t 1.0 d 18.55 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
   autoSendableChooser_.AddOption("B1:1S,H", "h 0 d 10.817 a 1 b 1 s 0.1 h 1 d -0.5");
   autoSendableChooser_.AddOption("B2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
   autoSendableChooser_.AddOption("B3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
@@ -185,12 +170,6 @@ void Robot::RobotInit()  {
   sparkEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("hab encoder val", 0.0).GetEntry();
   
   //autoChooserType_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("SendableChooser", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-<<<<<<< HEAD
-  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0 b 0").GetEntry();
-  
-  auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0").GetEntry();
-=======
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
   
   auto8Val_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("8:other string seq", "h 0").GetEntry();
 
@@ -221,11 +200,7 @@ void Robot::RobotPeriodic() {
   SmartDashboard::PutNumber("right encoder scale", robot_->GetRightEncodingScale());
   SmartDashboard::PutBoolean("is high gear?", robot_->IsHighGear());
   robot_->PrintState();
-<<<<<<< HEAD
   
-=======
-
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
   //printf("----------------------------%s\n", autoSendableChooser_.GetSelected().c_str());
   // std::cout << "INFORMATION:            " << autoSendableChooser_.GetSelected() << std::endl;
 }
@@ -251,21 +226,12 @@ void Robot::AutonomousInit() {
   // }
   printf("IN AUTONOMOUS \n");
   //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
-<<<<<<< HEAD
 
 
   autoController_ = new AutoController();
   autoMode_ = NULL;
   autoJoyVal_ = 0.0;
 
-=======
-  
-  
-  autoController_ = new AutoController();
-  autoMode_ = NULL;
-  autoJoyVal_ = 0.0;
-  
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
   robot_->SetLowGear(); //faster, for 2 hatch, so cargo does not fall out
@@ -337,13 +303,8 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 t -90.0");
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
-<<<<<<< HEAD
   // if(autoChooserType_.GetBoolean(true)){
     printf("auto sequence is %s from autoChooser (which is being used)\n", autoSendableChooser_.GetSelected().c_str());
-=======
-  //if(autoChooserType_.GetBoolean(true)){
-  printf("auto sequence is %s from autoChooser (which is being used)\n", autoSendableChooser_.GetSelected().c_str());
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
   if(autoSendableChooser_.GetSelected()=="h 0"){ //auto 8: other
     printf("using auto8 which is %s\n", auto8Val_.GetString("h 0").c_str());
     robot_->SetTestSequence(auto8Val_.GetString("h 0"));
@@ -357,27 +318,15 @@ void Robot::AutonomousInit() {
   //   robot_->SetTestSequence(auto8Val_.GetString("h 0 b 0"));
   // }
   printf("done choosing auto sequence\n");  
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
   // if(autoChooserType_.GetBoolean(true)){
   //   printf("selected auto: %s\n", autoSendableChooser_.GetSelected());
   //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
   // }
 
-<<<<<<< HEAD
   // robot_->ZeroNavXYaw();
   autoMode_ = new TestMode(robot_, humanControl_);
   printf("STATS:  %d %d\n", autoMode_==NULL, autoController_==NULL);
   // robot_->ZeroNavXYaw();
-=======
-  //robot_->ZeroNavXYaw();
-  autoMode_ = new TestMode(robot_, humanControl_);
-  printf("STATS:  %d %d\n", autoMode_==NULL, autoController_==NULL);
-  //robot_->ZeroNavXYaw();
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
   autoController_->SetAutonomousMode(autoMode_);
   autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1);
 
@@ -407,11 +356,7 @@ void Robot::AutonomousPeriodic() {
   //if (!curve_->IsDone()) curve_->Update(currTimeSec_, deltaTimeSec_);
   // if(!ellipse_->IsDone()) ellipse_->Update(currTimeSec_, deltaTimeSec_);
   //printf("is auto mode done %d\n\n", autoMode_->IsDone());
-<<<<<<< HEAD
   
-=======
-
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
   if(sandstormAuto_){
     printf("enter sandstorm auto\n");
     printf("STATS:  %d %d\n", autoMode_==NULL, autoController_==NULL);
