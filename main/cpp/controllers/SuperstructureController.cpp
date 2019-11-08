@@ -1,3 +1,10 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
 #include "../../include/controllers/SuperstructureController.h"
 
 SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlBoard *myHumanControl) {
@@ -10,7 +17,6 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
     desiredFlywheelVelocCargo_ = 0.65; 
     desiredFlywheelVelocRocket_ = 0.25; 
 
-    desiredHatchWristAngle_ = 90;
     hatchWristNewAngle_ = true;
 
     cargoVelocNet_ = frc::Shuffleboard::GetTab("Operator_Input").Add("cargo veloc", 0.65).GetEntry(); //0.65
@@ -87,12 +93,6 @@ SuperstructureController::SuperstructureController(RobotModel *myRobot, ControlB
      * up - floor to stowed position
     */
 
-    //hatchWristPID_ = new PIDController(hatchPUpFac_, hatchIUpFac_, hatchDUpFac_, robot_->GetGyro(), robot_->GetHatchWristMotor());
-    //hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
-    //hatchWristPID_->SetOutputRange(-1.0, 1.0);
-    //hatchWristPID_->SetAbsoluteTolerance(0.1); //TODO
-    //hatchWristPID_->SetContinuous(true);
-
     //TODO INIT highgear disengaged whatever whatever (like last year's wrist engage asap)
 }
 
@@ -111,14 +111,7 @@ void SuperstructureController::Reset() {
 
 void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 
-    //lightSensorDisplayNet_.SetBoolean(CargoInIntake());
-
     SetOutputs(); 
-
-    //TODO TAKE THIS OUT
-    //HatchWristAngleTest();
-    // printf("current flywheel veloc cargo ship %f\n", desiredFlywheelVelocCargo_);
-    // printf("curr flywheel veloc rocket ship %f\n", desiredFlywheelVelocRocket_);
 
 	switch(currState_) {
         case kInit:
@@ -136,24 +129,10 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
         case kIdle:
             nextState_ = kIdle;
             RefreshShuffleboard();
-            //HATCH STUFF
 
-            // if(humanControl_->GetHatchIntakeWheelDesired()){ //beak
-            //     if(hookEngaged_){
-            //         hookEngaged_ = false;
-            //     } else {
-            //         hookEngaged_ = true;
-            //     }
-            // }
-            // if(hookEngaged_){
-            //     robot_->EngageHook();
-            // } else {
-            //     robot_->DisengageHook();
-            // }
-
-            //TODO INTEGRATE GYRO - THIS IS SO NOT DONE RIGHT NOW thanks
+            // NOT SURE IF THIS IS NEEDED, gyro was supposed to be intrigrated into this initially
             if (humanControl_->GetHatchWristDownDesired()) { 
-			    printf("hatch intake wrist to floor\n");
+			    // printf("hatch intake wrist to floor\n");
                 robot_->SetHatchWristOutput(-hatchPowerNet_.GetDouble(0.4));
             } else if (humanControl_->GetHatchWristUpDesired()) { 
 			    robot_->SetHatchWristOutput(hatchPowerNet_.GetDouble(0.4));
@@ -161,28 +140,15 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 			    robot_->SetHatchWristOutput(0.0);
             }
 
-            /*
-            // TODO FIX BELOW SO THAT WHEELS ONLY RUN IF GYRO IS 90 ISH
-            if(humanControl_->GetHatchIntakeWheelDesired()){ //only run wheels if wrist down (otherwise wheels are irrelevant)
-                    printf("hatch intaking\n");
-                    robot_->SetHatchIntakeWheelOutput(0.8);
-            } else if (humanControl_->GetHatchUnintakeWheelDesired()){
-                printf("hatch unintaking\n");
-                robot_->SetHatchIntakeWheelOutput(-0.8);
-            } else {
-                robot_->SetHatchIntakeWheelOutput(0.0);
-            } 
-            */
-            //CARGO STUFF
+            //CARGO CODE
 
             //note: combined wrist and intake/unintake (so if wrist down and not unintaking, auto intake + no two controllers on same motor)
             if(humanControl_->GetCargoIntakeWristDesired()){
                 printf("wrist down\n");
                 hookEngaged_ = false;
-                // robot_->DisengageHook();
                 robot_->SetCargoIntakeWrist(true);
                 
-                if(!humanControl_->GetCargoUnintakeDesired()){  //!humanControl_->GetCargoUnintakeDesired()){ 
+                if(!humanControl_->GetCargoUnintakeDesired()){
                     if (!CargoInIntake() || !lightSensorNet_.GetBoolean(true)) {
                        robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
                     } else {
@@ -196,9 +162,8 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                     timeEngagedCargoWrist_ = robot_->GetTime();
                 }
                 hookEngaged_ = true;
-                //robot_->EngageHook();
                 robot_->SetCargoIntakeWrist(false);
-                if(humanControl_->GetCargoIntakeDesired()){ //if(humanControl_->GetCargoIntakeDesired()){ 
+                if(humanControl_->GetCargoIntakeDesired()){ 
                     robot_->SetCargoIntakeOutput(cargoIntakeOutput_);
                 } else if (humanControl_->GetCargoUnintakeDesired()){
                     robot_->SetCargoUnintakeOutput(cargoIntakeOutput_);
@@ -214,11 +179,11 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
                 //printf("engage hook\n");
             } 
 
-            if (humanControl_->GetCargoFlywheelDesiredRocket()){ //Note: check if less power first, don't want accident more power
+            if (humanControl_->GetCargoFlywheelDesiredRocket()){ // Note: check if less power first, don't want accident more power
                robot_->SetHatchBeak(true);
                robot_->SetCargoFlywheelOutput(RatioFlywheel(desiredFlywheelVelocRocket_)); 
                printf("flywheel speed is following %f\n", RatioFlywheel(desiredFlywheelVelocRocket_));
-            } else if(humanControl_->GetCargoFlywheelDesired()){ //flywheel for cargo ship
+            } else if(humanControl_->GetCargoFlywheelDesired()){ // flywheel for cargo ship
                 printf("cargo shooting into cargo ship\n");
                 robot_->SetHatchBeak(false);
                 robot_->SetCargoFlywheelOutput(RatioFlywheel(desiredFlywheelVelocCargo_)); 
@@ -230,20 +195,20 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
             } else {
                 robot_->SetCargoFlywheelOutput(0.0);
 
-                //so beak not messed up if multiple activated at a time
+                //so beak is not messed up if multiple activated at a time
                 if(humanControl_->GetHatchOuttakeDesired()){ //TODO different state: time delay
                     robot_->SetHatchBeak(true);
                     robot_->SetHatchOuttake(true);
                 } else if(humanControl_->GetHatchBeakDesired()){
                     robot_->SetHatchBeak(true);
-                    //robot_->SetHatchOuttake(false); //TODO prob not needed bc not immediete switch between buttons, but otherwise needed
                 } else {
                     robot_->SetHatchBeak(false);
                     robot_->SetHatchOuttake(false);
                 }
             }
 
-            if(humanControl_->GetHabBrakeDesired() || humanControl_->GetHabBrakeLevel2Desired()){ //&& !humanControl_->GetTestDesired() && !humanControl_->GetTest3Desired()
+            if(humanControl_->GetHabBrakeDesired() || humanControl_->GetHabBrakeLevel2Desired()){ 
+                //&& !humanControl_->GetTestDesired() && !humanControl_->GetTest3Desired()
                 robot_->SetHabBrake(false);
                 printf("hab brake not on\n");
             } else {
@@ -271,14 +236,8 @@ void SuperstructureController::Update(double currTimeSec, double deltaTimeSec) {
 void SuperstructureController::SetOutputs() {
     cargoFlyPID_->SetSetpoint(desiredFlywheelVelocCargo_);
     rocketFlyPID_->SetSetpoint(desiredFlywheelVelocRocket_);
-    //hatchWristPID_->SetSetpoint(desiredHatchWristAngle_);
 }
-/*
-void SuperstructureController::HatchWristAngleTest() {
-    currHatchWristAngle_ = robot_->GetGyroAngle();
-    //printf("Gryo Angle is the following %f\n", currHatchWristAngle_);
-}
-*/
+
 void SuperstructureController::HabEncoderTest() {
     currHabEncoderVal_ = robot_->GetHabEncoderValue();
     printf("Hab Encoder Value is the follwoing %f\n", currHabEncoderVal_);
@@ -331,7 +290,7 @@ double SuperstructureController::RatioFlywheel(double value){
     return ratioFlywheelOutput;
 }
 
-void SuperstructureController::RefreshIni() { //TODO remove
+void SuperstructureController::RefreshIni() {
 
 }
 

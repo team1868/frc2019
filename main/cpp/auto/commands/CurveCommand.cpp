@@ -9,7 +9,7 @@
 #include <math.h>
 #include <cmath>
 
-#define PI 3.141592653589 //TODO CHANGE, this is a mess
+#define PI 3.141592653589 // TODO CHANGE, this is a mess
 
 CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle, bool turnLeft,
   NavXPIDSource* navXSource, TalonEncoderPIDSource* talonEncoderSource,

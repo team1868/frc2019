@@ -13,10 +13,10 @@
 RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
   printf("robot model constructor\n");
-  //initialize base variables
+  // initialize base variables
   currentGameMode_ = NORMAL_TELEOP;//SANDSTORM;
 
-  //create private tab to get user input
+  // create private tab to get user input
   frc::Shuffleboard::GetTab("Private_Code_Input"); //ini replacement
   
   // initialize pid value nets
@@ -51,7 +51,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   last_world_linear_accel_x_ = 0.0f;
   last_world_linear_accel_y_ = 0.0f;
 
-  //TODO add to ini
+  // TODO add to ini
   driveCurrentLimit_ = 0.0;
   intakeCurrentLimit_ = 0.0;
   totalCurrentLimit_ = 0.0;
@@ -59,14 +59,14 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   pressureFloor_ = 0.0;
   size_ = 0.0;
 
-  //initializing timer
+  // initializing timer
   timer_ = new frc::Timer();
   timer_->Start();
 
-  //initializing pdp
+  // initializing pdp
   pdp_ = new frc::PowerDistributionPanel();
 
-  //power distribution
+  // power distribution
   ratioAll_ = 1.0; //no ratio
   ratioDrive_ = 1.0;
   ratioSuperstructure_ = 1.0;
@@ -80,11 +80,9 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   roboRIOCurrent_ = 0;
   compressorCurrent_ = 0;
 
-  //TODO: it says pressure sensor?
+  // encoders initialized later to account for gear shift
 
-  //encoders initialized later to account for gear shift
-
-  //initilize motor controllers
+  // initilize motor controllers
   leftMaster_ = new WPI_TalonSRX(LEFT_DRIVE_MASTER_ID);
   rightMaster_ = new WPI_TalonSRX(RIGHT_DRIVE_MASTER_ID);
   leftSlaveA_ = new WPI_VictorSPX(LEFT_DRIVE_SLAVE_A_ID);
@@ -101,7 +99,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   rightSlaveB_->Follow(*rightMaster_);
 
   // Setting Inversions
-  //TODO: make variables for inverted
+  // TODO: make variables for inverted
   rightMaster_->SetInverted(false);
   rightSlaveA_->SetInverted(false);
   rightSlaveB_->SetInverted(false);
@@ -114,26 +112,21 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   navX_ = new AHRS(SPI::kMXP, navXSpeed_);
   Wait(1.0); // NavX takes a second to calibrate
 
-  // Initializing pneumatics
+  // initializing pneumatics
   compressor_ = new frc::Compressor(PNEUMATICS_CONTROL_MODULE_A_ID);
   gearShiftSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, GEAR_SHIFT_FORWARD_SOLENOID_PORT);
 
-	//TODODODODODOD TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE EEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!
-  highGear_ = false; //NOTE: make match with ControlBoard
+	// TODO: tune!
+  highGear_ = false; // NOTE: make match with ControlBoard
 
-  //Superstructure
-
-	// Initialzing Gyro 
-	//gyro_ = new frc::AnalogGyro(GYRO_PORT);
-	//gyro_->InitGyro();
-	//gyro_->Calibrate();
+  // Superstructure
 
 	//Initializing Light Sensor
 	lightSensor_ = new frc::DigitalInput(LIGHT_SENSOR_PORT);
 
-  cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
-  hatchBeakSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
-  hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN); //TODO possible error?
+	cargoIntakeWristSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, CARGO_WRIST_UP_DOUBLE_SOLENOID_CHAN, CARGO_WRIST_DOWN_DOUBLE_SOLENOID_CHAN);
+	hatchBeakSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HATCH_BEAK_CLOSED_DOUBLE_SOLENOID_CHAN, HATCH_BEAK_OPEN_DOUBLE_SOLENOID_CHAN);
+	hatchOuttakeSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HATCH_OUTTAKE_OUT_DOUBLE_SOLENOID_CHAN); //TODO possible error?
 	habBrakeSolenoid_ = new frc::DoubleSolenoid(PNEUMATICS_CONTROL_MODULE_A_ID, HAB_BRAKE_ENGAGE_DOUBLE_SOLENOID_CHAN, HAB_BRAKE_RELEASE_DOUBLE_SOLENOID_CHAN);
 	hookSolenoid_ = new frc::Solenoid(PNEUMATICS_CONTROL_MODULE_B_ID, HOOK_FORWARD_SINGLE_SOL_CHAN);
 
@@ -144,13 +137,13 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
 
 	habSparkMotor_ = new rev::CANSparkMax(HAB_MOTOR_PORT, rev::CANSparkMax::MotorType::kBrushless); //changed 7 to HAB_MOTOR_PORT, correct?
 
-  cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
-  cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
-  cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
+    cargoFlywheelEncoder_ = new Encoder(FLYWHEEL_ENCODER_A_PWM_PORT, FLYWHEEL_ENCODER_B_PWM_PORT, false);
+    cargoFlywheelEncoder_->SetPIDSourceType(PIDSourceType::kRate);
+    cargoFlywheelEncoder_->SetDistancePerPulse(FLYWHEEL_DIAMETER * PI / (ENCODER_COUNT_PER_ROTATION * EDGES_PER_ENCODER_COUNT));
 	//habSparkMotor_->GetEncoder().GetPosition(); //move later
 
 
-  //TODO MESS, also TODO check before matches
+  // check before matches
   cargoWristEngaged_ = false;
   hatchOuttakeEngaged_ = false;
   hatchBeakEngaged_ = false;
@@ -177,10 +170,10 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   StartCompressor();
   ResetDriveEncoders();
 
-  //Shuffleboard prints
+  // Shuffleboard prints
   jerkYNet_ = tab_.Add("Jerk Y", navX_->GetWorldLinearAccelY()).GetEntry();
   jerkXNet_ = tab_.Add("Jerk X", navX_->GetWorldLinearAccelX()).GetEntry();
-  //NOTE: collisions Detected not added here
+  // NOTE: collisions Detected not added here
   leftDistanceNet_ = tab_.Add("Left Drive Distance", GetLeftDistance()).GetEntry();
   rightDistanceNet_ = tab_.Add("Right Drive Distance", GetRightDistance()).GetEntry();
   yawNet_ = tab_.Add("NavX Yaw", GetNavXYaw()).GetEntry();
@@ -192,7 +185,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   ratioDriveNet_ = tab_.Add("Ratio Drive", ratioDrive_).GetEntry();
   ratioSuperNet_ = tab_.Add("Ratio Superstructure", ratioSuperstructure_).GetEntry();
 
-	testSequence_ = "";
+  testSequence_ = "";
 
 }
 
@@ -213,9 +206,9 @@ double RobotModel::GetTime() {
 // get specific motor controller
 WPI_TalonSRX *RobotModel::GetTalon(Talons talon) {
   switch(talon) {
-    case(kLeftMaster): //left motor
+    case(kLeftMaster): // left motor
       return leftMaster_;
-    case(kRightMaster): //right motor
+    case(kRightMaster): // right motor
       return rightMaster_;
     default:
       printf("WARNING: Talon not returned from RobotModel::GetTalon()\n");
@@ -223,7 +216,7 @@ WPI_TalonSRX *RobotModel::GetTalon(Talons talon) {
   }
 }
 
-//TODO intake/outtake get motor speed
+// TODO intake/outtake get motor speed
 
 // get specific wheel speed
 double RobotModel::GetWheelSpeed(RobotModel::Wheels wheel){
@@ -233,7 +226,7 @@ double RobotModel::GetWheelSpeed(RobotModel::Wheels wheel){
 	case (kRightWheels): // right wheel
 	  return rightMaster_->Get();
 	case (kAllWheels): // right wheel
-	  return rightMaster_->Get(); //sketch, depending on right
+	  return rightMaster_->Get();
     default:
       printf("WARNING: Wheel speed not returned in RobotModel::GetWheelSpeed()\n");
       return 0.0;
@@ -241,10 +234,10 @@ double RobotModel::GetWheelSpeed(RobotModel::Wheels wheel){
 }
 
 // drive specific motor
-//WARNING: no static friction accounting, PID values would differ
+// WARNING: no static friction accounting, PID values would differ
 void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
-  leftDriveOutput_ = rightDriveOutput_ = value;  //SKETCH TODO INCORRECT, last year's code but makes no sense if setting one wheel at a time
-  value = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, value); //drive channels do the same as params
+  leftDriveOutput_ = rightDriveOutput_ = value;  // SKETCH TODO INCORRECT, last year's code but makes no sense if setting one wheel at a time
+  value = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, value); // drive channels do the same as params
 	switch (wheel) {
 	  case (kLeftWheels): // set left
 		leftMaster_->Set(-value);
@@ -263,14 +256,14 @@ void RobotModel::SetDriveValues(RobotModel::Wheels wheel, double value) {
 
 // drive motors
 void RobotModel::SetDriveValues(double leftValue, double rightValue) {
-  double thrust = leftValue + rightValue / 2.0; //find average to find y movement
+  double thrust = leftValue + rightValue / 2.0; // find average to find y movement
   leftValue = HandleStaticFriction(leftValue, thrust);
   rightValue = HandleStaticFriction(rightValue, thrust);
 
   leftValue = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, leftValue);
   rightValue = ModifyCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN, rightValue);
 
-  //TODO (minor) Make sure, output values are within range
+  // TODO (minor) Make sure, output values are within range
   double maxOutput = maxOutputNet_.GetDouble(1.0);
   if (leftValue > maxOutput) {
 	  rightValue = rightValue/leftValue;
@@ -287,12 +280,12 @@ void RobotModel::SetDriveValues(double leftValue, double rightValue) {
 	  rightValue = -maxOutput;
   }
 
-  //printf("      RM left output: %f and right output: %f\n", -leftValue, rightValue);
+  // printf("RM left output: %f and right output: %f\n", -leftValue, rightValue);
   leftMaster_->Set(-leftValue);
   rightMaster_->Set(-rightValue);
 }
 
-double RobotModel::GetStaticFriction(double thrustValue){ //TODO MAKE A VARIABLE DON'T BE AN IDIOT
+double RobotModel::GetStaticFriction(double thrustValue){ // TODO MAKE A VARIABLE
     LOW_GEAR_STATIC_FRICTION_POWER = lowGearStaticFric_.GetDouble(LOW_GEAR_STATIC_FRICTION_POWER);
 	HIGH_GEAR_STATIC_FRICTION_POWER = highGearStaticFric_.GetDouble(HIGH_GEAR_STATIC_FRICTION_POWER);
 	LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER = lowGearTurnStaticFric_.GetDouble(LOW_GEAR_STATIC_FRICTION_POWER+LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER)-LOW_GEAR_STATIC_FRICTION_POWER;
@@ -301,15 +294,15 @@ double RobotModel::GetStaticFriction(double thrustValue){ //TODO MAKE A VARIABLE
 	if(IsHighGear()){
 		staticFriction = HIGH_GEAR_STATIC_FRICTION_POWER;
 		
-		if(thrustValue <= 0.1 && thrustValue >= -0.1){ //TODO TUNE
-			//quick turn
+		if(thrustValue <= 0.1 && thrustValue >= -0.1){ // TODO TUNE
+			// quick turn
 			staticFriction += HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
 		}
 	} else {
 		staticFriction = LOW_GEAR_STATIC_FRICTION_POWER;
 
 		if(thrustValue <= 0.1 && thrustValue >= -0.1){
-			//quick turn
+			// quick turn
 			staticFriction += LOW_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER;
 		}
 	}
@@ -322,7 +315,7 @@ double RobotModel::HandleStaticFriction(double value, double thrustValue){
 		value += staticFriction;
 	} else if(value < 0.0){
 		value -= staticFriction;
-	} //else don't waste power on static friction or might burn motors
+	} // else don't waste power on static friction or might burn motors
 	return value;
 }
 
@@ -350,12 +343,12 @@ void RobotModel::SetTalonCoastMode() {
 
 // set motor high gear
 void RobotModel::SetHighGear() {
-	//gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
+	// gearShiftSolenoid_->Set(frc::DoubleSolenoid::kReverse); // TODO Check if right
 	gearShiftSolenoid_->Set(false);
 	highGear_ = true;
-  //leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
-  //rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
-	//printf("Gear shift %d\n", gearShiftSolenoid_->Get());
+  	// leftDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION); //TODO POSSIBLE DOURCE OF ERROR OR SLOWING CODE
+  	// rightDriveEncoder_->SetDistancePerPulse((HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION);
+	// printf("Gear shift %d\n", gearShiftSolenoid_->Get());
 }
 
 // set motor low gear
@@ -379,17 +372,18 @@ bool RobotModel::IsHighGear(){
 
 // ------------------------ get drive values--------------------------------------------
 double RobotModel::GetLeftEncoderValue() {
-	//printf("HELLO BLAH left encoder val???????? %d \n\n\n\n", leftDriveEncoder_->Get());
+	// printf("left encoder value %d \n", leftDriveEncoder_->Get());
 	return leftDriveEncoder_->Get();
 }
 
 double RobotModel::GetRightEncoderValue() {
+	// printf("right encoder value %d \n", rightDriveEncoder_->Get());
 	return rightDriveEncoder_->Get();
 }
 
 double RobotModel::GetLeftDistance() {
 	if(IsHighGear()){
-		return leftDriveEncoder_->Get()*(HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION;//GetDistance(); //correct? TODO
+		return leftDriveEncoder_->Get()*(HIGH_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION;// GetDistance(); //correct? TODO
 	} else {
 		return leftDriveEncoder_->Get()*(LOW_GEAR_ENCODER_ROTATION_DISTANCE) / ENCODER_COUNT_PER_ROTATION;
 	}
@@ -454,20 +448,7 @@ double RobotModel::GetNavXRoll() {
 }
 
 //-------------------------SUPERSTRUCTURE control-------------------------------------
-/*
-void RobotModel::ResetGyro(){
-	gyro_->Reset();
-}
 
-double RobotModel::GetGyroAngle(){
-	gyro_->GetAngle();
-}
-
-void RobotModel::CalibrateGyro(){
-	gyro_->InitGyro();
-	gyro_->Calibrate();
-}
-*/
 bool RobotModel::GetLightSensorStatus(){
 	lightSensor_->Get();
 }
@@ -479,18 +460,18 @@ int RobotModel::GetHabEncoderValue() {
 }
 
 void RobotModel::SetCargoIntakeOutput(double output){
-	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
-	cargoIntakeMotor_->Set(-output); //motor is negatized
+	// output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
+	cargoIntakeMotor_->Set(-output); // motor is negatized
 }
 
 void RobotModel::SetCargoUnintakeOutput(double output){
-	//output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
-	cargoIntakeMotor_->Set(output); //motor is negatized
+	// output = ModifyCurrent(CARGO_INTAKE_MOTOR_PDP_CHAN, output);
+	cargoIntakeMotor_->Set(output); // motor is negatized
 }
 
 void RobotModel::SetCargoFlywheelOutput(double output){
-	//output = ModifyCurrent(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, output);
-	cargoFlywheelMotor_->Set(-output); //motor negatized
+	// output = ModifyCurrent(CARGO_FLYWHEEL_MOTOR_PDP_CHAN, output);
+	cargoFlywheelMotor_->Set(-output); // motor negatized
 }
 
 void RobotModel::SetHatchIntakeWheelOutput(double output){
@@ -521,13 +502,13 @@ void RobotModel::SetHabBrake(bool change){
 	}
 }
 
-void RobotModel::SetCargoIntakeWrist(bool change){ //TODO RENAME
+void RobotModel::SetCargoIntakeWrist(bool change){ // TODO RENAME
 	if(change) {
 		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kReverse);
 		printf("forward cargo intake wrist\n");
 	} else {
-		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kForward); //TODO check if correct orientation
-		//printf("reverse cargo intake wrist\n");
+		cargoIntakeWristSolenoid_->Set(DoubleSolenoid::kForward); // TODO check if correct orientation
+		// printf("reverse cargo intake wrist\n");
 	}
 }
 
@@ -566,7 +547,7 @@ double RobotModel::GetFlywheelMotorOutput(){
 	return flywheelMotor_->Get();
 }
 */
-//slkjdflksjdf;liargj;oinlgkvgalkaghapeiu;oskldfjnaldirghoaf;ildzkjxflkcj TODODODODODODODODODODO what the gecko is the following my life is a lie
+// TODO
 Encoder* RobotModel::GetCargoFlywheelEncoder(){ //TODO possible error, encoder* or *encoder
 	return cargoFlywheelEncoder_;
 }
@@ -581,7 +562,7 @@ double RobotModel::ModifyCurrent(int channel, double value){
 	double individualPowerRatio = power;
 	double tempPowerRatio;
 
-	switch(channel){ //TODO check these constants what want to use? TODO CHANGE CHANGE DANG IT
+	switch(channel){ // TODO check these constants what want to use? TODO CHANGE CHANGE DANG IT
 		case LEFT_DRIVE_MOTOR_A_PDP_CHAN:
 		case RIGHT_DRIVE_MOTOR_A_PDP_CHAN:
 			power *= ratioDrive_;
@@ -622,8 +603,7 @@ double RobotModel::ModifyCurrent(int channel, double value){
 		default:
 			printf("WARNING: current not found to modify.  In ModifyCurrents() in RobotModel.cpp");
 	}
-	//debugging:
-	//printf("ratio current %f, drive ratio current %f, super ratio current %d", ratioAll_, ratioDrive_, ratioSuperstructure_);
+	// printf("ratio current %f, drive ratio current %f, super ratio current %d", ratioAll_, ratioDrive_, ratioSuperstructure_);
 	return power;
 }
 
@@ -632,14 +612,14 @@ double RobotModel::CheckMotorCurrentOver(int channel, double power){
 	if( motorCurrent > MAX_DRIVE_MOTOR_CURRENT){ //current to individual motor is over, TODO change for super
 		power = power*MAX_DRIVE_MOTOR_CURRENT / motorCurrent; //ratio down by percent over
 	}
-	//printf("Motor current is %f at channel %d\n", motorCurrent, channel);
+	// printf("Motor current is %f at channel %d\n", motorCurrent, channel);
 	return power;
 }
 
-//initializes variables pertaining to current
+// initializes variables pertaining to current
 void RobotModel::UpdateCurrent() {
-	//TODO PUT THIS BACK IN, use robotcontroller static class method :( it's currently causing errors
-	//leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
+	// TODO PUT THIS BACK IN, use robotcontroller static class method :( it's currently causing errors
+	// leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	
 	leftDriveACurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_A_PDP_CHAN);
 	leftDriveBCurrent_ = pdp_->GetCurrent(LEFT_DRIVE_MOTOR_B_PDP_CHAN);
@@ -650,10 +630,9 @@ void RobotModel::UpdateCurrent() {
 	compressorCurrent_ = compressor_->GetCompressorCurrent();
 	roboRIOCurrent_ = frc::RobotController::GetInputCurrent();
 
-	//TODO fix and check logic
+	// TODO fix and check logic
 	if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentNet_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltNet_.GetDouble(MIN_VOLTAGE_BROWNOUT)) && !lastOver_){
 		printf("\nSTOPPING\n\n");
-		//StopCompressor();
 		compressorOff_ = true;
 		if(ratioAll_-0.05 > MIN_RATIO_ALL_CURRENT){
 			ratioAll_ -= 0.05;
@@ -661,27 +640,20 @@ void RobotModel::UpdateCurrent() {
 			ratioSuperstructure_ -= 0.05;
 		} else if (ratioDrive_-0.05 > MIN_RATIO_DRIVE_CURRENT){
 			ratioDrive_ -= 0.05;
-		}// else {
-		//	cutSlaves_ = true;
-		//}
+		}
 		lastOver_ = true;
 	} else if((GetTotalCurrent() > /*MAX_CURRENT_OUTPUT*/maxCurrentNet_.GetDouble(MAX_CURRENT_OUTPUT) || GetVoltage() <= minVoltNet_.GetDouble(MIN_VOLTAGE_BROWNOUT) && lastOver_)){
-		//know compressor is off, because lastOver_ is true
-		//TODO WARNING THIS MIN IS NOT A MIN
+		// know compressor is off, because lastOver_ is true
+		// TODO WARNING THIS MIN IS NOT A MIN
 		if(ratioAll_ > MIN_RATIO_ALL_CURRENT){ //sketch, sketch, check this
 			ratioAll_ *= ratioAll_;//-= 0.1;
 		} else if (ratioSuperstructure_ > MIN_RATIO_SUPERSTRUCTURE_CURRENT){
 			ratioSuperstructure_ *= ratioSuperstructure_; //-= 0.1;
 		} else if (ratioDrive_ > MIN_RATIO_DRIVE_CURRENT){
 			ratioDrive_ *= ratioDrive_;//-= 0.1;
-		}// else {
-		//	cutSlaves_ = true;
-		//}
+		}
 		lastOver_ = true;
-	} else { //good !
-		//if(cutSlaves_){
-		//	cutSlaves = false;
-		//} else
+	} else { 
 		if(compressorOff_){
 			StartCompressor();
 			compressorOff_ = false;
@@ -698,7 +670,7 @@ void RobotModel::UpdateCurrent() {
 			ratioAll_ += 0.001;
 		} else if(ratioAll_ < 1.0){
 			ratioAll_ = 1.0;
-		} //else don't make it greater than one!
+		} // else don't make it greater than one!
 		lastOver_ = false;
 	}
 
@@ -712,21 +684,21 @@ void RobotModel::UpdateCurrent() {
 }
 
 
-//returns the voltage
+// returns the voltage
 double RobotModel::GetVoltage() {
 	return pdp_->GetVoltage();
 }
 
-//returns the total energy of the PDP
+// returns the total energy of the PDP
 double RobotModel::GetTotalCurrent() {
 	return pdp_->GetTotalCurrent();
 }
-//returns the total current of the PDP
+// returns the total current of the PDP
 double RobotModel::GetTotalEnergy() {
 	return pdp_->GetTotalEnergy();
 }
 
-//returns the total power of the PDP
+// returns the total power of the PDP
 double RobotModel::GetTotalPower() {
 	return pdp_->GetTotalPower();
 }
@@ -754,20 +726,20 @@ double RobotModel::GetCurrent(int channel) {
 	}
 }
 
-//returns the current of the compressor
+// returns the current of the compressor
 double RobotModel::GetCompressorCurrent() {
 	return compressorCurrent_;
 }
 
-//returns the current of the roboRIO
+// returns the current of the roboRIO
 double RobotModel::GetRIOCurrent() {
 	return roboRIOCurrent_;
 }
 
-//returns the pressure
+// returns the pressure
 double RobotModel::GetPressureSensorVal() { //TODO make sensor
   return 0.0;
-	//return 250 * (pressureSensor_->GetAverageVoltage() / 5) - 25;
+	// return 250 * (pressureSensor_->GetAverageVoltage() / 5) - 25;
 }
 
 // if sudden stop
@@ -789,7 +761,7 @@ bool RobotModel::CollisionDetected() {
 }
 //------------------------------------compressors--------------------------------
 void RobotModel::StopCompressor() {
-	//compressor_->Stop();
+	// compressor_->Stop();
 }
 
 void RobotModel::StartCompressor() {
@@ -803,7 +775,7 @@ RobotModel::GameMode RobotModel::GetGameMode(){
 }
 
 //-------------------------------get PID values from user--------------------------
-//distance p
+// distance P
 double RobotModel::GetDPFac(){
 	double dPFac = dPFacNet_.GetDouble(0.8);
 	if(dPFac > 1.0 || dPFac < 0.0){
@@ -918,6 +890,6 @@ NavXPIDSource* RobotModel::GetNavXSource(){
 	return navXSource_;
 }
 
-// deconstructor
+// destructor
 RobotModel::~RobotModel() {
 }

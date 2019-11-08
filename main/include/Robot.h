@@ -79,7 +79,6 @@ class Robot : public frc::TimedRobot {
 
   AlignWithTapeCommand *aCommand;
 
-  int curvesDone;// delete plz
   bool sandstormAuto_;
 
   double curHabPowerDeploy_;

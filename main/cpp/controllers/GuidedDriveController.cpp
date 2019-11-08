@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "../../include/controllers/GuidedDriveController.h"
-//#include <frc/WPILib.h>
+
 // constructor
 GuidedDriveController::GuidedDriveController(RobotModel *robot, ControlBoard *humanControl,
 	NavXPIDSource* navXSource, AnglePIDOutput* anglePIDOutput) : DriveController(robot, humanControl){
@@ -15,7 +15,7 @@ GuidedDriveController::GuidedDriveController(RobotModel *robot, ControlBoard *hu
 	//robot_ = robot;
 	//humanControl_ = humanControl;
 	
-	pFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided P", 0.085).GetEntry(); //TODO MOVE TO SEPERAT
+	pFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided P", 0.085).GetEntry();
 	iFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided I", 0.0).GetEntry();
 	dFacNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided D", 0.025).GetEntry();
 	
@@ -31,10 +31,10 @@ GuidedDriveController::GuidedDriveController(RobotModel *robot, ControlBoard *hu
 
 	anglePID_->SetPID(pFac_, iFac_, dFac_);
 	anglePID_->SetSetpoint(robot_->GetNavXYaw());
-	anglePID_->SetAbsoluteTolerance(3.0); //HM TUNE TODODODODODOD
+	anglePID_->SetAbsoluteTolerance(3.0); //HM TUNE TODO
 	anglePID_->SetContinuous(true);
 	anglePID_->SetInputRange(-180, 180);
-	anglePID_->SetOutputRange(-0.8, 0.8); //TODO TUNEEEEEEEEEEEE
+	anglePID_->SetOutputRange(-0.8, 0.8); //TODO TUNE
 	anglePID_->Enable();
 
 	// motor outputs, done in super() but done again anyways
@@ -63,20 +63,21 @@ void GuidedDriveController::ArcadeDrive(double myX, double myY, double thrustSen
 	rotateValue = GetCubicAdjustment(rotateValue, rotateSensitivity);
 	thrustValue = GetCubicAdjustment(thrustValue, thrustSensitivity);
 
-	if(reverseReverseNet_.GetBoolean(true) || (!reverseReverseNet_.GetBoolean(true) && thrustValue >= 0.0)){// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ //lili mode
+	if(reverseReverseNet_.GetBoolean(true) || (!reverseReverseNet_.GetBoolean(true) && thrustValue >= 0.0)){
+		// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ (for lili mode)
 		leftOutput = thrustValue;// + rotateValue;			// CHECK FOR COMP BOT
 		rightOutput = thrustValue;// - rotateValue;
 		anglePID_->SetSetpoint(robot_->GetNavXYaw()+rotateValue*10);
 		printf("ANGLE SETPOINT --------- %f\n\n", robot_->GetNavXYaw()+rotateValue*10);
 	} else {
-		leftOutput = thrustValue;// - rotateValue;
-		rightOutput = thrustValue;// + rotateValue;
+		leftOutput = thrustValue; // - rotateValue;
+		rightOutput = thrustValue; // + rotateValue;
 		anglePID_->SetSetpoint(robot_->GetNavXYaw()-rotateValue*10);
 		printf("ANGLE SETPOINT --------- %f\n\n", robot_->GetNavXYaw()-rotateValue*10);
 	}
 	
 	if(!anglePID_->OnTarget()){
-		double tOutput = anglePIDOutput_->GetPIDOutput(); //strange way to do it, lili drive working?
+		double tOutput = anglePIDOutput_->GetPIDOutput();
 		leftOutput -= tOutput;
 		rightOutput += tOutput;
 	}

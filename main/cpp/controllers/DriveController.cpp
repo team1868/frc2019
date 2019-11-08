@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "../../include/controllers/DriveController.h"
-//#include <frc/WPILib.h>
+
 // constructor
 DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) {
 
@@ -17,7 +17,7 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
 
 	// driver preferences
-    // Set sensitivity to 0
+	// set sensitivity to 0
 	thrustSensitivity_ = 0.0;
 	rotateSensitivity_ = 0.0;
 	quickTurnSensitivity_ = 0.0;
@@ -51,12 +51,7 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 }
 
 void DriveController::Reset() {
-//	robot_->SetPercentVBusDriveMode(); check robotmodel
 
-//	thrustSensitivity_ = robot_->pini_->getf("TELEOP DRIVING", "thrustSensitivity", 0.3);
-//	rotateSensitivity_ = robot_->pini_->getf("TELEOP DRIVING", "rotateSensitivity", 0.5);
-//	quickTurnSensitivity_ = robot_->pini_->getf("TELEOP DRIVING", "quickTurnSensitivity", 0.5);
-//	check ini
 }
 
 // update drive
@@ -65,41 +60,32 @@ void DriveController::Update(double currTimeSec, double deltaTimeSec) {
 
 	switch (robot_->GetGameMode()) {
 		case (RobotModel::NORMAL_TELEOP):
-			//		robot->SetPercentVBusDriveMode(); old talon stuff
 			double leftJoyY, leftJoyZ, rightJoyY, rightJoyX, rightJoyZ;
 
-			// Takes joystick values
+			// takes joystick values
 			leftJoyY = -humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kY);	// was neg
 			leftJoyZ = humanControl_->GetJoystickValue(ControlBoard::kLeftJoy, ControlBoard::kZ);
-			rightJoyY = -humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY);	// was neg
+			rightJoyY = -humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kY); // was neg
 			rightJoyX = humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kX);
-			//printf("RIGHT JOY X AT ---------------- %f", rightJoyX);
 			rightJoyZ = humanControl_->GetJoystickValue(ControlBoard::kRightJoy, ControlBoard::kZ);
 
 			// so leftJoyZ and rightJoyZ are from -1 to 1
 			thrustSensitivity_ = (leftJoyZ + 1.0) / 2.0;
 			rotateSensitivity_ = (rightJoyZ + 1.0) / 2.0;
 
-			// Change gear
-			if (humanControl_->GetHighGearDesired()) { //TODO POSSIBLY REMOVE WHY IS THIS ALSO HERE
+			// change gear
+			if (humanControl_->GetHighGearDesired()) { 
 				robot_->SetHighGear();
 			} else {
 				robot_->SetLowGear();
 			}
 		
-			// Checks quickturn or arcade drive
-			//*******************No QuickTurn Needed!******************, not implemented, quickturnDesired for alignwithtapecommand
-			//if (humanControl_->GetQuickTurnDesired()) {
-			//	QuickTurn(rightJoyX, 0.0);
-			//} else {
-				//if (humanControl_->GetArcadeDriveDesired()) {
-				if(arcadeDesireNet_.GetBoolean(true)){
-					ArcadeDrive(rightJoyX, leftJoyY, thrustSensitivity_, rotateSensitivity_);
-				} else {
-					printf("Using Tank drive------------------------------------------------------------------------------------------------------- \n");
-					TankDrive(leftJoyY, rightJoyY);
-				}
-			//}
+			if(arcadeDesireNet_.GetBoolean(true)){
+				ArcadeDrive(rightJoyX, leftJoyY, thrustSensitivity_, rotateSensitivity_);
+			} else {
+				printf("Using Tank drive------------------------------------------------------------------------------------------------------- \n");
+				TankDrive(leftJoyY, rightJoyY);
+			}
 			break;
 		case (RobotModel::SANDSTORM):
 			printf("WARNING: DriveController initialized in sandstorm????");
@@ -121,7 +107,8 @@ void DriveController::ArcadeDrive(double myX, double myY, double thrustSensitivi
 	rotateValue = GetCubicAdjustment(rotateValue, rotateSensitivity);
 	thrustValue = GetCubicAdjustment(thrustValue, thrustSensitivity);
 
-	if(reverseReverseNet_.GetBoolean(true) || (!reverseReverseNet_.GetBoolean(true) && thrustValue >= 0.0)){// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ //lili mode
+	if(reverseReverseNet_.GetBoolean(true) || (!reverseReverseNet_.GetBoolean(true) && thrustValue >= 0.0)){
+	// || reverseReverseNet_.GetBoolean(false) && thrustValue > 0.0){ (for lili mode)
 		leftOutput = thrustValue + rotateValue;			// CHECK FOR COMP BOT
 		rightOutput = thrustValue - rotateValue;
 	} else {
@@ -183,7 +170,7 @@ double DriveController::GetRotateDeadband(){
 }
 
 
-// Rotation sensitivity: when z == 0 same output; when z==1, output^3
+// rotation sensitivity: when z == 0 same output; when z==1, output^3
 double DriveController::GetCubicAdjustment(double value, double adjustmentConstant) {
 	return adjustmentConstant * std::pow(value, 3.0) + (1.0 - adjustmentConstant) * value;
 }
@@ -198,9 +185,6 @@ void DriveController::PrintDriveValues(){
 	rotateZNet_.SetDouble(rotateSensitivity_);
 	gearDesireNet_.SetBoolean(humanControl_->GetHighGearDesired());
 	quickturnDesireNet_.SetBoolean(humanControl_->GetQuickTurnDesired());
-	//arcadeDesireNet_.SetBoolean(humanControl_->GetArcadeDriveDesired());
-	//leftDriveNet_.SetDouble(leftOutput); //TODO MOVE INTO METHOD + line after
-	//rightDriveNet_.SetDouble(rightOutput);
 	driveDirectionNet_.SetDouble(GetDriveDirection());
 	navXAngleNet_.SetDouble(robot_->GetNavXYaw());
 	leftDistanceNet_.SetDouble(robot_->GetLeftDistance());

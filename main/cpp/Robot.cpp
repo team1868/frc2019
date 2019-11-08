@@ -32,46 +32,40 @@ void Robot::RobotInit()  {
 
   frc::Shuffleboard::GetTab("AUTO CHOOSER");
 
-  //initialize RobotModel
+  // initialize RobotModel
   robot_ = new RobotModel();
   robot_->CreateNavX();
 
   robot_->ZeroNavXYaw();
-  //robot_->CalibrateGyro();
-  //robot_->ResetGyro();
 
   aligningTape_ = false;
 
-  //NOTE: POSSIBLE ERROR bc making multiple sources teleop vs auto
-  navX_ = robot_->GetNavXSource();//new NavXPIDSource(robot_);
-  //TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
+  // NOTE: POSSIBLE ERROR bc making multiple sources teleop vs auto
+  navX_ = robot_->GetNavXSource();
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
-  //DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
   
   
-  //initialize controllers
+  // initialize controllers
   humanControl_ = new ControlBoard();
   driveController_ = new DriveController(robot_, humanControl_);
   guidedDriveController_ = new GuidedDriveController(robot_, humanControl_, navX_, anglePIDOutput);
 
-  superstructureController_ = new SuperstructureController(robot_, humanControl_); //TODO COMMENT OUT
-  //talonEncoderSource_ = new TalonEncoderPIDSource(robot_);
+  superstructureController_ = new SuperstructureController(robot_, humanControl_);
 
   habLimitSwitch_ = new DigitalInput(4);
 
-  // testHabPiston = new DoubleSolenoid(0, 7, 1);
   testHabPiston = new DoubleSolenoid(0,5,2);
   testHabPiston->Set(DoubleSolenoid::kReverse);
 
   autoJoyVal_ = 0.0;
 
   robot_->SetLowGear();
-  robot_->ResetDriveEncoders(); //needed?
+  robot_->ResetDriveEncoders();
 
 
   ResetTimerVariables();
   // Wait(1.0);
-  // NOTE camera commeted out
+  // NOTE camera commented out
   // cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture(0);
   // camera.SetResolution(320,240);
   //Wait(1.0);
@@ -134,7 +128,6 @@ void Robot::RobotInit()  {
   // autoSendableChooser_.AddOption("12:2R,Rship,HC", "t 1.0 d 18.8 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
   // // autoSendableChooser_.AddOption("13:2L,Lfront,H", "d 14.5 t 90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t -90.0 d 7.0 t 0.0 d -8.0 t -10.0 w b 0"); //UNTESTED sketch
   // // autoSendableChooser_.AddOption("14:2R,Rfront,H", "d 14.5 t -90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t 90.0 d 7.0 t 0.0 d -8.0 t 10.0 w b 0"); //UNTESTED sketch
-  
 
   //--------------------CAL GAMES----------------------------------------------- (integrate with team laptop or github to get chezy)
   autoSendableChooser_.SetDefaultOption("0: blank", "h 0 b 0");
@@ -159,11 +152,54 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("B12:2R,Rsh,HC", "t 1.0 d 18.65 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
   autoSendableChooser_.AddOption("8:other", "h 0");  
 
+  //chezy changes
+  /*autoSendableChooser_.AddOption("R1:1S,H", "h 0 d 10.85 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("R2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("R3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("R4:2L,Lsh,H", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("R5:2L,Lsh,1.5C", "h 0 d 18.55 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("R6:2R,Rsh,1C", "h 0 d 18.55 t -90.0 ^ h 0");
+  autoSendableChooser_.AddOption("R7:2R,Rsh,1.5C", "h 0 d 18.55 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("R10:2L,Lsh,HC", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("R12:2R,Rsh,HC", "t 1.0 d 18.55 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  autoSendableChooser_.AddOption("B1:1S,H", "h 0 d 10.817 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("B2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("B3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("B4:2L,Lsh,H", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("B5:2L,Lsh,1.5C", "t -0.5 d 19.35 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("B6:2R,Rsh,1C", "h 0 d 19.35 t -90.0 ^ h 0");
+  autoSendableChooser_.AddOption("B7:2R,Rsh,1.5C", "h 0 d 19.35 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("B10:2L,Lsh,HC", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("B12:2R,Rsh,HC", "t 1.0 d 19.35 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  */
+
   //TODO MOVE TO ROBOT MODEL
-	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
-	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
+  leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();	
+  rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Distance (RM)", robot_->GetLeftEncoderValue()).GetEntry();
-	rightDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Distance (RM)", robot_->GetRightEncoderValue()).GetEntry();
+  rightDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Distance (RM)", robot_->GetRightEncoderValue()).GetEntry();
+  leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
+  rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
+  testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.6).GetEntry();
+  habDeployAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab deploy accel", 1.0005).GetEntry();
+  habRaiseAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab raise accel", 1.001).GetEntry();
+  habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.9).GetEntry();
+  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  lightSensorDisplayNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("light sensor read", false).GetEntry();
+  //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("lala info", 0.0);
+  // frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose yo auto here fam", autoSendableChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
+  frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
+  sparkEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("hab encoder val", 0.0).GetEntry();
+  
+  //autoChooserType_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("SendableChooser", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
+  
+  autoSendableChooser_.AddOption("8:other", "h 0");  
+
+  //TODO MOVE TO ROBOT MODEL
+  leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
+  rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
+  leftDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Distance (RM)", robot_->GetLeftEncoderValue()).GetEntry();
+  rightDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Distance (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.6).GetEntry();
@@ -183,7 +219,7 @@ void Robot::RobotInit()  {
 
 }
 
-/**
+/*
  * This function is called every robot packet, no matter the mode. Use
  * this for items like diagnostics that you want ran during disabled,
  * autonomous, teleoperated and test.
@@ -208,12 +244,12 @@ void Robot::RobotPeriodic() {
   SmartDashboard::PutNumber("right encoder scale", robot_->GetRightEncodingScale());
   SmartDashboard::PutBoolean("is high gear?", robot_->IsHighGear());
   robot_->PrintState();
-
+  
   //printf("----------------------------%s\n", autoSendableChooser_.GetSelected().c_str());
   // std::cout << "INFORMATION:            " << autoSendableChooser_.GetSelected() << std::endl;
 }
 
-/**
+/*
  * This autonomous (along with the chooser code above) shows how to select
  * between different autonomous modes using the dashboard. The sendable chooser
  * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
@@ -234,19 +270,19 @@ void Robot::AutonomousInit() {
   // }
   printf("IN AUTONOMOUS \n");
   //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
-  
-  
+
+
   autoController_ = new AutoController();
   autoMode_ = NULL;
   autoJoyVal_ = 0.0;
-  
+
   robot_->ResetDriveEncoders();
   robot_->ZeroNavXYaw();
   robot_->SetLowGear(); //faster, for 2 hatch, so cargo does not fall out
   robot_->EngageHook();
 
-  //TODO BAD FORM but whatev
-  //NavXPIDSource *navXSource = new NavXPIDSource(robot_);
+  // TODO BAD FORM but whateva
+  // NavXPIDSource *navXSource = new NavXPIDSource(robot_);
   TalonEncoderPIDSource* talonEncoderSource = new TalonEncoderPIDSource(robot_);
   AnglePIDOutput* anglePIDOutput = new AnglePIDOutput();
   DistancePIDOutput* distancePIDOutput = new DistancePIDOutput();
@@ -256,7 +292,7 @@ void Robot::AutonomousInit() {
 
 
   // tuning pid
-  //  robot_->SetTestSequence("h 0 t -90.0 s 2.0 t 0.0");
+  // robot_->SetTestSequence("h 0 t -90.0 s 2.0 t 0.0");
   // robot_->SetTestSequence("h 0 t 8.0");
 
   // really sketch needs fixing:
@@ -267,7 +303,7 @@ void Robot::AutonomousInit() {
   // hatches:
   // robot_->SetTestSequence("h 0 d 10.9"); //  b 1 s 0.4 h 1 straight forward hatch deploy
   // robot_->SetTestSequence("h 0 d 12.0 t 90.0 d 2.9 t 0.0 d 2.3"); // left hab 2 to left front hatch deploy included offset WORKS actually go back to 2.8
-  //robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.9 t 0.0 d 2.3"); // right hab 2 to right front hatch deploy included offset
+  // robot_->SetTestSequence("h 0 d 12.0 t -90.0 d 2.9 t 0.0 d 2.3"); // right hab 2 to right front hatch deploy included offset
 
   // cargo:
   // left:
@@ -276,7 +312,7 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 d 18.8 t 90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // right:
   // robot_->SetTestSequence("h 0 d 15.8 t -90.0"); // chargo ship from hab 1 near cargo shot right
-  //robot_->SetTestSequence("h 0 d 19.0 t -90.0"); // cargo ship from hab 2 near cargo shot right
+  // robot_->SetTestSequence("h 0 d 19.0 t -90.0"); // cargo ship from hab 2 near cargo shot right
   // robot_->SetTestSequence("h 0 d 18.8 t -90.0 ^ d -2.8 t 0.0 d -16.6 w d 16.6 t -90.0");  // 1.5 ish cargo shoot left hab 2
 
 
@@ -306,13 +342,13 @@ void Robot::AutonomousInit() {
   // robot_->SetTestSequence("h 0 d 16.1 t 90.0"); // chargo ship from hab 1 near cargo shot left
   // robot_->SetTestSequence("h 0 d 19.1 t 90.0 ^ d -2.8 t 0.0 d -17.0 w d 17.0 t 90.0");  // 1.5 ish cargo shoot left hab 2
   // robot_->SetTestSequence(autoModeString);
-  //robot_->SetTestSequence("a h 0");
+  // robot_->SetTestSequence("a h 0");
 
   // robot_->SetTestSequence("h 0 t -90.0");
 
   // robot_->SetTestSequence("h 0 d 10.0 t 90.0 d 2.8 t 0.0 d 1.3 b 1 s 1.0 h 1"); // left hab 1 to front left
-  //if(autoChooserType_.GetBoolean(true)){
-  printf("auto sequence is %s from autoChooser (which is being used)\n", autoSendableChooser_.GetSelected().c_str());
+  // if(autoChooserType_.GetBoolean(true)){
+    printf("auto sequence is %s from autoChooser (which is being used)\n", autoSendableChooser_.GetSelected().c_str());
   if(autoSendableChooser_.GetSelected()=="h 0"){ //auto 8: other
     printf("using auto8 which is %s\n", auto8Val_.GetString("h 0").c_str());
     robot_->SetTestSequence(auto8Val_.GetString("h 0"));
@@ -326,16 +362,15 @@ void Robot::AutonomousInit() {
   //   robot_->SetTestSequence(auto8Val_.GetString("h 0 b 0"));
   // }
   printf("done choosing auto sequence\n");  
-  
   // if(autoChooserType_.GetBoolean(true)){
   //   printf("selected auto: %s\n", autoSendableChooser_.GetSelected());
   //   robot_->SetTestSequence(autoSendableChooser_.GetSelected());
   // }
 
-  //robot_->ZeroNavXYaw();
+  // robot_->ZeroNavXYaw();
   autoMode_ = new TestMode(robot_, humanControl_);
   printf("STATS:  %d %d\n", autoMode_==NULL, autoController_==NULL);
-  //robot_->ZeroNavXYaw();
+  // robot_->ZeroNavXYaw();
   autoController_->SetAutonomousMode(autoMode_);
   autoController_->Init(AutoMode::AutoPositions::kBlank, AutoMode::HabLevel::k1);
 
@@ -365,7 +400,7 @@ void Robot::AutonomousPeriodic() {
   //if (!curve_->IsDone()) curve_->Update(currTimeSec_, deltaTimeSec_);
   // if(!ellipse_->IsDone()) ellipse_->Update(currTimeSec_, deltaTimeSec_);
   //printf("is auto mode done %d\n\n", autoMode_->IsDone());
-
+  
   if(sandstormAuto_){
     printf("enter sandstorm auto\n");
     printf("STATS:  %d %d\n", autoMode_==NULL, autoController_==NULL);

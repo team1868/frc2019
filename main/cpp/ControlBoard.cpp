@@ -30,7 +30,7 @@ ControlBoard::ControlBoard() {
 	operatorJoy_ = new frc::Joystick(OPERATOR_JOY_USB_PORT);
 	operatorJoyB_ = new frc::Joystick(OPERATOR_JOY_B_USB_PORT); //if gamepad mode, just initialized and not used
 	
-	//Drive Buttons
+	// drive Buttons
 	highGearDesired_ = false;
 	smallTurnDesired_ = false;
 	arcadeDriveDesired_ = true;
@@ -44,7 +44,7 @@ ControlBoard::ControlBoard() {
 	alignTapeButton_ = new ButtonReader(rightJoy_, ALIGN_TAPE_BUTTON_PORT);
 	driveDirectionButton_ = new ButtonReader(leftJoy_, DRIVE_DIRECTION_BUTTON_PORT);
 	
-	//Superstructure Buttons
+	// Superstructure Buttons
 	cargoIntakeDesired_ = false;
 	cargoUnintakeDesired_ = false;
 	cargoFlywheelDesired_ = false; 
@@ -88,7 +88,6 @@ ControlBoard::ControlBoard() {
 	testButton3 = new ButtonReader(rightJoy_, 2); 
 
 	gearHighShiftButton_ = new ButtonReader(leftJoy_, HIGH_GEAR_BUTTON_PORT);
-	// gearLowShiftButton_ = new ButtonReader(leftJoy_, 0); //no low gear button
 
     ReadControls();
 }
@@ -97,7 +96,7 @@ void ControlBoard::ReadControls() {
 
 	ReadAllButtons();
 
-	//Reading joystick values
+	// reading joystick values
 	leftJoyX_ = leftJoy_->GetX();
 	leftJoyY_ = leftJoy_->GetY();
 
@@ -113,7 +112,7 @@ void ControlBoard::ReadControls() {
 	rightJoyX_ = rightJoy_->GetX();
 	rightJoyY_ = rightJoy_->GetY();
 
-	//no switch, so using buttons
+	// no switch, so using buttons
 	reverseDriveDesired_ = driveDirectionButton_->IsDown();
 	
 	if(gearHighShiftButton_->IsDown()){
@@ -122,9 +121,9 @@ void ControlBoard::ReadControls() {
 		highGearDesired_ = false;
 	}
 
-	arcadeDriveDesired_ = arcadeDriveButton_->IsDown(); //DEAD CODE, now on shuffleboard
+	arcadeDriveDesired_ = arcadeDriveButton_->IsDown(); // DEAD CODE, now on shuffleboard
 	quickTurnDesired_ = quickTurnButton_->IsDown();
-	alignTapeDesired_ = alignTapeButton_->WasJustPressed(); //TODO POSSIBLE ERROR
+	alignTapeDesired_ = alignTapeButton_->WasJustPressed(); // TODO POSSIBLE ERROR
 	smallTurnDesired_ = smallTurnButton_->IsDown();
 
 
@@ -299,7 +298,6 @@ bool ControlBoard::GetHabArmsRetractDesired(){
 void ControlBoard::ReadAllButtons() {
 	driveDirectionButton_->ReadValue();
 	gearHighShiftButton_->ReadValue();
-	// gearLowShiftButton_->ReadValue();
 	smallTurnButton_->ReadValue();
 	arcadeDriveButton_->ReadValue();
 	quickTurnButton_->ReadValue();

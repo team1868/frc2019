@@ -8,8 +8,9 @@
 #include "ButtonReader.h"
 #include <frc/WPILib.h>
 
-//Class ButtonReader
-//Constructs a joystick and sets the port of the button on the joystick, and reads the state of the button
+// class ButtonReader
+// constructs a joystick and sets the port of the button on the joystick, and reads the state of the button
+
 ButtonReader::ButtonReader(frc::Joystick* myJoystick, int myButtonNum) {
 	joystick = myJoystick;
 	buttonNum = myButtonNum;
@@ -46,7 +47,7 @@ ToggleButtonReader::ToggleButtonReader(frc::Joystick *joy, int buttonNum) :
 	currToggleState = false;
 }
 
-//Gets the current state of the toggle
+// gets the current state of the toggle
 bool ToggleButtonReader::GetState() {
 	if (WasJustReleased()) {
 		currToggleState = !currToggleState;
