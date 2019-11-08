@@ -51,11 +51,11 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	numTimesOnTarget_ = 0;
 
 	//ERROR (possibly) WARNING NOTE: this is adding every pivot
-	//frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", pivotPID_->GetError());
+	//frc::Shuffleboard::GetTab("Public_Display").Add("Pivot Error", pivotPID_->GetError());
 	// TODO THIS NEEDS TO MOVE STAT
-	leftDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Left Drive", 0.0).GetEntry();
-	rightDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Right Drive", 0.0).GetEntry();
-	pivotErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", 0.0).GetEntry();
+	leftDriveNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Pivot Left Drive", 0.0).GetEntry();
+	rightDriveNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Pivot Right Drive", 0.0).GetEntry();
+	pivotErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Pivot Error", 0.0).GetEntry();
 	//NOTE: not printing time difference
 
 }
@@ -103,11 +103,11 @@ PivotCommand::PivotCommand(RobotModel *robot, double desiredAngle, bool isAbsolu
 	numTimesOnTarget_ = 0;
 
 	//ERROR (possibly) WARNING NOTE: this is adding every pivot
-	//frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", pivotPID_->GetError());
+	//frc::Shuffleboard::GetTab("Public_Display").Add("Pivot Error", pivotPID_->GetError());
 	// TODO THIS NEEDS TO MOVE STAT
-	leftDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Left Drive", 0.0).GetEntry();
-	rightDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Right Drive", 0.0).GetEntry();
-	pivotErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Pivot Error", 0.0).GetEntry();
+	leftDriveNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Pivot Left Drive", 0.0).GetEntry();
+	rightDriveNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Pivot Right Drive", 0.0).GetEntry();
+	pivotErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Pivot Error", 0.0).GetEntry();
 	//NOTE: not printing time difference
 
 }

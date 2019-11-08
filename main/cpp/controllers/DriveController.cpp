@@ -32,20 +32,20 @@ DriveController::DriveController(RobotModel *robot, ControlBoard *humanControl) 
 	rightOutput  = 0.0;
 
 	// shuffleboard initializations
-	thrustZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Thrust Z", 0.0).GetEntry();
-	rotateZNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Rotate Z", 0.0).GetEntry();
-	gearDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("High Gear", humanControl_->GetHighGearDesired()).GetEntry();
-	quickturnDesireNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Quick Turn", humanControl_->GetQuickTurnDesired()).GetEntry();
+	thrustZNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Thrust Z", 0.0).GetEntry();
+	rotateZNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Rotate Z", 0.0).GetEntry();
+	gearDesireNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("High Gear", humanControl_->GetHighGearDesired()).GetEntry();
+	quickturnDesireNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Quick Turn", humanControl_->GetQuickTurnDesired()).GetEntry();
 	arcadeDesireNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Arcade Drive", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();// humanControl_->GetArcadeDriveDesired()).GetEntry();
 	reverseReverseNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Lili Mode", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-	leftDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Output (controller)", leftOutput).GetEntry();
-	rightDriveNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Output (controller)", rightOutput).GetEntry();
-	driveDirectionNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Drive Direction (controller)", GetDriveDirection()).GetEntry();
-	navXAngleNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("NavX Angle", robot_->GetNavXYaw()).GetEntry();
-	leftDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Drive Distance", robot_->GetLeftDistance()).GetEntry();
-	rightDistanceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Drive Distance", robot_->GetRightDistance()).GetEntry();
-	leftEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Encoder", robot_->GetLeftEncoderValue()).GetEntry();
-	rightEncoderNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Encoder", robot_->GetRightEncoderValue()).GetEntry();
+	leftDriveNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Output (controller)", leftOutput).GetEntry();
+	rightDriveNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Output (controller)", rightOutput).GetEntry();
+	driveDirectionNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Drive Direction (controller)", GetDriveDirection()).GetEntry();
+	navXAngleNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("NavX Angle", robot_->GetNavXYaw()).GetEntry();
+	leftDistanceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Drive Distance", robot_->GetLeftDistance()).GetEntry();
+	rightDistanceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Drive Distance", robot_->GetRightDistance()).GetEntry();
+	leftEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Encoder", robot_->GetLeftEncoderValue()).GetEntry();
+	rightEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Encoder", robot_->GetRightEncoderValue()).GetEntry();
 	thrustDeadbandNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Thrust Deadband", 0.1).GetEntry();
 	rotateDeadbandNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Rotate Deadband", 0.1).GetEntry();
 }

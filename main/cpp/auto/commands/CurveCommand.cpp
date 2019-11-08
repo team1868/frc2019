@@ -34,14 +34,14 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tD", 0.0).GetEntry();
 
   
-  dOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve dO", 0.0).GetEntry(); 
-  tOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve tO", 0.0).GetEntry(); 
-  lOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve lO", 0.0).GetEntry();
-  rOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve rO", 0.0).GetEntry();
-  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve dErr", 0.0).GetEntry(); 
-  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve tErr", 0.0).GetEntry(); 
+  dOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dO", 0.0).GetEntry(); 
+  tOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tO", 0.0).GetEntry(); 
+  lOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve lO", 0.0).GetEntry();
+  rOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve rO", 0.0).GetEntry();
+  dErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dErr", 0.0).GetEntry(); 
+  tErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tErr", 0.0).GetEntry(); 
 
-  pidSourceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve PID Get", 0.0).GetEntry(); 
+  pidSourceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve PID Get", 0.0).GetEntry(); 
 }
 
 CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desiredAngle,
@@ -67,14 +67,14 @@ CurveCommand::CurveCommand(RobotModel *robot, double desiredRadius, double desir
   tDFacNet_ =  frc::Shuffleboard::GetTab("Private_Code_Input").Add("Curve tD", 0.0).GetEntry();
 
   
-  dOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve dO", 0.0).GetEntry(); 
-  tOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve tO", 0.0).GetEntry(); 
-  lOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve lO", 0.0).GetEntry();
-  rOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve rO", 0.0).GetEntry();
-  dErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve dErr", 0.0).GetEntry(); 
-  tErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve tErr", 0.0).GetEntry(); 
+  dOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dO", 0.0).GetEntry(); 
+  tOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tO", 0.0).GetEntry(); 
+  lOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve lO", 0.0).GetEntry();
+  rOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve rO", 0.0).GetEntry();
+  dErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve dErr", 0.0).GetEntry(); 
+  tErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve tErr", 0.0).GetEntry(); 
 
-  pidSourceNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Curve PID Get", 0.0).GetEntry(); 
+  pidSourceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Curve PID Get", 0.0).GetEntry(); 
 }
 
 void CurveCommand::Init(){

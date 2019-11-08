@@ -10,7 +10,7 @@
 #include "Ports2019.h"
 #include <math.h>
 
-RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
+RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("Public_Display")){
 
   printf("robot model constructor\n");
   // initialize base variables
@@ -43,7 +43,7 @@ RobotModel::RobotModel() : tab_(frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS")){
   highGearTurnStaticFric_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("HT total SF", HIGH_GEAR_STATIC_FRICTION_POWER+HIGH_GEAR_QUICKTURN_ADDITIONAL_STATIC_FRICTION_POWER).GetEntry();
 
   printf("tabs done for pid\n");
-  frc::Shuffleboard::SelectTab("PRINTSSTUFFSYAYS");
+  frc::Shuffleboard::SelectTab("Public_Display");
   // initialize variables
   leftDriveOutput_ = 0.0;
   rightDriveOutput_ = 0.0;

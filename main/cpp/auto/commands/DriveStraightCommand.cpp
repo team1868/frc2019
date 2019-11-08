@@ -20,16 +20,16 @@ DriveStraightCommand::DriveStraightCommand(NavXPIDSource* navXSource, TalonEncod
 	//NOTE: adding repetative title, this may be an issue later
 
 	//TODO: this may seem as though error, bc all values start at 0 and shouldn't
-	leftStraightNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Left Output (drivestraight)", 0.0).GetEntry();
-	rightStraightNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Right Output (drivestraight)", 0.0).GetEntry();
-	angleErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle Error (drivestraight)", 0.0).GetEntry();
-	angleErrorGraphNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle Error Graph (drivestraight)", 0.0).GetEntry();
-	desiredAngleNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Desired Angle (drivestraight)", 0.0).GetEntry();
-	encoderErrorNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Encoder Error (drivestraight)", 0.0).GetEntry();
-	encoderErrorGraphNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Encoder Error Graph (drivestraight)", 0.0).GetEntry();
-	desiredTotalFeetNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Desired Total Feet", 0.0).GetEntry();
-	dPIDOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Distance PID Output", 0.0).GetEntry();
-	aPIDOutputNet_ = frc::Shuffleboard::GetTab("PRINTSSTUFFSYAYS").Add("Angle PID Output", 0.0).GetEntry();
+	leftStraightNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Output (drivestraight)", 0.0).GetEntry();
+	rightStraightNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Output (drivestraight)", 0.0).GetEntry();
+	angleErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Angle Error (drivestraight)", 0.0).GetEntry();
+	angleErrorGraphNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Angle Error Graph (drivestraight)", 0.0).GetEntry();
+	desiredAngleNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Desired Angle (drivestraight)", 0.0).GetEntry();
+	encoderErrorNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Encoder Error (drivestraight)", 0.0).GetEntry();
+	encoderErrorGraphNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Encoder Error Graph (drivestraight)", 0.0).GetEntry();
+	desiredTotalFeetNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Desired Total Feet", 0.0).GetEntry();
+	dPIDOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Distance PID Output", 0.0).GetEntry();
+	aPIDOutputNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Angle PID Output", 0.0).GetEntry();
 	
 }
 

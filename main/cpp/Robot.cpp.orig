@@ -131,6 +131,7 @@ void Robot::RobotInit()  {
 
   //--------------------CAL GAMES----------------------------------------------- (integrate with team laptop or github to get chezy)
   autoSendableChooser_.SetDefaultOption("0: blank", "h 0 b 0");
+<<<<<<< HEAD
   autoSendableChooser_.AddOption("R1:1S,H", "h 0 d 11.55 a 1 b 1 s 0.1 h 1 d -0.5");
   autoSendableChooser_.AddOption("R2:2L,Lfr,H", "h 0 d 12.61 t 90.0 d 2.8 t 0.0 d 2.3");
   autoSendableChooser_.AddOption("R3:2R,Rfr,H", "h 0 d 12.61 t -90.0 d 2.8 t 0.0 d 2.3");
@@ -150,10 +151,28 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("B7:2R,Rsh,1.5C", "h 0 d 18.65 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
   autoSendableChooser_.AddOption("B10:2L,Lsh,HC", "t -1.4 d 18.65 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
   autoSendableChooser_.AddOption("B12:2R,Rsh,HC", "t 1.0 d 18.65 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
-  autoSendableChooser_.AddOption("8:other", "h 0");  
-
-  //chezy changes
-  /*autoSendableChooser_.AddOption("R1:1S,H", "h 0 d 10.85 a 1 b 1 s 0.1 h 1 d -0.5");
+||||||| merged common ancestors
+  autoSendableChooser_.AddOption("R1:1S,H", "h 0 d 10.85 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("R2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("R3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("R4:2L,Lsh,H", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("R5:2L,Lsh,1.5C", "h 0 d 18.55 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("R6:2R,Rsh,1C", "h 0 d 18.55 t -90.0 ^ h 0");
+  autoSendableChooser_.AddOption("R7:2R,Rsh,1.5C", "h 0 d 18.55 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("R10:2L,Lsh,HC", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("R12:2R,Rsh,HC", "t 1.0 d 18.55 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  
+  autoSendableChooser_.AddOption("B1:1S,H", "h 0 d 10.817 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("B2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("B3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("B4:2L,Lsh,H", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("B5:2L,Lsh,1.5C", "t -0.5 d 19.35 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("B6:2R,Rsh,1C", "h 0 d 19.35 t -90.0 ^ h 0");
+  autoSendableChooser_.AddOption("B7:2R,Rsh,1.5C", "h 0 d 19.35 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("B10:2L,Lsh,HC", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("B12:2R,Rsh,HC", "t 1.0 d 19.35 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+=======
+  autoSendableChooser_.AddOption("R1:1S,H", "h 0 d 10.85 a 1 b 1 s 0.1 h 1 d -0.5");
   autoSendableChooser_.AddOption("R2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
   autoSendableChooser_.AddOption("R3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
   autoSendableChooser_.AddOption("R4:2L,Lsh,H", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
@@ -171,35 +190,14 @@ void Robot::RobotInit()  {
   autoSendableChooser_.AddOption("B7:2R,Rsh,1.5C", "h 0 d 19.35 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
   autoSendableChooser_.AddOption("B10:2L,Lsh,HC", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
   autoSendableChooser_.AddOption("B12:2R,Rsh,HC", "t 1.0 d 19.35 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
-  */
-
-  //TODO MOVE TO ROBOT MODEL
-  leftEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();	
-  rightEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
-  leftDistanceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Distance (RM)", robot_->GetLeftEncoderValue()).GetEntry();
-  rightDistanceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Distance (RM)", robot_->GetRightEncoderValue()).GetEntry();
-  leftEncoderStopNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Encoder Stopped (RM)", false).GetEntry();
-  rightEncoderStopNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Encoder Stopped (RM)", false).GetEntry();
-  testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.6).GetEntry();
-  habDeployAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab deploy accel", 1.0005).GetEntry();
-  habRaiseAccelNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("hab raise accel", 1.001).GetEntry();
-  habRisePowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER - power", 0.9).GetEntry();
-  guidedDriveNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("Guided Drive", false).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  lightSensorDisplayNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("light sensor read", false).GetEntry();
-  //frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("lala info", 0.0);
-  // frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose yo auto here fam", autoSendableChooser_).WithWidget(BuiltInWidgets::kComboBoxChooser);
-  frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("Choose auto", autoSendableChooser_).WithWidget(BuiltInWidgets::kSplitButtonChooser);
-  sparkEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("hab encoder val", 0.0).GetEntry();
-  
-  //autoChooserType_ = frc::Shuffleboard::GetTab("AUTO CHOOSER").Add("SendableChooser", true).WithWidget(BuiltInWidgets::kToggleSwitch).GetEntry();
-  
+>>>>>>> 7b237c93fa567e369fb1f925efbb156410d2d003
   autoSendableChooser_.AddOption("8:other", "h 0");  
 
   //TODO MOVE TO ROBOT MODEL
-  leftEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
-  rightEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
+	leftEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Encoder (RM)", robot_->GetLeftEncoderValue()).GetEntry();
+	rightEncoderNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Encoder (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftDistanceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Distance (RM)", robot_->GetLeftEncoderValue()).GetEntry();
-  rightDistanceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Distance (RM)", robot_->GetRightEncoderValue()).GetEntry();
+	rightDistanceNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Distance (RM)", robot_->GetRightEncoderValue()).GetEntry();
   leftEncoderStopNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Left Encoder Stopped (RM)", false).GetEntry();
 	rightEncoderStopNet_ = frc::Shuffleboard::GetTab("Public_Display").Add("Right Encoder Stopped (RM)", false).GetEntry();
   testerPowerNet_ = frc::Shuffleboard::GetTab("Private_Code_Input").Add("TESTER power", 0.6).GetEntry();
