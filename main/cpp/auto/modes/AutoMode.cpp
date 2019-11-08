@@ -41,14 +41,8 @@ void AutoMode:: QueueFromString(string autoSequence) {
 		
 		AutoCommand* tempCommand = NULL;
 		char command;
-<<<<<<< HEAD
 
 		while ((iss >> command) && !breakDesired_) {
-=======
-
-		while ((iss >> command) && !breakDesired_) {
-
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
 			//iss >> command;
 			printf("Command: %c, ", command);
 

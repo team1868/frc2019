@@ -29,8 +29,4 @@ void WaitForButtonCommand::Reset() {
 }
 
 WaitForButtonCommand::~WaitForButtonCommand() {
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 8ad727fb82cd4b6206784afb75a1bbd5407cdc10
