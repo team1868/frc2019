@@ -136,27 +136,27 @@ void Robot::RobotInit()  {
   // // autoSendableChooser_.AddOption("14:2R,Rfront,H", "d 14.5 t -90.0 d 2.8 t 0.0 a 1 b 1 s 0.1 h 1 s 0.3 d -2.3 t 90.0 d 7.0 t 0.0 d -8.0 t 10.0 w b 0"); //UNTESTED sketch
   
 
-  //--------------------CHEZY-----------------------------------------------
+  //--------------------CAL GAMES----------------------------------------------- (integrate with team laptop or github to get chezy)
   autoSendableChooser_.SetDefaultOption("0: blank", "h 0 b 0");
-  autoSendableChooser_.AddOption("R1:1S,H", "h 0 d 10.85 a 1 b 1 s 0.1 h 1 d -0.5");
-  autoSendableChooser_.AddOption("R2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("R3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("R4:2L,Lsh,H", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
-  autoSendableChooser_.AddOption("R5:2L,Lsh,1.5C", "h 0 d 18.55 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
-  autoSendableChooser_.AddOption("R6:2R,Rsh,1C", "h 0 d 18.55 t -90.0 ^ h 0");
-  autoSendableChooser_.AddOption("R7:2R,Rsh,1.5C", "h 0 d 18.55 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
-  autoSendableChooser_.AddOption("R10:2L,Lsh,HC", "t -1.0 d 18.55 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
-  autoSendableChooser_.AddOption("R12:2R,Rsh,HC", "t 1.0 d 18.55 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  autoSendableChooser_.AddOption("R1:1S,H", "h 0 d 11.55 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("R2:2L,Lfr,H", "h 0 d 12.61 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("R3:2R,Rfr,H", "h 0 d 12.61 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("R4:2L,Lsh,H", "t -1.0 d 19.25 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("R5:2L,Lsh,1.5C", "h 0 d 19.25 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("R6:2R,Rsh,1C", "h 0 d 19.25 t -90.0 ^ h 0");
+  autoSendableChooser_.AddOption("R7:2R,Rsh,1.5C", "h 0 d 19.25 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("R10:2L,Lsh,HC", "t -1.0 d 19.25 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("R12:2R,Rsh,HC", "t 1.0 d 19.25 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
   
-  autoSendableChooser_.AddOption("B1:1S,H", "h 0 d 10.817 a 1 b 1 s 0.1 h 1 d -0.5");
-  autoSendableChooser_.AddOption("B2:2L,Lfr,H", "h 0 d 11.916 t 90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("B3:2R,Rfr,H", "h 0 d 11.916 t -90.0 d 2.8 t 0.0 d 2.3");
-  autoSendableChooser_.AddOption("B4:2L,Lsh,H", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
-  autoSendableChooser_.AddOption("B5:2L,Lsh,1.5C", "t -0.5 d 19.35 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
-  autoSendableChooser_.AddOption("B6:2R,Rsh,1C", "h 0 d 19.35 t -90.0 ^ h 0");
-  autoSendableChooser_.AddOption("B7:2R,Rsh,1.5C", "h 0 d 19.35 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
-  autoSendableChooser_.AddOption("B10:2L,Lsh,HC", "t -1.4 d 19.35 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
-  autoSendableChooser_.AddOption("B12:2R,Rsh,HC", "t 1.0 d 19.35 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
+  autoSendableChooser_.AddOption("B1:1S,H", "h 0 d 10.117 a 1 b 1 s 0.1 h 1 d -0.5");
+  autoSendableChooser_.AddOption("B2:2L,Lfr,H", "h 0 d 11.216 t 90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("B3:2R,Rfr,H", "h 0 d 11.216 t -90.0 d 2.8 t 0.0 d 2.3");
+  autoSendableChooser_.AddOption("B4:2L,Lsh,H", "t -1.4 d 18.65 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -1.4");
+  autoSendableChooser_.AddOption("B5:2L,Lsh,1.5C", "t -0.5 d 18.65 t 90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t 90.0");
+  autoSendableChooser_.AddOption("B6:2R,Rsh,1C", "h 0 d 18.65 t -90.0 ^ h 0");
+  autoSendableChooser_.AddOption("B7:2R,Rsh,1.5C", "h 0 d 18.65 t -90.0 ^ d -2.883 t 0.0 d -17.0 w d 17.0 t -90.0");
+  autoSendableChooser_.AddOption("B10:2L,Lsh,HC", "t -1.4 d 18.65 t 90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t -15.0 w b 0");
+  autoSendableChooser_.AddOption("B12:2R,Rsh,HC", "t 1.0 d 18.65 t -90.0 a 1 b 1 s 0.1 h 1 s 0.3 d -3.4 h 0 t 0.0 d -16.0 t 15.0 w b 0"); //flipped of 10
   autoSendableChooser_.AddOption("8:other", "h 0");  
 
   //TODO MOVE TO ROBOT MODEL
@@ -472,7 +472,7 @@ void Robot::TeleopPeriodic() {
     if(!wasJustDeployingHab_){
       habStartTime_ = robot_->GetTime();
     } else if(robot_->GetTime()-habStartTime_ >= 0.5){
-      robot_->SetHabBrake(false);      
+      //robot_->SetHabBrake(false);      
     }
 
     if (robot_->GetHabEncoderValue() >= 202.0) { //5 val slippage, so ends at val 207
